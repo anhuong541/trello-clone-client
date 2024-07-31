@@ -9,10 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@fontsource/roboto": "^5.0.13",
+    "@mui/material": "^5.16.6",
+    "firebase": "^10.12.4",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
-    "tslint": "^6.1.3"
+    "tslint": "^6.1.3",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@types/node": "^20",
