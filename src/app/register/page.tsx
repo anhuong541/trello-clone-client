@@ -51,7 +51,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="flex h-screen">
+    <main className="flex h-screen container m-auto">
       <Container
         maxWidth="xs"
         className="m-auto shadow-md shadow-dark-600 py-10"

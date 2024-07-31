@@ -1,14 +1,17 @@
 "use client";
 
 import CurrentUserFirebase from "@/hooks/user";
+import { auth } from "@/lib/firebase";
 import { handleUserSignIn } from "@/lib/firebaseActions";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef } from "react";
 
 export default function LoginPage() {
-  const emailRef = useRef<{ value: string } | null>(null);
+  const emailRef = useRef<{ value: string } | null>(null); // { value: string | null }>
   const passwordRef = useRef<{ value: string } | null>(null);
+  const exampleRef = useRef<any>(null);
 
   const { user: userCurrentData, loading: isLoadingUser } =
     CurrentUserFirebase();
@@ -40,14 +43,20 @@ export default function LoginPage() {
     );
 
     console.log("Trigger Success");
-    // doesn't clear data input yet!!
+  };
 
-    emailRef.current = { value: "" };
-    passwordRef.current = { value: "" };
+  const clearRefValue = () => {
+    console.log("hmm: ", exampleRef?.current?.value);
+
+    const exampleValue = exampleRef?.current;
+    if (exampleRef?.current) {
+      exampleValue.value = "";
+      console.log("hmm: ", exampleRef?.current?.value);
+    }
   };
 
   return (
-    <main className="flex h-screen">
+    <main className="flex h-screen container m-auto">
       <Container
         maxWidth="xs"
         className="m-auto shadow-md shadow-dark-600 py-10"
@@ -58,7 +67,7 @@ export default function LoginPage() {
           </Typography>
           <form className="flex flex-col gap-4" onSubmit={onSubmit}>
             <TextField
-              inputRef={emailRef}
+              ref={emailRef}
               id="email-register"
               label="Email"
               variant="outlined"
@@ -66,15 +75,24 @@ export default function LoginPage() {
               placeholder="Enter your email"
             />
             <TextField
-              inputRef={passwordRef}
+              ref={passwordRef}
               id="password-register"
               label="Password"
               variant="outlined"
               type="password"
               placeholder="Enter your Password"
             />
+            <input type="text" ref={exampleRef} className="border px-3 py-1" />
             <Button variant="contained" type="submit">
               Sign in
+            </Button>
+
+            <Button variant="contained" onClick={() => signOut(auth)}>
+              Sign Out
+            </Button>
+
+            <Button variant="contained" onClick={clearRefValue}>
+              Clear Ref
             </Button>
           </form>
           <Link
