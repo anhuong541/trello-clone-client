@@ -1,13 +1,21 @@
 "use client";
 
+import CurrentUserFirebase from "@/hooks/user";
 import { handleUserSignIn } from "@/lib/firebaseActions";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import Link from "next/link";
-import { FormEvent, useRef } from "react";
+import { FormEvent, useEffect, useRef } from "react";
 
 export default function LoginPage() {
   const emailRef = useRef<{ value: string } | null>(null);
   const passwordRef = useRef<{ value: string } | null>(null);
+
+  const { user: userCurrentData, loading: isLoadingUser } =
+    CurrentUserFirebase();
+
+  useEffect(() => {
+    console.log({ user: userCurrentData?.uid });
+  }, [userCurrentData]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
