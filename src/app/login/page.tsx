@@ -1,17 +1,20 @@
 "use client";
 
-import CurrentUserFirebase from "@/hooks/user";
-import { auth } from "@/lib/firebase";
-import { handleUserSignIn } from "@/lib/firebaseActions";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
-import { signOut } from "firebase/auth";
+import { Box, Button, Container, Typography } from "@mui/material";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useEffect } from "react";
 import Link from "next/link";
-import { FormEvent, useEffect, useRef } from "react";
+
+import CurrentUserFirebase from "@/hooks/user";
+import { handleUserSignIn, handleUserSignOut } from "@/lib/firebaseActions";
+
+type LoginInput = {
+  emailLogin: string;
+  passwordLogin: string;
+};
 
 export default function LoginPage() {
-  const emailRef = useRef<{ value: string } | null>(null); // { value: string | null }>
-  const passwordRef = useRef<{ value: string } | null>(null);
-  const exampleRef = useRef<any>(null);
+  const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
 
   const { user: userCurrentData, loading: isLoadingUser } =
     CurrentUserFirebase();
@@ -20,38 +23,20 @@ export default function LoginPage() {
     console.log({ user: userCurrentData?.uid });
   }, [userCurrentData]);
 
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const checkRefValue =
-      emailRef?.current?.value && passwordRef?.current?.value !== null
-        ? true
-        : false;
-
-    if (emailRef.current?.value === "" || passwordRef.current?.value === "") {
-      console.log("Trigger Toast");
+  const onSubmit: SubmitHandler<LoginInput> = async (data) => {
+    if (data.emailLogin === "" || data.passwordLogin === "") {
+      console.log("Trigger Toast input is empty");
       return;
     }
+    let submitErr = false;
 
-    if (!checkRefValue) {
-      console.log("Trigger Toast");
-      return;
-    }
+    await handleUserSignIn(data.emailLogin, data.passwordLogin).catch((e) => {
+      console.log("submit login error: ", e);
+      submitErr = true;
+    });
 
-    await handleUserSignIn(
-      emailRef.current?.value ?? "",
-      passwordRef.current?.value ?? ""
-    );
-
-    console.log("Trigger Success");
-  };
-
-  const clearRefValue = () => {
-    console.log("hmm: ", exampleRef?.current?.value);
-
-    const exampleValue = exampleRef?.current;
-    if (exampleRef?.current) {
-      exampleValue.value = "";
-      console.log("hmm: ", exampleRef?.current?.value);
+    if (!submitErr) {
+      reset();
     }
   };
 
@@ -65,34 +50,30 @@ export default function LoginPage() {
           <Typography variant="h1" className="font-bold text-blue-500 text-4xl">
             Login Trello Clone
           </Typography>
-          <form className="flex flex-col gap-4" onSubmit={onSubmit}>
-            <TextField
-              ref={emailRef}
-              id="email-register"
-              label="Email"
-              variant="outlined"
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <input
+              {...register("emailLogin")}
+              required={true}
               type="email"
               placeholder="Enter your email"
+              className="px-4 py-2 border border-blue-400  rounded-md shadow-md"
             />
-            <TextField
-              ref={passwordRef}
-              id="password-register"
-              label="Password"
-              variant="outlined"
+            <input
+              {...register("passwordLogin")}
+              required={true}
               type="password"
               placeholder="Enter your Password"
+              className="px-4 py-2 border border-blue-400  rounded-md shadow-md"
             />
-            <input type="text" ref={exampleRef} className="border px-3 py-1" />
             <Button variant="contained" type="submit">
               Sign in
             </Button>
 
-            <Button variant="contained" onClick={() => signOut(auth)}>
+            <Button variant="contained" onClick={handleUserSignOut}>
               Sign Out
-            </Button>
-
-            <Button variant="contained" onClick={clearRefValue}>
-              Clear Ref
             </Button>
           </form>
           <Link

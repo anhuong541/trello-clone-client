@@ -1,53 +1,46 @@
 "use client";
 
 import Link from "next/link";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
-import { FormEvent, useRef } from "react";
+import { Box, Button, Container, Typography } from "@mui/material";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { handleUserRegister } from "@/lib/firebaseActions";
+import CurrentUserFirebase from "@/hooks/user";
+import { useEffect } from "react";
+
+type RegisterInput = {
+  emailRegister: string;
+  usernameRegister: string;
+  passwordRegister: string;
+  confirmPasswordRegister: string;
+};
 
 export default function RegisterPage() {
-  const emailRef = useRef<{ value: string } | null>(null);
-  const usernameRef = useRef<{ value: string } | null>(null);
-  const passwordRef = useRef<{ value: string } | null>(null);
-  const confirmPasswordRef = useRef<{ value: string } | null>(null);
+  const { register, handleSubmit, watch, reset } = useForm<RegisterInput>();
 
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const checkRefValue =
-      emailRef?.current?.value &&
-      usernameRef?.current?.value &&
-      passwordRef?.current?.value &&
-      confirmPasswordRef?.current?.value !== null
-        ? true
-        : false;
+  const { user: userCurrentData, loading: isLoadingUser } =
+    CurrentUserFirebase();
 
-    if (emailRef.current?.value === "" || passwordRef.current?.value === "") {
-      console.log("Trigger Toast");
+  useEffect(() => {
+    console.log({ user: userCurrentData?.uid });
+  }, [userCurrentData]);
+
+  const onSubmit: SubmitHandler<RegisterInput> = async (data) => {
+    if (data.passwordRegister !== data.confirmPasswordRegister) {
+      console.log("Trigger Toast Password is not the same");
       return;
     }
+    let submitErr = false;
 
-    if (!checkRefValue) {
-      console.log("Trigger Toast");
-      return;
-    }
-
-    if (passwordRef?.current?.value !== confirmPasswordRef?.current?.value) {
-      console.log("Trigger Toast");
-      return;
-    }
-
-    await handleUserRegister(
-      emailRef.current?.value ?? "",
-      passwordRef.current?.value ?? ""
+    await handleUserRegister(data.emailRegister, data.passwordRegister).catch(
+      (e) => {
+        submitErr = true;
+        console.log("submit register error: ", e);
+      }
     );
 
-    console.log("Trigger Success");
-    // doesn't clear data input yet!!
-
-    emailRef.current = { value: "" };
-    passwordRef.current = { value: "" };
-    usernameRef.current = { value: "" };
-    confirmPasswordRef.current = { value: "" };
+    if (!submitErr) {
+      reset();
+    }
   };
 
   return (
@@ -60,38 +53,37 @@ export default function RegisterPage() {
           <Typography variant="h1" className="font-bold text-blue-500 text-4xl">
             Register
           </Typography>
-          <form className="flex flex-col gap-4" onSubmit={onSubmit}>
-            <TextField
-              inputRef={emailRef}
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <input
+              {...register("emailRegister")}
               id="email-register"
-              label="Email"
-              variant="outlined"
               type="email"
               placeholder="Enter your email"
+              className="px-4 py-2 border border-blue-400 rounded-md shadow-md"
             />
-            <TextField
-              inputRef={usernameRef}
+            <input
+              {...register("usernameRegister")}
               id="username-register"
-              label="Username"
-              variant="outlined"
               type="text"
               placeholder="Enter your Username"
+              className="px-4 py-2 border border-blue-400 rounded-md shadow-md"
             />
-            <TextField
-              inputRef={passwordRef}
+            <input
+              {...register("passwordRegister")}
               id="password-register"
-              label="Password"
-              variant="outlined"
               type="password"
               placeholder="Enter your Password"
+              className="px-4 py-2 border border-blue-400 rounded-md shadow-md"
             />
-            <TextField
-              inputRef={confirmPasswordRef}
+            <input
+              {...register("confirmPasswordRegister")}
               id="confirm-password-register"
-              label="Confirm Password"
-              variant="outlined"
               type="password"
               placeholder="Confirm your Password"
+              className="px-4 py-2 border border-blue-400 rounded-md shadow-md"
             />
             <Button variant="contained" type="submit">
               Sign up

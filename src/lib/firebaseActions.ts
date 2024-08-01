@@ -15,6 +15,7 @@ export const handleUserRegister = async (email: string, password: string) => {
 
 export const handleUserSignIn = async (email: string, password: string) => {
   try {
+    console.log("email input: ", { email, password });
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error) {
     console.log("login firebase error: ", error);
