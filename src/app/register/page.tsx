@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { handleUserRegister } from "@/lib/firebaseActions";
+import { handleUserRegister } from "@/lib/firebase-actions";
 import CurrentUserFirebase from "@/hooks/user";
 import { useEffect } from "react";
 

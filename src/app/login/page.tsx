@@ -6,7 +6,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 
 import CurrentUserFirebase from "@/hooks/user";
-import { handleUserSignIn, handleUserSignOut } from "@/lib/firebaseActions";
+import { handleUserSignIn, handleUserSignOut } from "@/lib/firebase-actions";
+import axios from "axios";
 
 type LoginInput = {
   emailLogin: string;
