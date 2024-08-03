@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 
 export const handleUserRegister = async (email: string, password: string) => {
+  console.log("register input: ", { email, password });
   await createUserWithEmailAndPassword(auth, email, password);
 };
 

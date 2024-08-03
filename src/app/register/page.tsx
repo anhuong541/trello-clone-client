@@ -44,6 +44,33 @@ export default function RegisterPage() {
     }
   };
 
+  const registerFormData = [
+    {
+      register: { ...register("emailRegister") },
+      id: "email-register",
+      type: "email",
+      placeholder: "Enter your email",
+    },
+    {
+      register: { ...register("usernameRegister") },
+      id: "username-register",
+      type: "text",
+      placeholder: "Enter your Username",
+    },
+    {
+      register: { ...register("passwordRegister") },
+      id: "password-register",
+      type: "password",
+      placeholder: "Enter your Password",
+    },
+    {
+      register: { ...register("confirmPasswordRegister") },
+      id: "confirm-password-register",
+      type: "password",
+      placeholder: "Confirm your Password",
+    },
+  ];
+
   return (
     <main className="flex h-screen container m-auto">
       <Container
@@ -58,30 +85,17 @@ export default function RegisterPage() {
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Input
-              {...register("emailRegister")}
-              id="email-register"
-              type="email"
-              placeholder="Enter your email"
-            />
-            <Input
-              {...register("usernameRegister")}
-              id="username-register"
-              type="text"
-              placeholder="Enter your Username"
-            />
-            <Input
-              {...register("passwordRegister")}
-              id="password-register"
-              type="password"
-              placeholder="Enter your Password"
-            />
-            <Input
-              {...register("confirmPasswordRegister")}
-              id="confirm-password-register"
-              type="password"
-              placeholder="Confirm your Password"
-            />
+            {registerFormData.map(({ register, id, type, placeholder }) => {
+              return (
+                <Input
+                  key={id}
+                  id={id}
+                  type={type}
+                  placeholder={placeholder}
+                  {...register}
+                />
+              );
+            })}
             <Button variant="contained" type="submit">
               Sign up
             </Button>
