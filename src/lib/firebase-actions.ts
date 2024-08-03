@@ -6,20 +6,12 @@ import {
 } from "firebase/auth";
 
 export const handleUserRegister = async (email: string, password: string) => {
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
-  } catch (error) {
-    console.log("register firebase error: ", error);
-  }
+  await createUserWithEmailAndPassword(auth, email, password);
 };
 
 export const handleUserSignIn = async (email: string, password: string) => {
-  try {
-    console.log("email input: ", { email, password });
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (error) {
-    console.log("login firebase error: ", error);
-  }
+  console.log("email input: ", { email, password });
+  await signInWithEmailAndPassword(auth, email, password);
 };
 
 export const handleUserSignOut = async () => {
