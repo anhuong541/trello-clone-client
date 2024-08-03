@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { handleUserRegister } from "@/lib/firebase-actions";
 import CurrentUserFirebase from "@/hooks/user";
 import { useEffect } from "react";
+import { Input } from "@/components/common/Input";
 
 type RegisterInput = {
   emailRegister: string;
@@ -57,33 +58,29 @@ export default function RegisterPage() {
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <input
+            <Input
               {...register("emailRegister")}
               id="email-register"
               type="email"
               placeholder="Enter your email"
-              className="px-4 py-2 border border-blue-400 rounded-md shadow-md"
             />
-            <input
+            <Input
               {...register("usernameRegister")}
               id="username-register"
               type="text"
               placeholder="Enter your Username"
-              className="px-4 py-2 border border-blue-400 rounded-md shadow-md"
             />
-            <input
+            <Input
               {...register("passwordRegister")}
               id="password-register"
               type="password"
               placeholder="Enter your Password"
-              className="px-4 py-2 border border-blue-400 rounded-md shadow-md"
             />
-            <input
+            <Input
               {...register("confirmPasswordRegister")}
               id="confirm-password-register"
               type="password"
               placeholder="Confirm your Password"
-              className="px-4 py-2 border border-blue-400 rounded-md shadow-md"
             />
             <Button variant="contained" type="submit">
               Sign up

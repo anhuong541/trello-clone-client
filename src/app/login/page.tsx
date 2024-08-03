@@ -8,6 +8,7 @@ import Link from "next/link";
 import CurrentUserFirebase from "@/hooks/user";
 import { handleUserSignIn, handleUserSignOut } from "@/lib/firebase-actions";
 import axios from "axios";
+import { Input } from "@/components/common/Input";
 
 type LoginInput = {
   emailLogin: string;
@@ -41,6 +42,10 @@ export default function LoginPage() {
     }
   };
 
+  const getApi = async () => {
+    await axios.get("http://localhost:3456/");
+  };
+
   return (
     <main className="flex h-screen container m-auto">
       <Container
@@ -55,19 +60,18 @@ export default function LoginPage() {
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <input
+            <Input
               {...register("emailLogin")}
               required={true}
               type="email"
               placeholder="Enter your email"
-              className="px-4 py-2 border border-blue-400  rounded-md shadow-md"
             />
-            <input
+
+            <Input
               {...register("passwordLogin")}
               required={true}
               type="password"
               placeholder="Enter your Password"
-              className="px-4 py-2 border border-blue-400  rounded-md shadow-md"
             />
             <Button variant="contained" type="submit">
               Sign in
@@ -75,6 +79,10 @@ export default function LoginPage() {
 
             <Button variant="contained" onClick={handleUserSignOut}>
               Sign Out
+            </Button>
+
+            <Button variant="contained" onClick={getApi}>
+              Api
             </Button>
           </form>
           <Link
