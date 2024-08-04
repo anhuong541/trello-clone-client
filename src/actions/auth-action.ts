@@ -13,7 +13,7 @@ export async function createSession(uid: string) {
   });
 
   //   redirect to home route
-  // redirect(HOME_ROUTE);
+  redirect(HOME_ROUTE);
 }
 
 export async function removeSession() {

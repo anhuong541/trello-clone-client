@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Button, Container, Typography } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useEffect } from "react";
 import Link from "next/link";
@@ -11,7 +10,9 @@ import {
   handleUserSignOut,
 } from "@/actions/firebase-actions";
 import axios from "axios";
+
 import { Input } from "@/components/common/Input";
+import { Button } from "@/components/common/Button";
 
 type LoginInput = {
   emailLogin: string;
@@ -51,14 +52,11 @@ export default function LoginPage() {
 
   return (
     <main className="flex h-screen container m-auto">
-      <Container
-        maxWidth="xs"
-        className="m-auto shadow-md shadow-dark-600 py-10"
-      >
-        <Box display="flex" flexDirection="column" gap={4}>
-          <Typography variant="h1" className="font-bold text-blue-500 text-4xl">
+      <div className="m-auto shadow-md shadow-dark-600 py-10 px-6 sm:w-[440px] w-full">
+        <div className="flex flex-col gap-4">
+          <h1 className="font-bold text-blue-500 text-4xl">
             Login Trello Clone
-          </Typography>
+          </h1>
           <form
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
@@ -76,17 +74,11 @@ export default function LoginPage() {
               type="password"
               placeholder="Enter your Password"
             />
-            <Button variant="contained" type="submit">
-              Sign in
-            </Button>
+            <Button type="submit">Sign in</Button>
 
-            <Button variant="contained" onClick={handleUserSignOut}>
-              Sign Out
-            </Button>
+            <Button onClick={handleUserSignOut}>Sign Out</Button>
 
-            <Button variant="contained" onClick={getApi}>
-              Api
-            </Button>
+            <Button onClick={getApi}>Api</Button>
           </form>
           <Link
             href="/register"
@@ -94,8 +86,8 @@ export default function LoginPage() {
           >
             You didn&lsquo;t have an account yet?
           </Link>
-        </Box>
-      </Container>
+        </div>
+      </div>
     </main>
   );
 }

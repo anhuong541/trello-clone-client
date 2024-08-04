@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Box, Button, Container, Typography } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { handleUserRegister } from "@/actions/firebase-actions";
 import CurrentUserFirebase from "@/hooks/user";
 import { useEffect } from "react";
 import { Input } from "@/components/common/Input";
+import { Button } from "@/components/common/Button";
 
 type RegisterInput = {
   emailRegister: string;
@@ -73,14 +73,9 @@ export default function RegisterPage() {
 
   return (
     <main className="flex h-screen container m-auto">
-      <Container
-        maxWidth="xs"
-        className="m-auto shadow-md shadow-dark-600 py-10"
-      >
-        <Box display="flex" flexDirection="column" gap={4}>
-          <Typography variant="h1" className="font-bold text-blue-500 text-4xl">
-            Register
-          </Typography>
+      <div className="m-auto shadow-md shadow-dark-600 py-10 px-6 sm:w-[440px] w-full">
+        <div className="flex flex-col gap-4">
+          <h1 className="font-bold text-blue-500 text-4xl">Register</h1>
           <form
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
@@ -96,9 +91,7 @@ export default function RegisterPage() {
                 />
               );
             })}
-            <Button variant="contained" type="submit">
-              Sign up
-            </Button>
+            <Button type="submit">Sign up</Button>
           </form>
           <Link
             href="/login"
@@ -106,8 +99,8 @@ export default function RegisterPage() {
           >
             You already have an account?
           </Link>
-        </Box>
-      </Container>
+        </div>
+      </div>
     </main>
   );
 }
