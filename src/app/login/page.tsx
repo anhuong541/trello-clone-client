@@ -6,7 +6,10 @@ import { useEffect } from "react";
 import Link from "next/link";
 
 import CurrentUserFirebase from "@/hooks/user";
-import { handleUserSignIn, handleUserSignOut } from "@/lib/firebase-actions";
+import {
+  handleUserSignIn,
+  handleUserSignOut,
+} from "@/actions/firebase-actions";
 import axios from "axios";
 import { Input } from "@/components/common/Input";
 
