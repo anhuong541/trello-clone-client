@@ -35,7 +35,6 @@ export default function Sidebar({ userId }: { userId: string }) {
       <div className="flex flex-col gap-2 h-full py-2">
         <div className="flex items-center justify-between px-4">
           <h3>Project List</h3>
-
           <AddProjectPopover />
         </div>
 
