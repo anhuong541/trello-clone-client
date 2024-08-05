@@ -40,10 +40,6 @@ export default function LoginPage() {
     }
   };
 
-  const getApi = async () => {
-    await axios.get("http://localhost:3456/");
-  };
-
   return (
     <main className="flex h-screen container m-auto">
       <div className="m-auto shadow-md shadow-dark-600 py-10 px-6 sm:w-[440px] w-full">
@@ -71,8 +67,6 @@ export default function LoginPage() {
             <Button type="submit">Sign in</Button>
 
             <Button onClick={handleUserSignOut}>Sign Out</Button>
-
-            <Button onClick={getApi}>Api</Button>
           </form>
           <Link
             href="/register"
