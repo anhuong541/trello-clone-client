@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { handleUserRegister } from "@/actions/firebase-actions";
-import CurrentUserFirebase from "@/hooks/user";
-import { useEffect } from "react";
 import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
 
@@ -18,13 +16,6 @@ type RegisterInput = {
 export default function RegisterPage() {
   const { register, handleSubmit, watch, reset } = useForm<RegisterInput>();
 
-  const { user: userCurrentData, loading: isLoadingUser } =
-    CurrentUserFirebase();
-
-  useEffect(() => {
-    console.log({ user: userCurrentData?.uid });
-  }, [userCurrentData]);
-
   const onSubmit: SubmitHandler<RegisterInput> = async (data) => {
     if (data.passwordRegister !== data.confirmPasswordRegister) {
       console.log("Trigger Toast Password is not the same");
@@ -32,7 +23,7 @@ export default function RegisterPage() {
     }
     let submitErr = false;
 
-    await handleUserRegister(
+    const resUID = await handleUserRegister(
       data.emailRegister,
       data.passwordRegister,
       data.usernameRegister

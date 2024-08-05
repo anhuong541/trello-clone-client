@@ -22,13 +22,6 @@ type LoginInput = {
 export default function LoginPage() {
   const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
 
-  const { user: userCurrentData, loading: isLoadingUser } =
-    CurrentUserFirebase();
-
-  useEffect(() => {
-    console.log({ user: userCurrentData?.uid });
-  }, [userCurrentData]);
-
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     if (data.emailLogin === "" || data.passwordLogin === "") {
       console.log("Trigger Toast input is empty");
@@ -36,7 +29,10 @@ export default function LoginPage() {
     }
     let submitErr = false;
 
-    await handleUserSignIn(data.emailLogin, data.passwordLogin).catch((e) => {
+    const resUID = await handleUserSignIn(
+      data.emailLogin,
+      data.passwordLogin
+    ).catch((e) => {
       console.log("submit login error: ", e);
       submitErr = true;
     });

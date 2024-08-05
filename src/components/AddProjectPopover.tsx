@@ -12,7 +12,7 @@ interface AddProjectInput {
   nameProject: string;
 }
 
-export default function AddProjectDialog() {
+export default function AddProjectPopover() {
   const { register, handleSubmit, watch, reset } = useForm<AddProjectInput>();
 
   const onSubmit: SubmitHandler<AddProjectInput> = async (data) => {

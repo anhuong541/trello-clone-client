@@ -2,15 +2,24 @@
 
 import Image from "next/image";
 import ProjectSelect from "../ProjectSelect";
-import AddProjectDialog from "../AddProjectDialog";
+import AddProjectPopover from "../AddProjectPopover";
+import { useEffect, useState } from "react";
+import { handlerUserProjectList } from "@/actions/firebase-actions";
+import { DocumentData } from "firebase/firestore";
 
-const fakeProjectList = [
-  { title: "Project 1" },
-  { title: "Project 2" },
-  { title: "Project 3" },
-];
+export default function Sidebar({ userId }: { userId: string }) {
+  const [projectSelectList, setProjectSelectList] = useState<DocumentData[]>(
+    []
+  );
 
-export default function Sidebar() {
+  useEffect(() => {
+    (async () => {
+      const data = await handlerUserProjectList(userId);
+      setProjectSelectList(data);
+      console.log({ data });
+    })();
+  }, [userId]);
+
   return (
     <div className="col-span-2 border-r h-full flex flex-col">
       <div className="flex items-center gap-2 p-4 border-b">
@@ -27,12 +36,12 @@ export default function Sidebar() {
         <div className="flex items-center justify-between px-4">
           <h3>Project List</h3>
 
-          <AddProjectDialog />
+          <AddProjectPopover />
         </div>
 
         {/* list project */}
         <div className="flex flex-col">
-          {fakeProjectList.map((item, index) => {
+          {projectSelectList.map((item, index) => {
             return <ProjectSelect item={item} key={index} />;
           })}
         </div>
