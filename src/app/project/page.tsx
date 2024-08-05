@@ -1,5 +1,5 @@
-import Header from "@/components/layouts/header";
-import Sidebar from "@/components/layouts/sidebar";
+import Header from "@/components/layouts/Header";
+import Sidebar from "@/components/layouts/Sidebar";
 
 export default function ProjectPage() {
   return (

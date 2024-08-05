@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { createSession, removeSession } from "./auth-action";
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 export const handleUserRegister = async (
   email: string,
@@ -41,7 +41,7 @@ export const onCreateNewProject = async (
   userId: string,
   projectName: string
 ) => {
-  await setDoc(doc(firestore, "users", userId), {
+  await addDoc(collection(firestore, "users", userId, "projects"), {
     projectName,
     createAt: Date.now(),
   });

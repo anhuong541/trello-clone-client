@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "../common/Button";
-import { MdAdd, MdOutlineMoreHoriz } from "react-icons/md";
+import ProjectSelect from "../ProjectSelect";
+import AddProjectDialog from "../AddProjectDialog";
 
 const fakeProjectList = [
   { title: "Project 1" },
@@ -26,30 +26,14 @@ export default function Sidebar() {
       <div className="flex flex-col gap-2 h-full py-2">
         <div className="flex items-center justify-between px-4">
           <h3>Project List</h3>
-          <Button size="icon" onClick={() => console.log("add new Project")}>
-            <MdAdd />
-          </Button>
 
-          {/* popup a form to type infomation on the new project */}
+          <AddProjectDialog />
         </div>
+
         {/* list project */}
         <div className="flex flex-col">
           {fakeProjectList.map((item, index) => {
-            return (
-              <div className="wrappper relative group" key={index}>
-                <div className="flex justify-between w-full items-center px-4 py-2 group-hover:bg-gray-100 cursor-pointer">
-                  <p>{item.title}</p>
-                </div>
-                <Button
-                  size="icon"
-                  variant="icon"
-                  className="absolute top-[50%] -translate-y-1/2 right-4 group-hover:bg-gray-100 hover:!bg-gray-300"
-                  onClick={() => console.log("project option")}
-                >
-                  <MdOutlineMoreHoriz />
-                </Button>
-              </div>
-            );
+            return <ProjectSelect item={item} key={index} />;
           })}
         </div>
       </div>
