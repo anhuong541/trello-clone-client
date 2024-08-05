@@ -32,12 +32,14 @@ export default function RegisterPage() {
     }
     let submitErr = false;
 
-    await handleUserRegister(data.emailRegister, data.passwordRegister).catch(
-      (e) => {
-        submitErr = true;
-        console.log("submit register error: ", e);
-      }
-    );
+    await handleUserRegister(
+      data.emailRegister,
+      data.passwordRegister,
+      data.usernameRegister
+    ).catch((e) => {
+      submitErr = true;
+      console.log("submit register error: ", e);
+    });
 
     if (!submitErr) {
       reset();

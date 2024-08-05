@@ -29,6 +29,8 @@ export default function Sidebar() {
           <Button size="icon" onClick={() => console.log("add new Project")}>
             <MdAdd />
           </Button>
+
+          {/* popup a form to type infomation on the new project */}
         </div>
         {/* list project */}
         <div className="flex flex-col">

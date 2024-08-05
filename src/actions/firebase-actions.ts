@@ -1,19 +1,29 @@
-import { auth } from "../lib/firebase";
+import { auth, firestore } from "../lib/firebase";
 import {
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { createSession, removeSession } from "./auth-action";
+import { collection, doc, setDoc } from "firebase/firestore";
 
-export const handleUserRegister = async (email: string, password: string) => {
+export const handleUserRegister = async (
+  email: string,
+  password: string,
+  username: string
+) => {
   console.log("register input: ", { email, password });
   const res = await createUserWithEmailAndPassword(auth, email, password);
+  await setDoc(doc(firestore, "users", res.user.uid), {
+    userName: username,
+    email,
+    createAt: Date.now(),
+  });
   await createSession(res.user.uid);
 };
 
 export const handleUserSignIn = async (email: string, password: string) => {
-  console.log("email input: ", { email, password });
+  console.log("login input: ", { email, password });
   const res = await signInWithEmailAndPassword(auth, email, password);
   await createSession(res.user.uid);
 };
@@ -25,4 +35,14 @@ export const handleUserSignOut = async () => {
   } catch (error) {
     console.log("sign out firebase error: ", error);
   }
+};
+
+export const onCreateNewProject = async (
+  userId: string,
+  projectName: string
+) => {
+  await setDoc(doc(firestore, "users", userId), {
+    projectName,
+    createAt: Date.now(),
+  });
 };
