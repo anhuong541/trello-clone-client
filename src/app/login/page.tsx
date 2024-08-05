@@ -1,10 +1,8 @@
 "use client";
 
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useEffect } from "react";
 import Link from "next/link";
 
-import CurrentUserFirebase from "@/hooks/user";
 import {
   handleUserSignIn,
   handleUserSignOut,

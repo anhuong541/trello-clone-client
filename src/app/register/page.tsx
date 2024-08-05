@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
+import Link from "next/link";
+
 import { handleUserRegister } from "@/actions/firebase-actions";
-import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
+import { Input } from "@/components/common/Input";
 
 type RegisterInput = {
   emailRegister: string;

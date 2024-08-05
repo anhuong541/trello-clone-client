@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
+
 import Header from "@/components/layouts/Header";
 import Sidebar from "@/components/layouts/Sidebar";
 import CurrentUserFirebase from "@/hooks/user";
-import { useEffect } from "react";
 
 export default function ProjectPage() {
   const { user: userId, loading: isLoadingUser } = CurrentUserFirebase();
