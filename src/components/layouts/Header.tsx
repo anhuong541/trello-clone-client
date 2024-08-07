@@ -3,14 +3,13 @@
 import Image from "next/image";
 import { Button } from "../common/Button";
 import { MdLogout } from "react-icons/md";
-import { handleUserSignOut } from "@/actions/firebase-actions";
 import { useState } from "react";
 
 export default function Header() {
   const [openAvatarOption, setOpenAvatarOption] = useState(false);
   return (
-    <header className="h-[70px] w-full flex justify-between items-center border-b shadow-sm px-4">
-      <h1 className="font-bold text-blue-500 text-4xl">Trello Clone</h1>
+    <header className="h-[70px] bg-blue-200 w-full flex justify-between items-center border-b shadow-sm shadow-white px-4">
+      <h1 className="font-bold text-blue-700 text-4xl">Trello Clone</h1>
       <div className="flex justify-end items-center gap-4 relative">
         <Button
           size="icon"
@@ -22,7 +21,7 @@ export default function Header() {
             width={40}
             src="/default-avatar.webp"
             alt="avatar"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain rounded-full"
             loading="lazy"
           />
         </Button>
@@ -30,7 +29,7 @@ export default function Header() {
           <Button
             size="sm"
             className="flex gap-1 absolute ring-0 top-[120%]"
-            onClick={handleUserSignOut}
+            onClick={() => {}}
           >
             <MdLogout className="h-5 w-5" />
             Logout

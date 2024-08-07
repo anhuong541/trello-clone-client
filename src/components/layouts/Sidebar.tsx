@@ -7,6 +7,8 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { useQuery } from "@tanstack/react-query";
 import ProjectItemOption from "../ProjectItemOption";
 import { useRouter } from "next/navigation";
+import { projectStore } from "@/lib/stores";
+import { useEffect } from "react";
 
 export interface ProjectListItem {
   description: string;
@@ -16,12 +18,24 @@ export interface ProjectListItem {
   userId: string;
 }
 
-function ProjectSelect({ item }: { item: ProjectListItem }) {
+export interface ProjectSelectProps {
+  item: ProjectListItem;
+  updateProjectName: (value: string) => void;
+  updateProjectID: (value: string) => void;
+}
+
+function ProjectSelect({
+  item,
+  updateProjectName,
+  updateProjectID,
+}: ProjectSelectProps) {
   const route = useRouter();
   const onSelectProject = async () => {
     console.log("object: ", item.projectName);
     // push to /project/[projectId] in the fulture
     // route.push(`/project/${item.projectId}`);
+    updateProjectID(item.projectId);
+    updateProjectName(item.projectName);
   };
 
   return (
@@ -40,6 +54,7 @@ function ProjectSelect({ item }: { item: ProjectListItem }) {
 }
 
 export default function Sidebar({ userId }: { userId: string }) {
+  const { projectName, updateProjectName, updateProjectID } = projectStore();
   const queryUserProjectList = useQuery({
     queryKey: [reactQueryKeys.projectList],
     queryFn: async () => await handleUserProjectList(userId),
@@ -49,7 +64,7 @@ export default function Sidebar({ userId }: { userId: string }) {
     (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
 
   return (
-    <div className="col-span-2 border-r h-full flex flex-col bg-blue-50">
+    <div className="col-span-2 h-full flex flex-col bg-blue-200">
       <div className="flex items-center gap-2 p-4 border-b">
         <Image
           src="/default-avatar.webp"
@@ -58,7 +73,7 @@ export default function Sidebar({ userId }: { userId: string }) {
           width={40}
           className="w-10 h-10 object-contain rounded-full"
         />
-        <h2 className="font-medium text-xl">My Project</h2>
+        <h2 className="font-medium text-xl">{projectName}</h2>
       </div>
       <div className="flex flex-col gap-2 h-full py-2">
         <div className="flex items-center justify-between px-4">
@@ -70,7 +85,14 @@ export default function Sidebar({ userId }: { userId: string }) {
             return <ProjectSelect item={item} key={index} />;
           })} */}
           {userProjectList.map((item: ProjectListItem, index: number) => {
-            return <ProjectSelect item={item} key={index} />;
+            return (
+              <ProjectSelect
+                item={item}
+                key={index}
+                updateProjectID={updateProjectID}
+                updateProjectName={updateProjectName}
+              />
+            );
           })}
         </div>
       </div>

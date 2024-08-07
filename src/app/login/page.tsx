@@ -4,11 +4,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 
-import {
-  handleUserSignIn,
-  handleUserSignOut,
-} from "@/actions/firebase-actions";
-
 import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -78,8 +73,6 @@ export default function LoginPage() {
               placeholder="Enter your Password"
             />
             <Button type="submit">Sign in</Button>
-
-            <Button onClick={handleUserSignOut}>Sign Out</Button>
           </form>
           <Link
             href="/register"

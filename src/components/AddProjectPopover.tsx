@@ -6,7 +6,6 @@ import { MdAdd } from "react-icons/md";
 
 import { Button } from "./common/Button";
 import { Input } from "./common/Input";
-import { onCreateNewProject } from "@/actions/firebase-actions";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { onCreateProject } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -37,8 +36,6 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
       projectName: data.projectName,
       userId,
     });
-
-    console.log({ res: res?.status });
 
     if (res?.status) {
       toast.success("Create project success full");

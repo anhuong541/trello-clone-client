@@ -6,4 +6,5 @@ export const reactQueryKeys = {
   addProject: "add-project",
   deleteProject: "delete-project",
   editProject: "edit-project",
+  viewProjectTasks: "view-project-tasks",
 };

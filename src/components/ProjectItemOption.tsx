@@ -137,7 +137,7 @@ export default function ProjectItemOption({
                   return (
                     <button
                       key={index}
-                      className="hover:bg-red-500 hover:text-white border-red-500 text-red-500 active:opacity-60 rounded-md px-4 py-2 w-full font-medium"
+                      className="hover:bg-red-500 hover:text-white border border-red-500 text-red-500 active:opacity-60 rounded-md px-4 py-2 w-full font-medium"
                       onClick={item.action}
                     >
                       {item.label}
