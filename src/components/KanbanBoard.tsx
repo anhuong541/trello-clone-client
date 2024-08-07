@@ -21,7 +21,9 @@ export default function KanbanBoard() {
   return (
     <div className="col-span-8 w-full h-full bg-blue-100">
       <div className="w-full h-[73px]" />
-      hello world
+      <div className="grid grid-cols-4 gap-8">
+        <div className="border border-red-500"></div>
+      </div>
     </div>
   );
 }
