@@ -1,10 +1,10 @@
 import { auth } from "@/lib/firebase";
-import { userStore } from "@/lib/stores";
+import { userIdStore } from "@/lib/stores";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useEffect, useState } from "react";
 
 export default function CurrentUserFirebase() {
-  const { updateUID } = userStore();
+  const { updateUID } = userIdStore();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
