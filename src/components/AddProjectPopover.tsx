@@ -7,24 +7,46 @@ import { MdAdd } from "react-icons/md";
 import { Button } from "./common/Button";
 import { Input } from "./common/Input";
 import { onCreateNewProject } from "@/actions/firebase-actions";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { onCreateProject } from "@/actions/query-actions";
+import { reactQueryKeys } from "@/lib/react-query-keys";
+import { toast } from "react-toastify";
 
 interface AddProjectInput {
-  nameProject: string;
+  projectName: string;
+  projectDescription: string;
 }
 
-export default function AddProjectPopover() {
+export default function AddProjectPopover({ userId }: { userId: string }) {
+  const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<AddProjectInput>();
 
+  const addProjectAction = useMutation({
+    mutationFn: onCreateProject,
+    mutationKey: [reactQueryKeys.addProject],
+  });
+
   const onSubmit: SubmitHandler<AddProjectInput> = async (data) => {
-    if (data.nameProject === "") {
+    if (data.projectName === "") {
       console.log("trigger Toast");
       return;
     }
 
-    await onCreateNewProject(
-      "ZVkX4pMMnEVIFbOXKydEZnu1bIt1",
-      data.nameProject
-    ).then((res) => reset());
+    const res = await addProjectAction.mutateAsync({
+      description: data.projectDescription,
+      projectName: data.projectName,
+      userId,
+    });
+
+    console.log({ res: res?.status });
+
+    if (res?.status) {
+      toast.success("Create project success full");
+      queryClient.refetchQueries({
+        queryKey: [reactQueryKeys.projectList],
+      });
+      reset();
+    }
   };
 
   return (
@@ -40,17 +62,27 @@ export default function AddProjectPopover() {
           className="translate-x-5 flex border rounded-md p-4"
         >
           <form
-            className="flex flex-col gap-2"
+            className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <label htmlFor="name-project" className="flex flex-col gap-1">
-              <p className="text-xs font-medium">Your Project Name</p>
-              <Input
-                {...register("nameProject")}
-                type="text"
-                id="name-project"
-              />
-            </label>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="name-project" className="flex flex-col gap-1">
+                <p className="text-xs font-medium">Project Name</p>
+                <Input
+                  {...register("projectName")}
+                  type="text"
+                  id="name-project"
+                />
+              </label>
+              <label htmlFor="name-project" className="flex flex-col gap-1">
+                <p className="text-xs font-medium">Description</p>
+                <Input
+                  {...register("projectDescription")}
+                  type="text"
+                  id="description-project"
+                />
+              </label>
+            </div>
             <Button type="submit">Add Project</Button>
           </form>
         </Popover.Content>

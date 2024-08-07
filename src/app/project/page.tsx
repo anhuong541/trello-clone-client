@@ -1,24 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
-
 import Header from "@/components/layouts/Header";
 import Sidebar from "@/components/layouts/Sidebar";
-import CurrentUserFirebase from "@/hooks/user";
+import { userIdStore } from "@/lib/stores";
 
 export default function ProjectPage() {
-  const { user: userId, loading: isLoadingUser } = CurrentUserFirebase();
-
-  useEffect(() => {
-    console.log({ user: userId?.uid });
-  }, [userId]);
+  const { userId, updateUID } = userIdStore();
 
   if (userId) {
     return (
       <main className="h-screen w-screen flex flex-col">
         <Header />
         <div className="grid grid-cols-10 h-full">
-          <Sidebar userId={userId?.uid} />
+          <Sidebar userId={userId} />
         </div>
       </main>
     );

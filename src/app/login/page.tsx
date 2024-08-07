@@ -1,16 +1,20 @@
 "use client";
 
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 
 import {
   handleUserSignIn,
   handleUserSignOut,
 } from "@/actions/firebase-actions";
-import axios from "axios";
 
 import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
+import { reactQueryKeys } from "@/lib/react-query-keys";
+import { onUserLogin } from "@/actions/query-actions";
+import { userIdStore } from "@/lib/stores";
+import { useRouter } from "next/navigation";
 
 type LoginInput = {
   emailLogin: string;
@@ -18,7 +22,16 @@ type LoginInput = {
 };
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { userId, updateUID } = userIdStore();
   const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
+
+  const loginAction = useMutation({
+    mutationFn: onUserLogin,
+    mutationKey: [reactQueryKeys.login],
+  });
+
+  console.log({ userId });
 
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     if (data.emailLogin === "" || data.passwordLogin === "") {
@@ -27,16 +40,16 @@ export default function LoginPage() {
     }
     let submitErr = false;
 
-    const resUID = await handleUserSignIn(
-      data.emailLogin,
-      data.passwordLogin
-    ).catch((e) => {
-      console.log("submit login error: ", e);
-      submitErr = true;
+    const res = await loginAction.mutateAsync({
+      email: data.emailLogin,
+      password: data.passwordLogin,
     });
+
+    updateUID(res?.data.userId);
 
     if (!submitErr) {
       reset();
+      router.push("/project");
     }
   };
 
