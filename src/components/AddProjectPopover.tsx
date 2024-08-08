@@ -35,10 +35,12 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
       description: data.projectDescription,
       projectName: data.projectName,
       userId,
+      projectId: "",
+      createAt: Date.now(),
     });
 
     if (res?.status) {
-      toast.success("Create project success full");
+      toast.success("Create project successfull");
       queryClient.refetchQueries({
         queryKey: [reactQueryKeys.projectList],
       });
@@ -56,7 +58,7 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
       <Popover.Portal>
         <Popover.Content
           side="right"
-          className="translate-x-5 flex border rounded-md p-4"
+          className="translate-x-5 translate-y-20 z-10 bg-blue-50 flex border rounded-md p-4"
         >
           <form
             className="flex flex-col gap-4"

@@ -34,7 +34,7 @@ export default function ProjectItemOption({
   const listProjectItenOption = [
     {
       label: "Edit",
-      action: () => {},
+      // action: () => {}, // already trigger onSubmit
     },
     {
       label: "Delete",
@@ -82,13 +82,13 @@ export default function ProjectItemOption({
 
   return (
     <Popover.Root>
-      <Popover.Trigger className="h-10 w-10 flex justify-center items-center">
+      <Popover.Trigger className="h-8 w-8 flex justify-center items-center">
         <MdOutlineMoreHoriz />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
           side="right"
-          className="translate-x-5 flex flex-col border rounded-md py-2 w-[230px] bg-blue-50 text-gray-700"
+          className="translate-x-5 translate-y-20 z-10 flex flex-col border rounded-md py-2 w-[230px] bg-blue-50 text-gray-700"
         >
           <div className="flex justify-center px-4 relative">
             <h4 className="py-2 font-bold text-sm text-center">
@@ -128,7 +128,6 @@ export default function ProjectItemOption({
                     <button
                       key={index}
                       className="hover:bg-blue-400 bg-blue-500 text-white active:opacity-60 rounded-md px-4 py-2 w-full font-medium"
-                      onClick={item.action}
                     >
                       {item.label}
                     </button>
