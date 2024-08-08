@@ -8,4 +8,5 @@ export const reactQueryKeys = {
   editProject: "edit-project",
   viewProjectTasks: "view-project-tasks",
   addTask: "add-task",
+  updateTask: "update-task",
 };

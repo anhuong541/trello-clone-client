@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { TaskItem } from "@/types";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -14,9 +15,11 @@ function Droppable(props: {
   id: string;
   children: ReactNode;
   className?: string;
+  // dataItem: TaskItem;
 }) {
   const { isOver, setNodeRef } = useDroppable({
     id: props.id,
+    // data: props.dataItem,
   });
   const style = {
     color: isOver ? "green" : undefined,
@@ -33,6 +36,7 @@ function Draggable(props: {
   id: string;
   children: ReactNode;
   className: string;
+  dataItem: TaskItem;
 }) {
   const ref = useRef<any>(null);
   const [offsetWidth, setOffsetWidth] = useState(0);
@@ -40,6 +44,7 @@ function Draggable(props: {
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: props.id,
+    data: props.dataItem,
   });
 
   //   console.log("trigger!!!!", {

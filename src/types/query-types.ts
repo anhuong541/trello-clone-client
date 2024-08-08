@@ -32,7 +32,7 @@ export interface EditProjectInputType {
   createAt: number;
 }
 
-export interface AddTaskInput {
+export interface TaskInput {
   userId: string;
   projectId: string;
   title: string;

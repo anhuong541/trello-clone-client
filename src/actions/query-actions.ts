@@ -1,11 +1,11 @@
 import { server } from "@/lib/network";
 import {
-  AddTaskInput,
   CreateProjectInputType,
   EditProjectInputType,
   LoginInputType,
   ProjectIdAndUserIdInput,
   RegisterInputType,
+  TaskInput,
 } from "@/types/query-types";
 
 export const onUserRegister = async (dataInput: RegisterInputType) => {
@@ -87,9 +87,18 @@ export const handleViewProjectTasks = async (
   }
 };
 
-export const onCreateNewTask = async (dataInput: AddTaskInput) => {
+export const onCreateNewTask = async (dataInput: TaskInput) => {
   try {
     return await server.post(`/task`, dataInput);
+  } catch (error) {
+    console.log("add task error: ", error);
+  }
+};
+
+export const onChangeTaskState = async (dataInput: TaskInput) => {
+  console.log("it trigger");
+  try {
+    return await server.put(`/task`, dataInput);
   } catch (error) {
     console.log("add task error: ", error);
   }
