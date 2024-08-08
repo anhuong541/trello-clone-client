@@ -1,37 +1,12 @@
 import { server } from "@/lib/network";
-import { PriorityType, TaskStatusType } from "@/types";
-
-interface RegisterInputType {
-  email: string;
-  password: string;
-  username: string;
-}
-
-interface LoginInputType {
-  email: string;
-  password: string;
-}
-
-interface ProjectIdAndUserIdInput {
-  projectId: string;
-  userId: string;
-}
-
-interface CreateProjectInputType {
-  userId: string;
-  projectId: string;
-  projectName: string;
-  description: string;
-  createAt: number;
-}
-
-interface EditProjectInputType {
-  userId: string;
-  projectId: string;
-  projectName: string;
-  description: string;
-  createAt: number;
-}
+import {
+  AddTaskInput,
+  CreateProjectInputType,
+  EditProjectInputType,
+  LoginInputType,
+  ProjectIdAndUserIdInput,
+  RegisterInputType,
+} from "@/types/query-types";
 
 export const onUserRegister = async (dataInput: RegisterInputType) => {
   try {
@@ -111,18 +86,6 @@ export const handleViewProjectTasks = async (
     console.log("project tasks list error: ", error);
   }
 };
-
-interface AddTaskInput {
-  userId: string;
-  projectId: string;
-  title: string;
-  description: string;
-  taskStatus: TaskStatusType;
-  storyPoint: 1 | 2 | 3 | 5 | 8 | 13 | 21;
-  startDate: number;
-  dueDate: number;
-  priority: PriorityType;
-}
 
 export const onCreateNewTask = async (dataInput: AddTaskInput) => {
   try {
