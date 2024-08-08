@@ -1,3 +1,4 @@
+import { KanbanBoardType } from "@/types";
 import { create } from "zustand";
 
 interface UserStoreState {
@@ -37,4 +38,14 @@ export const projectStore = create<ProjectStoreState>((set) => ({
   removeProjectID: () => set({ projectId: "" }),
   updateProjectName: (newProjectName) => set({ projectName: newProjectName }),
   removeProjectName: () => set({ projectName: "" }),
+}));
+
+interface KanbanBoardStore {
+  kanbanBoardData: KanbanBoardType[];
+  updateKanbanBoardData: (value: KanbanBoardType[]) => void;
+}
+
+export const kanbanTableStore = create<KanbanBoardStore>((set) => ({
+  kanbanBoardData: [],
+  updateKanbanBoardData: (newBoard) => set({ kanbanBoardData: newBoard }),
 }));
