@@ -29,14 +29,33 @@ interface TaskType {
   taskTitle: string;
 }
 
+const initialKanbanData: KanbanBoardType[] = [
+  {
+    label: "Open",
+    table: [],
+  },
+  {
+    label: "In-progress",
+    table: [],
+  },
+  {
+    label: "Resolved",
+    table: [],
+  },
+  {
+    label: "Closed",
+    table: [],
+  },
+];
+
 function addTaskToStatusGroup(
   data: KanbanBoardType[],
   newTask: TaskInput
 ): KanbanBoardType[] {
-  const group = data.find((group) => group.label === newTask.taskStatus);
+  const group = data?.find((group) => group.label === newTask.taskStatus);
 
   if (group) {
-    group.table.push(newTask);
+    group?.table?.push(newTask);
   } else {
     data.push({
       label: newTask.taskStatus,
@@ -84,7 +103,11 @@ function AddTask({
       };
 
       const dataLater = addTaskToStatusGroup(kanbanData, dataAddTask);
+      // ?  addTaskToStatusGroup(kanbanData, dataAddTask)
+      // : addTaskToStatusGroup(initialKanbanData, dataAddTask);
       await addTaskAction.mutateAsync(dataAddTask);
+
+      // console.log({ dataLater, kanbanData, initialKanbanData });
 
       onAddTableData([...dataLater]);
 
@@ -232,19 +255,19 @@ export default function KanbanBoard({
         setKanbanData([
           {
             label: "Open",
-            table: createKanbanMap.get("Open"),
+            table: createKanbanMap.get("Open") ?? [],
           },
           {
             label: "In-progress",
-            table: createKanbanMap.get("In-progress"),
+            table: createKanbanMap.get("In-progress") ?? [],
           },
           {
             label: "Resolved",
-            table: createKanbanMap.get("Resolved"),
+            table: createKanbanMap.get("Resolved") ?? [],
           },
           {
             label: "Closed",
-            table: createKanbanMap.get("Closed"),
+            table: createKanbanMap.get("Closed") ?? [],
           },
         ]);
       }
@@ -274,6 +297,7 @@ export default function KanbanBoard({
   const sensors = useSensors(mouseSensor, touchSensor);
 
   if (projectId !== "") {
+    // console.log({ kanbanData, initialKanbanData });
     return (
       <div className="col-span-8 w-full h-full bg-blue-100">
         <div className="w-full h-[49px]" />
@@ -283,7 +307,7 @@ export default function KanbanBoard({
           sensors={sensors}
         >
           <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
-            {(kanbanData ?? []).map((table) => {
+            {(kanbanData ?? initialKanbanData).map((table) => {
               return (
                 <Droppable
                   className="flex flex-col h-full"

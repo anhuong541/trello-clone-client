@@ -64,7 +64,8 @@ function Draggable(props: {
       // });
     }
     // New drag take the old position
-  }, [attributes["aria-pressed"]]);
+  }, [attributes]);
+
   const style: CSSProperties | undefined = useMemo(() => {
     return transform
       ? {
