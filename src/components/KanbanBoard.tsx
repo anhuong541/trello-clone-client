@@ -1,14 +1,22 @@
 import { MdAdd, MdClear, MdOutlineSubject } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   handleViewProjectTasks,
   onChangeTaskState,
   onCreateNewTask,
 } from "@/actions/query-actions";
 import { KanbanBoardType, TaskItem, TaskStatusType } from "@/types";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
 import { generateNewUid } from "@/lib/utils";
@@ -121,6 +129,23 @@ function AddTask({
   }
 }
 
+function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
+  return (
+    <Draggable
+      id={itemInput.taskId}
+      className="p-2 bg-gray-100 rounded-md hover:border-blue-500 active:border-gray-100 border border-gray-100 cursor-pointer"
+      dataItem={itemInput}
+    >
+      <p className="text-sm font-medium">{itemInput.title}</p>
+      <div className="flex items-center gap-2" id="icon-state">
+        <MdOutlineSubject />
+        <div className="text-xs">{itemInput.priority}</div>
+        <div className="text-xs">{itemInput.storyPoint}</div>
+      </div>
+    </Draggable>
+  );
+}
+
 export default function KanbanBoard({
   projectId,
   userId,
@@ -149,7 +174,7 @@ export default function KanbanBoard({
 
   const handleDragEnd = async (e: DragEndEvent) => {
     setDragOverId(null);
-    if (e.over?.id !== e.active.data.current?.taskStatus) {
+    if (e.over?.id && e.over.id !== e.active.data.current?.taskStatus) {
       const dataInput: any = {
         ...e.active.data.current,
         taskStatus: e.over?.id,
@@ -226,7 +251,27 @@ export default function KanbanBoard({
     }
   }, [kanbanData, queryProjectTasksList]);
 
-  console.log({ dragOverId });
+  const mouseSensor = useSensor(MouseSensor, {
+    onActivation: () => console.log("it trigger!!! mouseSensor"),
+    bypassActivationConstraint(props) {
+      console.log({ props });
+      return true;
+    },
+    activationConstraint: {
+      tolerance: 4000,
+      distance: 4000,
+      delay: 4000,
+    },
+  });
+  const touchSensor = useSensor(TouchSensor, {
+    onActivation: () => console.log("it trigger!!! touchSensor"),
+    activationConstraint: {
+      tolerance: 5,
+      delay: 200,
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, touchSensor);
 
   if (projectId !== "") {
     return (
@@ -235,6 +280,7 @@ export default function KanbanBoard({
         <DndContext
           onDragEnd={handleDragEnd}
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
+          sensors={sensors}
         >
           <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
             {(kanbanData ?? []).map((table) => {
@@ -249,26 +295,11 @@ export default function KanbanBoard({
                     <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
                       {(table.table ?? []).map((item: TaskItem) => {
                         return (
-                          <Draggable
-                            key={item.taskId}
-                            id={item.taskId}
-                            className="space-y-2 p-2 bg-gray-100 rounded-md cursor-pointer"
-                            dataItem={item}
-                          >
-                            <p className="text-sm font-medium">{item.title}</p>
-                            <div
-                              className="flex items-center gap-2"
-                              id="icon-state"
-                            >
-                              <MdOutlineSubject />
-                              <div className="text-xs">{item.priority}</div>
-                              <div className="text-xs">{item.storyPoint}</div>
-                            </div>
-                          </Draggable>
+                          <TaskableItem itemInput={item} key={item.taskId} />
                         );
                       })}
                       {dragOverId === table.label && (
-                        <div className="rounded-md bg-gray-200 h-[44px] w-full" />
+                        <div className="rounded-md bg-gray-200 h-[60px] w-full" />
                       )}
                     </div>
                     <AddTask
