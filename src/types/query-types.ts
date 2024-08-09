@@ -33,6 +33,7 @@ export interface EditProjectInputType {
 }
 
 export interface TaskInput {
+  taskId: string;
   userId: string;
   projectId: string;
   title: string;

@@ -61,6 +61,8 @@ function Draggable(props: {
     //   left: position?.left,
     //   press: attributes["aria-pressed"],
     // });
+
+    // New drag take the old position
   }, [attributes["aria-pressed"]]);
 
   const style: CSSProperties | undefined = transform

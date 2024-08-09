@@ -2,22 +2,40 @@ import { MdAdd, MdClear, MdOutlineSubject } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-
 import {
   handleViewProjectTasks,
   onChangeTaskState,
   onCreateNewTask,
 } from "@/actions/query-actions";
+import { KanbanBoardType, TaskItem, TaskStatusType } from "@/types";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
+import { TaskInput } from "@/types/query-types";
+import { generateNewUid } from "@/lib/utils";
 
 import { Input } from "./common/Input";
 import { Button } from "./common/Button";
-import { KanbanBoardType, TaskItem, TaskStatusType } from "@/types";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { Draggable, Droppable } from "./DragFeat";
 
 interface TaskType {
   taskTitle: string;
+}
+
+function addTaskToStatusGroup(
+  data: KanbanBoardType[],
+  newTask: TaskInput
+): KanbanBoardType[] {
+  const group = data.find((group) => group.label === newTask.taskStatus);
+
+  if (group) {
+    group.table.push(newTask);
+  } else {
+    data.push({
+      label: newTask.taskStatus,
+      table: [newTask],
+    });
+  }
+  return data;
 }
 
 function AddTask({
@@ -25,13 +43,14 @@ function AddTask({
   userId,
   taskStatus,
   onAddTableData,
+  kanbanData,
 }: {
   projectId: string;
   userId: string;
   taskStatus: TaskStatusType;
-  onAddTableData: (value: KanbanBoardType[]) => void;
+  onAddTableData: any;
+  kanbanData: KanbanBoardType[];
 }) {
-  const queryClient = useQueryClient();
   const [openAddTask, setOpenAddTask] = useState(false);
   const { register, handleSubmit, watch, reset } = useForm<TaskType>();
 
@@ -41,23 +60,32 @@ function AddTask({
   });
 
   const onSubmit: SubmitHandler<TaskType> = async (data) => {
-    await addTaskAction.mutateAsync({
-      userId,
-      projectId,
-      title: data.taskTitle,
-      priority: "Low", // auto Low edit next time
-      description: "",
-      dueDate: Date.now(),
-      startDate: Date.now(),
-      taskStatus, // need to change after create by status take from props
-      storyPoint: 1,
-    });
+    if (data.taskTitle !== "") {
+      const newTaskId = generateNewUid();
+      const dataAddTask: TaskInput = {
+        taskId: newTaskId,
+        userId,
+        projectId,
+        title: data.taskTitle,
+        priority: "Low", // auto Low edit next time
+        description: "",
+        dueDate: Date.now(),
+        startDate: Date.now(),
+        taskStatus, // need to change after create by status take from props
+        storyPoint: 1,
+      };
 
-    queryClient.refetchQueries({
-      queryKey: [projectId, reactQueryKeys.viewProjectTasks],
-    });
-    setOpenAddTask(false);
-    reset();
+      const dataLater = addTaskToStatusGroup(kanbanData, dataAddTask);
+      await addTaskAction.mutateAsync(dataAddTask);
+
+      onAddTableData([...dataLater]);
+
+      console.log("data before: ", kanbanData);
+      console.log("data later: ", dataLater);
+
+      setOpenAddTask(false);
+      reset();
+    }
   };
 
   if (openAddTask) {
@@ -194,14 +222,16 @@ export default function KanbanBoard({
         ]);
       }
     }
-  }, [queryProjectTasksList]);
+  }, [kanbanData, queryProjectTasksList]);
+
+  console.log(kanbanData, "kanbanData");
 
   if (projectId !== "") {
     return (
       <div className="col-span-8 w-full h-full bg-blue-100">
         <div className="w-full h-[49px]" />
         <DndContext onDragEnd={handleDragEnd}>
-          <ul className="grid grid-cols-4 gap-2 px-2 relative h-full">
+          <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
             {(kanbanData ?? []).map((table) => {
               return (
                 <Droppable
@@ -238,6 +268,7 @@ export default function KanbanBoard({
                       userId={userId}
                       taskStatus={table.label}
                       onAddTableData={setKanbanData}
+                      kanbanData={kanbanData ?? []}
                     />
                   </div>
                 </Droppable>
