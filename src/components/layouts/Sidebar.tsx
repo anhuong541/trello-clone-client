@@ -19,20 +19,16 @@ export interface ProjectListItem {
 
 export interface ProjectSelectProps {
   item: ProjectListItem;
-  updateProjectName: (value: string) => void;
-  updateProjectID: (value: string) => void;
 }
 
-function ProjectSelect({
-  item,
-  updateProjectName,
-  updateProjectID,
-}: ProjectSelectProps) {
+function ProjectSelect({ item }: ProjectSelectProps) {
   const route = useRouter();
+  const { updateProjectName, updateProjectID } = projectStore();
+
   const onSelectProject = async () => {
     console.log("object: ", item.projectName);
     // push to /project/[projectId] in the fulture
-    // route.push(`/project/${item.projectId}`);
+    route.push(`/project/${item.projectId}/${item.userId}`);
     updateProjectID(item.projectId);
     updateProjectName(item.projectName);
   };
@@ -53,7 +49,7 @@ function ProjectSelect({
 }
 
 export default function Sidebar({ userId }: { userId: string }) {
-  const { projectName, updateProjectName, updateProjectID } = projectStore();
+  const { projectName } = projectStore();
   const queryUserProjectList = useQuery({
     queryKey: [reactQueryKeys.projectList],
     queryFn: async () => await handleUserProjectList(userId),
@@ -81,14 +77,7 @@ export default function Sidebar({ userId }: { userId: string }) {
         </div>
         <div className="flex flex-col">
           {userProjectList.map((item: ProjectListItem, index: number) => {
-            return (
-              <ProjectSelect
-                item={item}
-                key={index}
-                updateProjectID={updateProjectID}
-                updateProjectName={updateProjectName}
-              />
-            );
+            return <ProjectSelect item={item} key={index} />;
           })}
         </div>
       </div>

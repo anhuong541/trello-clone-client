@@ -47,12 +47,6 @@ function Draggable(props: {
     data: props.dataItem,
   });
 
-  //   console.log("trigger!!!!", {
-  //     width: ref.current?.offsetWidth ?? "",
-  //     listeners,
-  //     attributes,
-  //   });
-
   useEffect(() => {
     if (!attributes["aria-pressed"]) {
       setOffsetWidth(ref.current?.offsetWidth);

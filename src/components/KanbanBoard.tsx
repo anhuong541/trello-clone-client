@@ -1,7 +1,7 @@
 import { MdAdd, MdClear, MdOutlineSubject } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   handleViewProjectTasks,
@@ -9,7 +9,6 @@ import {
   onCreateNewTask,
 } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import { kanbanTableStore, projectStore } from "@/lib/stores";
 
 import { Input } from "./common/Input";
 import { Button } from "./common/Button";
@@ -92,14 +91,22 @@ function AddTask({
   }
 }
 
-export default function KanbanBoard() {
-  const queryClient = useQueryClient();
-  const { projectId, userId } = projectStore();
-  const createKanbanMap = new Map();
+export default function KanbanBoard({
+  projectId,
+  userId,
+}: {
+  projectId: string;
+  userId: string;
+}) {
+  const [kanbanData, setKanbanData] = useState<KanbanBoardType[] | null>(null);
+  const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
+    TaskItem[] | null
+  >(null);
 
   const queryProjectTasksList = useQuery({
     queryKey: [projectId, reactQueryKeys.viewProjectTasks],
     queryFn: async () => await handleViewProjectTasks({ projectId, userId }),
+    enabled: true,
   });
 
   const updateTaskAction = useMutation({
@@ -109,27 +116,30 @@ export default function KanbanBoard() {
 
   const handleDragEnd = async (e: DragEndEvent) => {
     if (e.over?.id !== e.active.data.current?.taskStatus) {
-      const dataInput: any = e.active.data.current;
-
-      await updateTaskAction.mutateAsync({
-        ...dataInput,
+      const dataInput: any = {
+        ...e.active.data.current,
         taskStatus: e.over?.id,
-      });
-      queryClient.refetchQueries({
-        queryKey: [reactQueryKeys.viewProjectTasks],
-      });
-    }
-  };
+      };
+      const createKanbanMap = new Map();
+      const projectTasksList = currentProjectTaskList
+        ? currentProjectTaskList
+        : queryProjectTasksList.data?.data?.data ?? [];
 
-  const kanbanBoardListData = useMemo(() => {
-    if (queryProjectTasksList.isSuccess) {
-      console.log("it trigger!!!");
-      const projectTasksList = queryProjectTasksList.data?.data?.data ?? [];
-      const filterProject = projectTasksList.forEach((item: TaskItem) => {
-        const value = createKanbanMap.get(item.taskStatus) ?? [];
-        createKanbanMap.set(item.taskStatus, [...value, item]);
+      const newValue: TaskItem[] = projectTasksList.map((item: TaskItem) => {
+        if (item.taskId !== e.active.data.current?.taskId) {
+          const value = createKanbanMap.get(item.taskStatus) ?? [];
+          createKanbanMap.set(item.taskStatus, [...value, item]);
+          return item;
+        } else {
+          const value = createKanbanMap.get(e.over?.id) ?? [];
+          createKanbanMap.set(e.over?.id, [...value, dataInput]);
+          return dataInput;
+        }
       });
-      return [
+
+      setCurrentProjectTaskList([...newValue]);
+
+      setKanbanData([
         {
           label: "Open",
           table: createKanbanMap.get("Open"),
@@ -146,50 +156,78 @@ export default function KanbanBoard() {
           label: "Closed",
           table: createKanbanMap.get("Closed"),
         },
-      ] as KanbanBoardType[];
+      ]);
+
+      // await updateTaskAction.mutateAsync(dataInput);
     }
-  }, [queryProjectTasksList, createKanbanMap]);
+  };
+
+  useEffect(() => {
+    if (!kanbanData) {
+      const createKanbanMap = new Map();
+      const projectTasksList = queryProjectTasksList.data?.data?.data ?? [];
+      const filterProject = projectTasksList.forEach((item: TaskItem) => {
+        const value = createKanbanMap.get(item.taskStatus) ?? [];
+        createKanbanMap.set(item.taskStatus, [...value, item]);
+      });
+
+      if (createKanbanMap.get("Open")) {
+        setKanbanData([
+          {
+            label: "Open",
+            table: createKanbanMap.get("Open"),
+          },
+          {
+            label: "In-progress",
+            table: createKanbanMap.get("In-progress"),
+          },
+          {
+            label: "Resolved",
+            table: createKanbanMap.get("Resolved"),
+          },
+          {
+            label: "Closed",
+            table: createKanbanMap.get("Closed"),
+          },
+        ]);
+      }
+    }
+  }, [queryProjectTasksList]);
 
   if (projectId !== "") {
     return (
       <div className="col-span-8 w-full h-full bg-blue-100">
         <div className="w-full h-[49px]" />
         <DndContext onDragEnd={handleDragEnd}>
-          <ul className="grid grid-cols-4 gap-2 px-2 relative">
-            {(kanbanBoardListData ?? []).map((table) => {
+          <ul className="grid grid-cols-4 gap-2 px-2 relative h-full">
+            {(kanbanData ?? []).map((table) => {
               return (
-                <li className="flex flex-col h-full" key={table.label}>
+                <Droppable
+                  className="flex flex-col h-full"
+                  key={table.label}
+                  id={table.label}
+                >
                   <div className="flex-col px-2 py-2 bg-blue-200 rounded-lg">
                     <h4 className="p-2 font-bold">{table.label}</h4>
-                    <div
-                      // id={table.label}
-                      className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]"
-                    >
+                    <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
                       {(table.table ?? []).map((item: TaskItem) => {
                         return (
-                          <Droppable
+                          <Draggable
                             key={item.taskId}
-                            id={table.label}
-                            // dataItem={item}
+                            id={item.taskId}
+                            className="space-y-2 p-2 bg-gray-100 rounded-md cursor-pointer"
+                            dataItem={item}
                           >
-                            <Draggable
-                              id={item.taskId}
-                              className="space-y-2 p-2 bg-gray-100 rounded-md cursor-pointer"
-                              dataItem={item}
+                            <p className="text-sm font-medium">{item.title}</p>
+                            <div
+                              className="flex items-center gap-2"
+                              id="icon-state"
                             >
-                              <p className="text-sm font-medium">
-                                {item.title}
-                              </p>
-                              <div
-                                className="flex items-center gap-2"
-                                id="icon-state"
-                              >
-                                <MdOutlineSubject />
-                                <div className="text-xs">{item.priority}</div>
-                                <div className="text-xs">{item.storyPoint}</div>
-                              </div>
-                            </Draggable>
-                          </Droppable>
+                              <MdOutlineSubject />
+                              <div className="text-xs">{item.priority}</div>
+                              <div className="text-xs">{item.storyPoint}</div>
+                            </div>
+                          </Draggable>
                         );
                       })}
                     </div>
@@ -199,7 +237,7 @@ export default function KanbanBoard() {
                       taskStatus={table.label}
                     />
                   </div>
-                </li>
+                </Droppable>
               );
             })}
           </ul>

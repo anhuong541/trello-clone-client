@@ -26,7 +26,7 @@ export default function LoginPage() {
     mutationKey: [reactQueryKeys.login],
   });
 
-  console.log({ userId });
+  // console.log({ userId });
 
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     if (data.emailLogin === "" || data.passwordLogin === "") {

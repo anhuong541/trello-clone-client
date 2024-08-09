@@ -14,7 +14,7 @@ export default function ProjectPage() {
         <Header />
         <div className="grid grid-cols-10 h-full">
           <Sidebar userId={userId} />
-          <KanbanBoard />
+          {/* <KanbanBoard /> */}
         </div>
       </main>
     );
