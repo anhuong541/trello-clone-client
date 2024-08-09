@@ -7,7 +7,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { useQuery } from "@tanstack/react-query";
 import ProjectItemOption from "../ProjectItemOption";
 import { useRouter } from "next/navigation";
-import { projectStore } from "@/lib/stores";
+import { useMemo } from "react";
 
 export interface ProjectListItem {
   description: string;
@@ -23,11 +23,9 @@ export interface ProjectSelectProps {
 
 function ProjectSelect({ item }: ProjectSelectProps) {
   const route = useRouter();
-  const { updateProjectName } = projectStore();
 
   const onSelectProject = async () => {
     // push to /project/[projectId] in the fulture
-    updateProjectName(item.projectName);
     route.push(`/project/${item.projectId}/${item.userId}`);
   };
 
@@ -46,15 +44,26 @@ function ProjectSelect({ item }: ProjectSelectProps) {
   );
 }
 
-export default function Sidebar({ userId }: { userId: string }) {
-  const { projectName } = projectStore();
+export default function Sidebar({
+  projectId,
+  userId,
+}: {
+  projectId: string;
+  userId: string;
+}) {
   const queryUserProjectList = useQuery({
     queryKey: [reactQueryKeys.projectList],
     queryFn: async () => await handleUserProjectList(userId),
   });
 
-  const userProjectList: ProjectListItem[] =
-    (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
+  const userProjectList: ProjectListItem[] = useMemo(() => {
+    return (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
+  }, [queryUserProjectList]);
+
+  const projectName = useMemo(() => {
+    return userProjectList.find((item) => item.projectId === projectId)
+      ?.projectName;
+  }, [projectId, userProjectList]);
 
   return (
     <div className="col-span-2 h-full flex flex-col bg-blue-200">

@@ -15,7 +15,7 @@ export default function ProjectPage() {
     <main className="h-screen w-screen flex flex-col">
       <Header />
       <div className="grid grid-cols-10 h-full">
-        <Sidebar userId={userId} />
+        <Sidebar projectId={projectId} userId={userId} />
         <KanbanBoard projectId={projectId} userId={userId} />
       </div>
     </main>
