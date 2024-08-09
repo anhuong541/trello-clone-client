@@ -132,6 +132,9 @@ export default function KanbanBoard({
   const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
     TaskItem[] | null
   >(null);
+  const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(
+    null
+  );
 
   const queryProjectTasksList = useQuery({
     queryKey: [projectId, reactQueryKeys.viewProjectTasks],
@@ -145,6 +148,7 @@ export default function KanbanBoard({
   });
 
   const handleDragEnd = async (e: DragEndEvent) => {
+    setDragOverId(null);
     if (e.over?.id !== e.active.data.current?.taskStatus) {
       const dataInput: any = {
         ...e.active.data.current,
@@ -168,7 +172,6 @@ export default function KanbanBoard({
       });
 
       setCurrentProjectTaskList([...newValue]);
-
       setKanbanData([
         {
           label: "Open",
@@ -187,8 +190,7 @@ export default function KanbanBoard({
           table: createKanbanMap.get("Closed"),
         },
       ]);
-
-      // await updateTaskAction.mutateAsync(dataInput);
+      await updateTaskAction.mutateAsync(dataInput);
     }
   };
 
@@ -224,13 +226,16 @@ export default function KanbanBoard({
     }
   }, [kanbanData, queryProjectTasksList]);
 
-  console.log(kanbanData, "kanbanData");
+  console.log({ dragOverId });
 
   if (projectId !== "") {
     return (
       <div className="col-span-8 w-full h-full bg-blue-100">
         <div className="w-full h-[49px]" />
-        <DndContext onDragEnd={handleDragEnd}>
+        <DndContext
+          onDragEnd={handleDragEnd}
+          onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
+        >
           <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
             {(kanbanData ?? []).map((table) => {
               return (
@@ -262,6 +267,9 @@ export default function KanbanBoard({
                           </Draggable>
                         );
                       })}
+                      {dragOverId === table.label && (
+                        <div className="rounded-md bg-gray-200 h-[44px] w-full" />
+                      )}
                     </div>
                     <AddTask
                       projectId={projectId}
