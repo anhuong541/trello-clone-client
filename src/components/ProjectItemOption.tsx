@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MdOutlineClose, MdOutlineMoreHoriz } from "react-icons/md";
 import { ProjectListItem } from "./layouts/Sidebar";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { MouseEvent } from "react";
+import { MouseEvent, useState } from "react";
 import { Input } from "./common/Input";
 
 interface ProjectItemOptionProps {
@@ -20,6 +20,7 @@ interface EditProjectInput {
 export default function ProjectItemOption({
   itemData,
 }: ProjectItemOptionProps) {
+  const [openPop, setOpenPop] = useState(false);
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<EditProjectInput>();
   const userEditProjectAction = useMutation({
@@ -40,6 +41,7 @@ export default function ProjectItemOption({
       label: "Delete",
       action: async (e: MouseEvent) => {
         e.preventDefault();
+        setOpenPop(false);
         await userDeleteProjectAction.mutateAsync({
           projectId: itemData.projectId,
           userId: itemData.userId,
@@ -77,24 +79,32 @@ export default function ProjectItemOption({
     queryClient.refetchQueries({
       queryKey: [reactQueryKeys.projectList],
     });
+    setOpenPop(false);
     reset();
   };
 
   return (
-    <Popover.Root>
-      <Popover.Trigger className="h-8 w-8 flex justify-center items-center">
+    <Popover.Root open={openPop}>
+      <Popover.Trigger
+        className="h-8 w-8 flex justify-center items-center"
+        onClick={() => setOpenPop((prev) => !prev)}
+      >
         <MdOutlineMoreHoriz />
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
           side="right"
           className="translate-x-5 translate-y-20 z-10 flex flex-col border rounded-md py-2 w-[230px] bg-blue-50 text-gray-700"
+          onInteractOutside={() => setOpenPop(false)}
         >
           <div className="flex justify-center px-4 relative">
             <h4 className="py-2 font-bold text-sm text-center">
               {itemData.projectName}
             </h4>
-            <Popover.Close className="absolute top-0 right-2 hover:bg-blue-100 p-2 rounded-md">
+            <Popover.Close
+              className="absolute top-0 right-2 hover:bg-blue-100 p-2 rounded-md"
+              onClick={() => setOpenPop(false)}
+            >
               <MdOutlineClose />
             </Popover.Close>
           </div>

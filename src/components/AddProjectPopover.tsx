@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { onCreateProject } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 interface AddProjectInput {
   projectName: string;
@@ -17,6 +18,7 @@ interface AddProjectInput {
 }
 
 export default function AddProjectPopover({ userId }: { userId: string }) {
+  const [openPop, setOpenPop] = useState(false);
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<AddProjectInput>();
 
@@ -44,13 +46,14 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
       queryClient.refetchQueries({
         queryKey: [reactQueryKeys.projectList],
       });
+      setOpenPop(false);
       reset();
     }
   };
 
   return (
-    <Popover.Root>
-      <Popover.Trigger>
+    <Popover.Root open={openPop}>
+      <Popover.Trigger onClick={() => setOpenPop((prev) => !prev)}>
         <div className="h-10 w-10 rounded-md bg-blue-400 flex justify-center items-center text-white font-medium">
           <MdAdd className="w-6 h-6" />
         </div>
