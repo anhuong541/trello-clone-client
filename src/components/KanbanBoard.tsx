@@ -24,10 +24,12 @@ function AddTask({
   projectId,
   userId,
   taskStatus,
+  onAddTableData,
 }: {
   projectId: string;
   userId: string;
   taskStatus: TaskStatusType;
+  onAddTableData: (value: KanbanBoardType[]) => void;
 }) {
   const queryClient = useQueryClient();
   const [openAddTask, setOpenAddTask] = useState(false);
@@ -235,6 +237,7 @@ export default function KanbanBoard({
                       projectId={projectId}
                       userId={userId}
                       taskStatus={table.label}
+                      onAddTableData={setKanbanData}
                     />
                   </div>
                 </Droppable>

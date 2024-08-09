@@ -21,8 +21,9 @@ function Droppable(props: {
     id: props.id,
     // data: props.dataItem,
   });
-  const style = {
-    color: isOver ? "green" : undefined,
+  const style: CSSProperties = {
+    border: isOver ? "1px solid #3399FF" : undefined,
+    borderRadius: "8px",
   };
 
   return (

@@ -23,14 +23,12 @@ export interface ProjectSelectProps {
 
 function ProjectSelect({ item }: ProjectSelectProps) {
   const route = useRouter();
-  const { updateProjectName, updateProjectID } = projectStore();
+  const { updateProjectName } = projectStore();
 
   const onSelectProject = async () => {
-    console.log("object: ", item.projectName);
     // push to /project/[projectId] in the fulture
-    route.push(`/project/${item.projectId}/${item.userId}`);
-    updateProjectID(item.projectId);
     updateProjectName(item.projectName);
+    route.push(`/project/${item.projectId}/${item.userId}`);
   };
 
   return (

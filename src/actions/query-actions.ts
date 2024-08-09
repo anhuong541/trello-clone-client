@@ -96,10 +96,9 @@ export const onCreateNewTask = async (dataInput: TaskInput) => {
 };
 
 export const onChangeTaskState = async (dataInput: TaskInput) => {
-  console.log("it trigger");
   try {
     return await server.put(`/task`, dataInput);
   } catch (error) {
-    console.log("add task error: ", error);
+    console.log("change task error: ", error);
   }
 };

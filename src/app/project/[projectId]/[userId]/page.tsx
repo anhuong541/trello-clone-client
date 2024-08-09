@@ -3,7 +3,7 @@
 import KanbanBoard from "@/components/KanbanBoard";
 import Header from "@/components/layouts/Header";
 import Sidebar from "@/components/layouts/Sidebar";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function ProjectPage() {
   const { projectId, userId } = useParams<{
