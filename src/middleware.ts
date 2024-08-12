@@ -1,26 +1,54 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "./constants";
+import jwt from "jsonwebtoken";
+import { server } from "./lib/network";
+import { AxiosError } from "axios";
+import { removeSession } from "./actions/auth-action";
 
 const protectedRoutes = [HOME_ROUTE];
 const routesBanWhenUserSignin = ["/login", "/register", ROOT_ROUTE];
 
+export const checkJwtExpire = async (token: string) => {
+  try {
+    return await server.get("user/token-verify", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error) {
+    // console.log("check jwt expire error: ", error);
+    return error;
+  }
+};
+
 export async function middleware(request: NextRequest) {
-  const session = request.cookies.get(SESSION_COOKIE_NAME)?.value || "";
+  const tokenSession = request.cookies.get(SESSION_COOKIE_NAME)?.value || null;
+  if (tokenSession) {
+    const firstRoute = "/" + request.nextUrl.pathname.split("/")[1];
+    const checkToken = (await checkJwtExpire(tokenSession)) as any;
 
-  // // Redirect to login if session is not set
-  // if (!session && protectedRoutes.includes(request.nextUrl.pathname)) {
-  //   const absoluteURL = new URL("/login", request.nextUrl.origin);
-  //   return NextResponse.redirect(absoluteURL.toString());
-  // }
+    if (
+      checkToken?.response?.status === 401 &&
+      protectedRoutes.includes(firstRoute)
+    ) {
+      removeSession();
+      const absoluteURL = new URL("/login", request.nextUrl.origin);
+      return NextResponse.redirect(absoluteURL.toString());
+    }
 
-  // if (session && routesBanWhenUserSignin.includes(request.nextUrl.pathname)) {
-  //   const absoluteURL = new URL(HOME_ROUTE, request.nextUrl.origin);
-  //   return NextResponse.redirect(absoluteURL.toString());
-  // }
+    if (
+      checkToken?.status === 200 &&
+      routesBanWhenUserSignin.includes(request.nextUrl.pathname)
+    ) {
+      console.log("it trigger!!!");
+      const absoluteURL = new URL(HOME_ROUTE, request.nextUrl.origin);
+      return NextResponse.redirect(absoluteURL.toString());
+    }
+  }
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/", "/project", "/login", "/register"],
+  matcher: ["/", "/project", "/login", "/register", "/project/:path*"],
 };
