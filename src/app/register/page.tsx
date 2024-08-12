@@ -10,7 +10,7 @@ import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserRegister, onUserVerifyEmail } from "@/actions/query-actions";
-import { createSession } from "@/actions/auth-action";
+import { redirect, useRouter } from "next/navigation";
 
 type RegisterInput = {
   emailRegister: string;
@@ -20,6 +20,7 @@ type RegisterInput = {
 };
 
 export default function RegisterPage() {
+  const router = useRouter();
   const { register, handleSubmit, watch, reset } = useForm<RegisterInput>();
   const [emailVerified, setEmailVerified] = useState(false);
 
@@ -47,15 +48,13 @@ export default function RegisterPage() {
         username: data.usernameRegister,
       })
       .then((res) => {
-        submitErr = false;
-        createSession(res?.data.jwt);
         return res?.data;
       });
 
-    console.log({ res });
-
-    if (!submitErr) {
+    submitErr = false;
+    if (!submitErr && res?.status === 200) {
       reset();
+      router.push("/project");
     }
   };
 
@@ -64,17 +63,18 @@ export default function RegisterPage() {
   ) => {
     e.preventDefault();
     const email = watch("emailRegister");
-    console.log("trigger email: ", email);
     if (email === "") {
       toast.warning("You have to type your email first");
       return;
     }
     const result = await checkEmailAction.mutateAsync(email);
-    if (!result?.data.used) {
-      toast.info(result?.data.message);
+    if (result?.data && !result?.data.used) {
+      toast.success("You can use this email");
       setEmailVerified(true);
+    } else if (result?.data && result?.data.used) {
+      toast.warn("This is email have been used!!!");
     } else {
-      toast.warn(result?.data.message);
+      toast.error("Something wrong at the server");
     }
   };
 

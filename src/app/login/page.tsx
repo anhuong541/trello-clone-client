@@ -18,15 +18,13 @@ type LoginInput = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { userId, updateUID } = userIdStore();
+  const { updateUID } = userIdStore();
   const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
 
   const loginAction = useMutation({
     mutationFn: onUserLogin,
     mutationKey: [reactQueryKeys.login],
   });
-
-  // console.log({ userId });
 
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     if (data.emailLogin === "" || data.passwordLogin === "") {
@@ -40,9 +38,7 @@ export default function LoginPage() {
       password: data.passwordLogin,
     });
 
-    updateUID(res?.data.userId);
-
-    if (!submitErr) {
+    if (!submitErr && res?.status === 200) {
       reset();
       router.push("/project");
     }
