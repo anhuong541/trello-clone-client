@@ -41,15 +41,11 @@ export default function RegisterPage() {
     }
     let submitErr = true;
 
-    const res = await registerAction
-      .mutateAsync({
-        email: data.emailRegister,
-        password: data.passwordRegister,
-        username: data.usernameRegister,
-      })
-      .then((res) => {
-        return res?.data;
-      });
+    const res = await registerAction.mutateAsync({
+      email: data.emailRegister,
+      password: data.passwordRegister,
+      username: data.usernameRegister,
+    });
 
     submitErr = false;
     if (!submitErr && res?.status === 200) {
