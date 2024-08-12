@@ -1,4 +1,9 @@
-import { MdAdd, MdClear, MdOutlineSubject } from "react-icons/md";
+import {
+  MdAdd,
+  MdClear,
+  MdDeleteOutline,
+  MdOutlineSubject,
+} from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -52,17 +57,16 @@ function addTaskToStatusGroup(
   data: KanbanBoardType[],
   newTask: TaskInput
 ): KanbanBoardType[] {
-  const group = data?.find((group) => group.label === newTask.taskStatus);
-
-  if (group) {
-    group?.table?.push(newTask);
-  } else {
-    data.push({
-      label: newTask.taskStatus,
-      table: [newTask],
-    });
-  }
-  return data;
+  return data.map((item) => {
+    if (item.label !== newTask.taskStatus) {
+      return item;
+    } else {
+      return {
+        label: item.label,
+        table: [...item.table, newTask],
+      };
+    }
+  });
 }
 
 function AddTask({
@@ -101,19 +105,13 @@ function AddTask({
         taskStatus, // need to change after create by status take from props
         storyPoint: 1,
       };
+      const dataLater =
+        kanbanData && kanbanData.length === 4
+          ? addTaskToStatusGroup(kanbanData, dataAddTask)
+          : addTaskToStatusGroup(initialKanbanData, dataAddTask);
 
-      const dataLater = addTaskToStatusGroup(kanbanData, dataAddTask);
-      // ?  addTaskToStatusGroup(kanbanData, dataAddTask)
-      // : addTaskToStatusGroup(initialKanbanData, dataAddTask);
       await addTaskAction.mutateAsync(dataAddTask);
-
-      // console.log({ dataLater, kanbanData, initialKanbanData });
-
       onAddTableData([...dataLater]);
-
-      console.log("data before: ", kanbanData);
-      console.log("data later: ", dataLater);
-
       setOpenAddTask(false);
       reset();
     }
@@ -197,7 +195,7 @@ export default function KanbanBoard({
 
   const handleDragEnd = async (e: DragEndEvent) => {
     setDragOverId(null);
-    if (e.over?.id && e.over.id !== e.active.data.current?.taskStatus) {
+    if (e?.over?.id && e.over.id !== e.active.data.current?.taskStatus) {
       const dataInput: any = {
         ...e.active.data.current,
         taskStatus: e.over?.id,
@@ -223,21 +221,22 @@ export default function KanbanBoard({
       setKanbanData([
         {
           label: "Open",
-          table: createKanbanMap.get("Open"),
+          table: createKanbanMap.get("Open") ?? [],
         },
         {
           label: "In-progress",
-          table: createKanbanMap.get("In-progress"),
+          table: createKanbanMap.get("In-progress") ?? [],
         },
         {
           label: "Resolved",
-          table: createKanbanMap.get("Resolved"),
+          table: createKanbanMap.get("Resolved") ?? [],
         },
         {
           label: "Closed",
-          table: createKanbanMap.get("Closed"),
+          table: createKanbanMap.get("Closed") ?? [],
         },
       ]);
+      createKanbanMap.clear();
       await updateTaskAction.mutateAsync(dataInput);
     }
   };
@@ -271,6 +270,7 @@ export default function KanbanBoard({
           },
         ]);
       }
+      createKanbanMap.clear();
     }
   }, [kanbanData, queryProjectTasksList]);
 
