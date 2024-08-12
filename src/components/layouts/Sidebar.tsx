@@ -6,8 +6,9 @@ import { handleUserProjectList } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { useQuery } from "@tanstack/react-query";
 import ProjectItemOption from "../ProjectItemOption";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { cn } from "@/lib/utils";
 
 export interface ProjectListItem {
   description: string;
@@ -23,21 +24,32 @@ export interface ProjectSelectProps {
 
 function ProjectSelect({ item }: ProjectSelectProps) {
   const route = useRouter();
+  const params = useParams();
+  const ProjectSelected = params.projectId === item.projectId;
 
   const onSelectProject = async () => {
-    // push to /project/[projectId] in the fulture
-    route.push(`/project/${item.projectId}/${item.userId}`);
+    route.push(`/project/${item.projectId}`);
   };
 
   return (
     <div className="wrappper relative group">
       <div
-        className="flex justify-between w-full items-center px-4 py-2 group-hover:bg-blue-100 cursor-pointer"
+        className={cn(
+          "flex justify-between w-full items-center px-4 py-2 group-hover:bg-blue-100 cursor-pointer",
+          ProjectSelected &&
+            "bg-blue-400 text-white group-hover:bg-blue-300 group-hover:text-blue-800"
+        )}
         onClick={onSelectProject}
       >
         <p className="font-medium">{item.projectName}</p>
       </div>
-      <div className="absolute top-[50%] -translate-y-1/2 right-5 group-hover:bg-blue-100 hover:!bg-blue-300 rounded-md">
+      <div
+        className={cn(
+          "absolute top-[50%] -translate-y-1/2 right-5 group-hover:bg-blue-100 hover:!bg-blue-300 rounded-md",
+          ProjectSelected &&
+            "bg-blue-400 text-white group-hover:bg-blue-300 group-hover:text-blue-800 hover:!bg-blue-400"
+        )}
+      >
         <ProjectItemOption itemData={item} />
       </div>
     </div>
@@ -45,15 +57,15 @@ function ProjectSelect({ item }: ProjectSelectProps) {
 }
 
 export default function Sidebar({
-  projectId,
   userId,
+  projectId,
 }: {
-  projectId: string;
   userId: string;
+  projectId: string;
 }) {
   const queryUserProjectList = useQuery({
     queryKey: [reactQueryKeys.projectList],
-    queryFn: async () => await handleUserProjectList(userId),
+    queryFn: handleUserProjectList,
   });
 
   const userProjectList: ProjectListItem[] = useMemo(() => {
@@ -61,8 +73,10 @@ export default function Sidebar({
   }, [queryUserProjectList]);
 
   const projectName = useMemo(() => {
-    return userProjectList.find((item) => item.projectId === projectId)
-      ?.projectName;
+    return (
+      userProjectList.find((item) => item?.projectId === projectId)
+        ?.projectName ?? []
+    );
   }, [projectId, userProjectList]);
 
   return (

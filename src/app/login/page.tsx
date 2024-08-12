@@ -8,7 +8,6 @@ import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserLogin } from "@/actions/query-actions";
-import { userIdStore } from "@/lib/stores";
 import { useRouter } from "next/navigation";
 
 type LoginInput = {
@@ -18,7 +17,6 @@ type LoginInput = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { updateUID } = userIdStore();
   const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
 
   const loginAction = useMutation({

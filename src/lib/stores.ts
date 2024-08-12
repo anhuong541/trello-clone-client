@@ -10,7 +10,7 @@ interface UserStoreState {
 // userid 2: 518df0473a0c6ad7f1375062fc6dfe54333
 
 export const userIdStore = create<UserStoreState>((set) => ({
-  userId: "518df0473a0c6ad7f1375062fc6dfe54333", // hard code for easy to code :<
+  userId: "", // hard code for easy to code :<
   updateUID: (newUID) => set({ userId: newUID }),
   removeUID: () => set({ userId: "" }),
 }));

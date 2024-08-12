@@ -3,10 +3,10 @@ import {
   CreateProjectInputType,
   EditProjectInputType,
   LoginInputType,
-  ProjectIdAndUserIdInput,
   RegisterInputType,
   TaskInput,
 } from "@/types/query-types";
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 export const onUserRegister = async (dataInput: RegisterInputType) => {
   try {
@@ -40,17 +40,22 @@ export const onUserLogout = async () => {
   }
 };
 
-export const handleUserInfo = async (userId: string) => {
+export const handleUserInfo = async (cookie: ReadonlyRequestCookies) => {
+  const token = cookie.get("user_session")?.value;
   try {
-    return await server.get(`/user/${userId}`);
+    const res = await server.get("/user", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return res.data;
   } catch (error) {
     console.log("user info error: ", error);
   }
 };
 
-export const handleUserProjectList = async (userId: string) => {
+export const handleUserProjectList = async () => {
   try {
-    return await server.get(`/project/${userId}`);
+    return await server.get(`/project`);
   } catch (error) {
     console.log("user project list error: ", error);
   }
@@ -72,22 +77,18 @@ export const onEditProject = async (dataInput: EditProjectInputType) => {
   }
 };
 
-export const onDeleteProject = async (dataInput: ProjectIdAndUserIdInput) => {
-  const { projectId, userId } = dataInput;
+export const onDeleteProject = async (projectId: string) => {
   try {
-    return await server.delete(`/project/${projectId}/${userId}`);
+    return await server.delete(`/project/${projectId}`);
   } catch (error) {
     console.log("delete project error: ", error);
   }
 };
 
-export const handleViewProjectTasks = async (
-  dataInput: ProjectIdAndUserIdInput
-) => {
-  const { projectId, userId } = dataInput;
+export const handleViewProjectTasks = async (projectId: string) => {
   try {
-    if (projectId !== "" && userId !== "") {
-      return await server.get(`/task/${userId}/${projectId}`);
+    if (projectId !== "") {
+      return await server.get(`/task/${projectId}`);
     }
     return { data: [] };
   } catch (error) {

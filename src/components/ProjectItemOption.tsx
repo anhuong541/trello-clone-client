@@ -42,10 +42,7 @@ export default function ProjectItemOption({
       action: async (e: MouseEvent) => {
         e.preventDefault();
         setOpenPop(false);
-        await userDeleteProjectAction.mutateAsync({
-          projectId: itemData.projectId,
-          userId: itemData.userId,
-        });
+        await userDeleteProjectAction.mutateAsync(itemData.projectId);
         queryClient.refetchQueries({
           queryKey: [reactQueryKeys.projectList],
         });

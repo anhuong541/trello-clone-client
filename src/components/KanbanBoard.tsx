@@ -1,3 +1,5 @@
+"use client";
+
 import {
   MdAdd,
   MdClear,
@@ -5,8 +7,8 @@ import {
   MdOutlineSubject,
 } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   handleViewProjectTasks,
   onChangeTaskState,
@@ -184,7 +186,7 @@ export default function KanbanBoard({
 
   const queryProjectTasksList = useQuery({
     queryKey: [projectId, reactQueryKeys.viewProjectTasks],
-    queryFn: async () => await handleViewProjectTasks({ projectId, userId }),
+    queryFn: async () => await handleViewProjectTasks(projectId),
     enabled: true,
   });
 

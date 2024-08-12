@@ -11,6 +11,7 @@ import { onCreateProject } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface AddProjectInput {
   projectName: string;
@@ -18,6 +19,7 @@ interface AddProjectInput {
 }
 
 export default function AddProjectPopover({ userId }: { userId: string }) {
+  const route = useRouter();
   const [openPop, setOpenPop] = useState(false);
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<AddProjectInput>();
@@ -46,6 +48,7 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
       queryClient.refetchQueries({
         queryKey: [reactQueryKeys.projectList],
       });
+      route.push(`/project/${res?.data?.projectId}`);
       setOpenPop(false);
       reset();
     }
