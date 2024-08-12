@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "./constants";
-import jwt from "jsonwebtoken";
 import { server } from "./lib/network";
-import { AxiosError } from "axios";
 import { removeSession } from "./actions/auth-action";
 
 const protectedRoutes = [HOME_ROUTE];
@@ -24,13 +22,14 @@ export const checkJwtExpire = async (token: string) => {
 
 export async function middleware(request: NextRequest) {
   const tokenSession = request.cookies.get(SESSION_COOKIE_NAME)?.value || null;
+  const firstParam = "/" + request.nextUrl.pathname.split("/")[1];
+
   if (tokenSession) {
-    const firstRoute = "/" + request.nextUrl.pathname.split("/")[1];
     const checkToken = (await checkJwtExpire(tokenSession)) as any;
 
     if (
       checkToken?.response?.status === 401 &&
-      protectedRoutes.includes(firstRoute)
+      protectedRoutes.includes(firstParam)
     ) {
       removeSession();
       const absoluteURL = new URL("/login", request.nextUrl.origin);
@@ -41,10 +40,12 @@ export async function middleware(request: NextRequest) {
       checkToken?.status === 200 &&
       routesBanWhenUserSignin.includes(request.nextUrl.pathname)
     ) {
-      console.log("it trigger!!!");
       const absoluteURL = new URL(HOME_ROUTE, request.nextUrl.origin);
       return NextResponse.redirect(absoluteURL.toString());
     }
+  } else if (protectedRoutes.includes(firstParam)) {
+    const absoluteURL = new URL("/login", request.nextUrl.origin);
+    return NextResponse.redirect(absoluteURL.toString());
   }
 }
 
