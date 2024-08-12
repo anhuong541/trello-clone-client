@@ -32,6 +32,14 @@ export const onUserLogin = async (dataInput: LoginInputType) => {
   }
 };
 
+export const onUserLogout = async () => {
+  try {
+    return await server.get("/user/logout");
+  } catch (error) {
+    console.log("logout error: ", error);
+  }
+};
+
 export const handleUserInfo = async (userId: string) => {
   try {
     return await server.get(`/user/${userId}`);
