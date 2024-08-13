@@ -7,7 +7,7 @@ import {
   MdOutlineSubject,
 } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   handleViewProjectTasks,
@@ -84,6 +84,7 @@ function AddTask({
   onAddTableData: any;
   kanbanData: KanbanBoardType[];
 }) {
+  const queryClient = useQueryClient();
   const [openAddTask, setOpenAddTask] = useState(false);
   const { register, handleSubmit, watch, reset } = useForm<TaskType>();
 
@@ -112,8 +113,9 @@ function AddTask({
           ? addTaskToStatusGroup(kanbanData, dataAddTask)
           : addTaskToStatusGroup(initialKanbanData, dataAddTask);
 
-      await addTaskAction.mutateAsync(dataAddTask);
       onAddTableData([...dataLater]);
+      await addTaskAction.mutateAsync(dataAddTask);
+      queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
       setOpenAddTask(false);
       reset();
     }
@@ -176,6 +178,7 @@ export default function KanbanBoard({
   projectId: string;
   userId: string;
 }) {
+  const queryClient = useQueryClient();
   const [kanbanData, setKanbanData] = useState<KanbanBoardType[] | null>(null);
   const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
     TaskItem[] | null
@@ -187,7 +190,6 @@ export default function KanbanBoard({
   const queryProjectTasksList = useQuery({
     queryKey: [projectId, reactQueryKeys.viewProjectTasks],
     queryFn: async () => await handleViewProjectTasks(projectId),
-    enabled: true,
   });
 
   const updateTaskAction = useMutation({
@@ -201,6 +203,7 @@ export default function KanbanBoard({
       const dataInput: any = {
         ...e.active.data.current,
         taskStatus: e.over?.id,
+        dueDate: Date.now(),
       };
       const createKanbanMap = new Map();
       const projectTasksList = currentProjectTaskList
@@ -239,6 +242,7 @@ export default function KanbanBoard({
         },
       ]);
       createKanbanMap.clear();
+      queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
       await updateTaskAction.mutateAsync(dataInput);
     }
   };
@@ -252,7 +256,7 @@ export default function KanbanBoard({
         createKanbanMap.set(item.taskStatus, [...value, item]);
       });
 
-      if (createKanbanMap.get("Open")) {
+      if (projectTasksList.length > 0) {
         setKanbanData([
           {
             label: "Open",
@@ -299,7 +303,6 @@ export default function KanbanBoard({
   const sensors = useSensors(mouseSensor, touchSensor);
 
   if (projectId !== "") {
-    // console.log({ kanbanData, initialKanbanData });
     return (
       <div className="col-span-8 w-full h-full bg-blue-100">
         <div className="w-full h-[49px]" />

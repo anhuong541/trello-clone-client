@@ -14,8 +14,9 @@ export interface ProjectListItem {
   description: string;
   projectName: string;
   projectId: string;
-  createAt: number;
   userId: string;
+  createAt: number;
+  dueTime: number;
 }
 
 export interface ProjectSelectProps {
@@ -69,7 +70,14 @@ export default function Sidebar({
   });
 
   const userProjectList: ProjectListItem[] = useMemo(() => {
-    return (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
+    const data: ProjectListItem[] =
+      (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
+
+    const formatDataUserProjectList = data.sort(
+      (a, b) => b?.dueTime - a?.dueTime
+    );
+
+    return formatDataUserProjectList;
   }, [queryUserProjectList]);
 
   const projectName = useMemo(() => {
