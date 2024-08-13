@@ -4,8 +4,8 @@ import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "@/constants";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function createSession(uid: string) {
-  cookies().set("user_email", uid, {
+export async function createSession(userId: string) {
+  cookies().set("user_email", userId, {
     httpOnly: true,
     // secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24, // One day

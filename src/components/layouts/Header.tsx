@@ -25,7 +25,7 @@ export default function Header({ userInfo }: { userInfo: any }) {
     <header className="h-[70px] bg-blue-200 w-full flex justify-between items-center border-b shadow-sm shadow-white px-4">
       <h1 className="font-bold text-blue-700 text-4xl">Trello Clone</h1>
       <Popover.Root>
-        <Popover.Trigger className="flex justify-end items-center gap-4 relative">
+        <Popover.Trigger className="flex justify-end items-center gap-4 relative hover:opacity-70">
           <p className="font-bold">{userInfo.data.username}</p>
           <Image
             height={40}

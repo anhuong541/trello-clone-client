@@ -23,7 +23,7 @@ function Droppable(props: { id: string; children: ReactNode }) {
   );
 }
 
-function Draggable(props) {
+function Draggable(props: any) {
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: props.id,
   });
@@ -54,7 +54,7 @@ export default function DemoPage() {
     </DndContext>
   );
 
-  function handleDragStart(event) {
+  function handleDragStart(event: any) {
     setActiveId(event.active.id);
   }
 

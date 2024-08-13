@@ -38,7 +38,6 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
     const res = await addProjectAction.mutateAsync({
       description: data.projectDescription,
       projectName: data.projectName,
-      userId,
       projectId: "",
       createAt: Date.now(),
     });

@@ -73,13 +73,11 @@ function addTaskToStatusGroup(
 
 function AddTask({
   projectId,
-  userId,
   taskStatus,
   onAddTableData,
   kanbanData,
 }: {
   projectId: string;
-  userId: string;
   taskStatus: TaskStatusType;
   onAddTableData: any;
   kanbanData: KanbanBoardType[];
@@ -98,7 +96,6 @@ function AddTask({
       const newTaskId = generateNewUid();
       const dataAddTask: TaskInput = {
         taskId: newTaskId,
-        userId,
         projectId,
         title: data.taskTitle,
         priority: "Low", // auto Low edit next time
@@ -171,13 +168,7 @@ function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
   );
 }
 
-export default function KanbanBoard({
-  projectId,
-  userId,
-}: {
-  projectId: string;
-  userId: string;
-}) {
+export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
   const [kanbanData, setKanbanData] = useState<KanbanBoardType[] | null>(null);
   const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
@@ -333,7 +324,6 @@ export default function KanbanBoard({
                     </div>
                     <AddTask
                       projectId={projectId}
-                      userId={userId}
                       taskStatus={table.label}
                       onAddTableData={setKanbanData}
                       kanbanData={kanbanData ?? []}

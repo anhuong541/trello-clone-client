@@ -14,7 +14,6 @@ export interface ProjectListItem {
   description: string;
   projectName: string;
   projectId: string;
-  userId: string;
   createAt: number;
   dueTime: number;
 }

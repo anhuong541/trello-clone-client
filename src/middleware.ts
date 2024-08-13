@@ -31,6 +31,7 @@ export async function middleware(request: NextRequest) {
       checkToken?.response?.status === 401 &&
       protectedRoutes.includes(firstParam)
     ) {
+      console.log("it token fail!!!");
       removeSession();
       const absoluteURL = new URL("/login", request.nextUrl.origin);
       return NextResponse.redirect(absoluteURL.toString());

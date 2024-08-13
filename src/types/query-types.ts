@@ -11,13 +11,7 @@ export interface LoginInputType {
   password: string;
 }
 
-export interface ProjectIdAndUserIdInput {
-  projectId: string;
-  userId: string;
-}
-
 export interface CreateProjectInputType {
-  userId: string;
   projectId: string;
   projectName: string;
   description: string;
@@ -25,7 +19,6 @@ export interface CreateProjectInputType {
 }
 
 export interface EditProjectInputType {
-  userId: string;
   projectId: string;
   projectName: string;
   description: string;
@@ -34,7 +27,6 @@ export interface EditProjectInputType {
 
 export interface TaskInput {
   taskId: string;
-  userId: string;
   projectId: string;
   title: string;
   description: string;

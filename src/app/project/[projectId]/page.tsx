@@ -16,7 +16,7 @@ export default async function ProjectPage({
       <Header userInfo={data} />
       <div className="grid grid-cols-10 h-full">
         <Sidebar projectId={params.projectId} userId={data?.data?.uid} />
-        <KanbanBoard projectId={params.projectId} userId={data?.data?.uid} />
+        <KanbanBoard projectId={params.projectId} />
       </div>
     </main>
   );
