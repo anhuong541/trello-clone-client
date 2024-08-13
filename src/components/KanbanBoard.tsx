@@ -105,15 +105,15 @@ function AddTask({
         taskStatus, // need to change after create by status take from props
         storyPoint: 1,
       };
+
+      setOpenAddTask(false);
       const dataLater =
         kanbanData && kanbanData.length === 4
           ? addTaskToStatusGroup(kanbanData, dataAddTask)
           : addTaskToStatusGroup(initialKanbanData, dataAddTask);
-
       onAddTableData([...dataLater]);
       await addTaskAction.mutateAsync(dataAddTask);
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
-      setOpenAddTask(false);
       reset();
     }
   };

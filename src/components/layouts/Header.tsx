@@ -10,7 +10,6 @@ import { onUserLogout } from "@/actions/query-actions";
 
 export default function Header({ userInfo }: { userInfo: any }) {
   const route = useRouter();
-
   const logoutAction = useMutation({
     mutationKey: [reactQueryKeys.logout],
     mutationFn: onUserLogout,

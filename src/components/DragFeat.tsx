@@ -10,7 +10,14 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { CSSProperties, ReactNode, useMemo, useRef } from "react";
+import {
+  CSSProperties,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 function Droppable(props: {
   id: string;
@@ -43,10 +50,14 @@ function Draggable(props: {
   const ref = useRef<any>(null);
   const refOffsetWidth = useRef(0);
   const refPosition = useRef({ top: 0, left: 0 });
+  const userMouseDown = useRef<"mouse-down" | null>(null);
+  const [userDrag, setUserDrag] = useState<"drag" | null>(null);
+  const [disableDrag, setDisableDrag] = useState(true);
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: props.id,
     data: props.dataItem,
+    disabled: userDrag === "drag",
   });
 
   useMemo(() => {
@@ -62,9 +73,22 @@ function Draggable(props: {
       //   left: position?.left,
       //   press: attributes["aria-pressed"],
       // });
+      if (userDrag === null) {
+        userMouseDown.current = null;
+      }
     }
     // New drag take the old position
-  }, [attributes]);
+  }, [attributes, userDrag]);
+
+  useEffect(() => {
+    if (userDrag === "drag") {
+      console.log("object");
+      setDisableDrag(false);
+    } else {
+      console.log("object 2");
+      setDisableDrag(true);
+    }
+  }, [userDrag]);
 
   const style: CSSProperties | undefined = useMemo(() => {
     return transform
@@ -78,6 +102,8 @@ function Draggable(props: {
       : undefined;
   }, [transform]);
 
+  console.log({ attributes: userMouseDown.current, userDrag, disableDrag });
+
   return (
     <div
       ref={setNodeRef}
@@ -85,6 +111,11 @@ function Draggable(props: {
       {...listeners}
       {...attributes}
       className={cn("", props.className)}
+      onMouseMove={() => {
+        if (userMouseDown.current === "mouse-down") {
+          setUserDrag("drag");
+        }
+      }}
     >
       <div ref={ref} className="space-y-2">
         {props.children}
