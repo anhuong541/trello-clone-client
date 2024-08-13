@@ -9,7 +9,7 @@ const routesBanWhenUserSignin = ["/login", "/register", ROOT_ROUTE];
 
 export const checkJwtExpire = async (token: string) => {
   try {
-    return await server.get("user/token-verify", {
+    return await server.get("/user/token-verify", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -43,11 +43,11 @@ export const onUserLogout = async () => {
 export const handleUserInfo = async (cookie: ReadonlyRequestCookies) => {
   const token = cookie.get("user_session")?.value;
   try {
-    const res = await server.get("/user", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    return res.data;
+    return await server
+      .get("/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => res.data);
   } catch (error) {
     console.log("user info error: ", error);
   }
