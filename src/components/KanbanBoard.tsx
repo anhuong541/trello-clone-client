@@ -9,7 +9,7 @@ import {
 } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   handleViewProjectTasks,
   onChangeTaskState,
@@ -33,6 +33,8 @@ import { Input } from "./common/Input";
 import { Button } from "./common/Button";
 import { Draggable, Droppable } from "./DragFeat";
 import TaskDetail from "./TaskDetail";
+import { KanbanDataContext } from "@/context/kanbanTable";
+import { useParams } from "next/navigation";
 
 interface TaskType {
   taskTitle: string;
@@ -190,9 +192,10 @@ function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
   );
 }
 
-export default function KanbanBoard({ projectId }: { projectId: string }) {
+export default function KanbanBoard() {
+  const { projectId }: { projectId: string } = useParams();
+  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const queryClient = useQueryClient();
-  const [kanbanData, setKanbanData] = useState<KanbanBoardType[] | null>(null);
   const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
     TaskItem[] | null
   >(null);
@@ -205,10 +208,23 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     queryFn: async () => await handleViewProjectTasks(projectId),
   });
 
+  console.log({
+    queryProjectTasksList:
+      queryProjectTasksList && (queryProjectTasksList.isSuccess ?? []),
+    projectId,
+  });
+
   const updateTaskAction = useMutation({
     mutationFn: onChangeTaskState,
     mutationKey: [reactQueryKeys.updateTask],
   });
+
+  useEffect(() => {
+    if (kanbanDataStore && projectId) {
+      setKanbanDataStore(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
   const handleDragEnd = async (e: DragEndEvent) => {
     setDragOverId(null);
@@ -236,7 +252,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       });
 
       setCurrentProjectTaskList([...newValue]);
-      setKanbanData([
+      setKanbanDataStore([
         {
           label: "Open",
           table: createKanbanMap.get("Open") ?? [],
@@ -261,7 +277,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   };
 
   useEffect(() => {
-    if (!kanbanData) {
+    if (!kanbanDataStore) {
       const createKanbanMap = new Map();
       const projectTasksList = queryProjectTasksList.data?.data?.data ?? [];
       const filterProject = projectTasksList.forEach((item: TaskItem) => {
@@ -270,7 +286,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       });
 
       if (projectTasksList.length > 0) {
-        setKanbanData([
+        setKanbanDataStore([
           {
             label: "Open",
             table: createKanbanMap.get("Open") ?? [],
@@ -291,7 +307,12 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       }
       createKanbanMap.clear();
     }
-  }, [kanbanData, queryProjectTasksList]);
+  }, [
+    kanbanDataStore,
+    queryProjectTasksList.data?.data?.data,
+    queryProjectTasksList.isFetching,
+    setKanbanDataStore,
+  ]);
 
   if (projectId !== "") {
     return (
@@ -302,7 +323,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
         >
           <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
-            {(kanbanData ?? initialKanbanData).map((table) => {
+            {(kanbanDataStore ?? initialKanbanData).map((table) => {
               return (
                 <Droppable
                   className="flex flex-col h-full"
@@ -324,8 +345,8 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                     <AddTask
                       projectId={projectId}
                       taskStatus={table.label}
-                      onAddTableData={setKanbanData}
-                      kanbanData={kanbanData ?? []}
+                      onAddTableData={setKanbanDataStore}
+                      kanbanData={kanbanDataStore ?? []}
                     />
                   </div>
                 </Droppable>

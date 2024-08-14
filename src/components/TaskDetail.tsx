@@ -28,7 +28,7 @@ export default function TaskDetail({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef(null);
-  console.log({ data });
+  // console.log({ data });
 
   const handleClose = () => {
     onClose();

@@ -7,8 +7,9 @@ import AddProjectPopover from "../AddProjectPopover";
 import { handleUserProjectList } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import ProjectItemOption from "../ProjectItemOption";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { KanbanDataContext } from "@/context/kanbanTable";
 
 export interface ProjectListItem {
   description: string;
