@@ -13,7 +13,11 @@ export interface TaskItem {
   priority: PriorityType;
 }
 
-export interface KanbanBoardType {
+interface KanbanColumn {
   label: TaskStatusType;
   table: TaskItem[];
 }
+
+export type KanbanBoardType = {
+  [status in TaskStatusType]: KanbanColumn;
+};

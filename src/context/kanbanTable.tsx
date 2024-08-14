@@ -8,8 +8,8 @@ import {
 } from "react";
 
 export const KanbanDataContext = createContext<{
-  kanbanDataStore: KanbanBoardType[] | null;
-  setKanbanDataStore: Dispatch<SetStateAction<KanbanBoardType[] | null>>;
+  kanbanDataStore: KanbanBoardType | null;
+  setKanbanDataStore: Dispatch<SetStateAction<KanbanBoardType | null>>;
 }>({ kanbanDataStore: null, setKanbanDataStore: () => {} });
 
 export default function KanbanDataContextProvider({
@@ -17,9 +17,8 @@ export default function KanbanDataContextProvider({
 }: {
   children: ReactNode;
 }) {
-  const [kanbanDataStore, setKanbanDataStore] = useState<
-    KanbanBoardType[] | null
-  >(null);
+  const [kanbanDataStore, setKanbanDataStore] =
+    useState<KanbanBoardType | null>(null);
 
   return (
     <KanbanDataContext.Provider value={{ kanbanDataStore, setKanbanDataStore }}>

@@ -3,7 +3,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineDescription } from "react-icons/md";
 import { useContext, useState } from "react";
-import { Button, useDisclosure, Flex, Text, Textarea } from "@chakra-ui/react";
+import { Button, Flex, Text, Textarea } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { TaskItem } from "@/types";
 import { KanbanDataContext } from "@/context/kanbanTable";
@@ -25,52 +25,35 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
     taskDescription: string;
   }> = async (data) => {
     if (kanbanDataStore) {
-      //   console.log("data => ", data);
-      const labelIndex: number = kanbanDataStore
-        ?.map((item) => item.label)
-        .indexOf(dataInput.taskStatus);
+      console.time("edit desc");
+      console.log("data => ", data);
+      const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
+        .map((item) => item.taskId)
+        .indexOf(dataInput.taskId);
 
-      console.time("table");
-
-      const tableItemIndex: any =
-        labelIndex >= 0 &&
-        kanbanDataStore[labelIndex].table
-          .map((item) => item.taskId)
-          .indexOf(dataInput.taskId); // it trigger false somewhere and i don't know where
-
-      let itemTable = kanbanDataStore[labelIndex].table;
+      let itemTable = kanbanDataStore[dataInput.taskStatus].table;
       if (tableItemIndex >= 0) {
+        // condition >= 0 because the logic read 0 is false
         itemTable[tableItemIndex] = {
           ...itemTable[tableItemIndex],
           description: data.taskDescription,
         };
       }
 
-      console.timeEnd("table");
+      let dataChanging = kanbanDataStore;
+      dataChanging[dataInput.taskStatus] = {
+        label: dataInput.taskStatus,
+        table: itemTable,
+      };
 
-      console.log({
-        itemTable,
-        taskDescription: data.taskDescription,
-        tableItemIndex,
-      });
-
-      const arrChange = kanbanDataStore.map((item) => {
-        if (item.label !== dataInput.taskStatus) {
-          return item;
-        } else {
-          return {
-            label: item.label,
-            table: itemTable,
-          };
-        }
-      });
-
-      setKanbanDataStore((prev) => (prev = arrChange));
+      setKanbanDataStore((prev) => (prev = dataChanging));
       await onUserEdit.mutateAsync({
         ...dataInput,
         description: data.taskDescription,
       });
-      setOpenEdit(false);
+      // setOpenEdit(false);
+
+      console.timeEnd("edit desc");
     }
     reset();
   };

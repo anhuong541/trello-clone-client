@@ -9,22 +9,14 @@ import {
 } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   handleViewProjectTasks,
   onChangeTaskState,
   onCreateNewTask,
 } from "@/actions/query-actions";
 import { KanbanBoardType, TaskItem, TaskStatusType } from "@/types";
-import {
-  DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
 import { generateNewUid } from "@/lib/utils";
@@ -40,40 +32,38 @@ interface TaskType {
   taskTitle: string;
 }
 
-const initialKanbanData: KanbanBoardType[] = [
-  {
+const initialKanbanData: KanbanBoardType = {
+  Open: {
     label: "Open",
     table: [],
   },
-  {
+  "In-progress": {
     label: "In-progress",
     table: [],
   },
-  {
+  Resolved: {
     label: "Resolved",
     table: [],
   },
-  {
+  Closed: {
     label: "Closed",
     table: [],
   },
+};
+
+export const listTableKey: TaskStatusType[] = [
+  "Open",
+  "In-progress",
+  "Resolved",
+  "Closed",
 ];
 
-function addTaskToStatusGroup(
-  data: KanbanBoardType[],
-  newTask: TaskInput
-): KanbanBoardType[] {
-  return data.map((item) => {
-    if (item.label !== newTask.taskStatus) {
-      return item;
-    } else {
-      return {
-        label: item.label,
-        table: [...item.table, newTask],
-      };
-    }
-  });
-}
+const addTaskToStatusGroup = (data: KanbanBoardType, newTask: TaskInput) => {
+  let dataReturn = data;
+  const newTaskTable = dataReturn[newTask.taskStatus].table;
+  dataReturn[newTask.taskStatus].table = [...newTaskTable, newTask];
+  return dataReturn;
+};
 
 function AddTask({
   projectId,
@@ -84,13 +74,12 @@ function AddTask({
   projectId: string;
   taskStatus: TaskStatusType;
   onAddTableData: any;
-  kanbanData: KanbanBoardType[];
+  kanbanData: KanbanBoardType;
 }) {
   const queryClient = useQueryClient();
   const [openAddTask, setOpenAddTask] = useState(false);
   const { register, handleSubmit, watch, reset, setFocus } =
     useForm<TaskType>();
-  const addRef = useRef<HTMLInputElement>(null);
 
   const addTaskAction = useMutation({
     mutationKey: [reactQueryKeys.addTask],
@@ -113,11 +102,8 @@ function AddTask({
       };
 
       setOpenAddTask(false);
-      const dataLater =
-        kanbanData && kanbanData.length === 4
-          ? addTaskToStatusGroup(kanbanData, dataAddTask)
-          : addTaskToStatusGroup(initialKanbanData, dataAddTask);
-      onAddTableData([...dataLater]);
+      const dataLater = addTaskToStatusGroup(kanbanData, dataAddTask);
+      onAddTableData({ ...dataLater }); // check if got some error
       await addTaskAction.mutateAsync(dataAddTask);
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
       reset();
@@ -203,7 +189,6 @@ function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
 export default function KanbanBoard() {
   const { projectId }: { projectId: string } = useParams();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
-  console.log({ kanbanDataStore });
   const queryClient = useQueryClient();
   const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
     TaskItem[] | null
@@ -255,24 +240,24 @@ export default function KanbanBoard() {
       });
 
       setCurrentProjectTaskList([...newValue]);
-      setKanbanDataStore([
-        {
+      setKanbanDataStore({
+        Open: {
           label: "Open",
           table: createKanbanMap.get("Open") ?? [],
         },
-        {
+        "In-progress": {
           label: "In-progress",
           table: createKanbanMap.get("In-progress") ?? [],
         },
-        {
+        Resolved: {
           label: "Resolved",
           table: createKanbanMap.get("Resolved") ?? [],
         },
-        {
+        Closed: {
           label: "Closed",
           table: createKanbanMap.get("Closed") ?? [],
         },
-      ]);
+      });
       createKanbanMap.clear();
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
       await updateTaskAction.mutateAsync(dataInput);
@@ -289,24 +274,24 @@ export default function KanbanBoard() {
       });
 
       if (projectTasksList.length > 0) {
-        setKanbanDataStore([
-          {
+        setKanbanDataStore({
+          Open: {
             label: "Open",
             table: createKanbanMap.get("Open") ?? [],
           },
-          {
+          "In-progress": {
             label: "In-progress",
             table: createKanbanMap.get("In-progress") ?? [],
           },
-          {
+          Resolved: {
             label: "Resolved",
             table: createKanbanMap.get("Resolved") ?? [],
           },
-          {
+          Closed: {
             label: "Closed",
             table: createKanbanMap.get("Closed") ?? [],
           },
-        ]);
+        });
       }
       createKanbanMap.clear();
     }
@@ -326,7 +311,12 @@ export default function KanbanBoard() {
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
         >
           <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
-            {(kanbanDataStore ?? initialKanbanData).map((table) => {
+            {listTableKey.map((key: TaskStatusType) => {
+              // initialKanbanData
+              // kanbanDataStore
+              // console.log({ kanbanDataStore });
+              const table = (kanbanDataStore ?? initialKanbanData)[key];
+
               return (
                 <Droppable
                   className="flex flex-col h-full"
@@ -349,7 +339,7 @@ export default function KanbanBoard() {
                       projectId={projectId}
                       taskStatus={table.label}
                       onAddTableData={setKanbanDataStore}
-                      kanbanData={kanbanDataStore ?? []}
+                      kanbanData={kanbanDataStore ?? initialKanbanData}
                     />
                   </div>
                 </Droppable>
