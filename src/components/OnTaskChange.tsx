@@ -1,12 +1,12 @@
-import { onChangeTaskState } from "@/actions/query-actions";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { Button, Flex, Text, Textarea } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineDescription } from "react-icons/md";
-import { useContext, useState } from "react";
-import { Button, Flex, Text, Textarea } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { TaskItem } from "@/types";
+import { useContext, useState } from "react";
+import { onChangeTaskState } from "@/actions/query-actions";
 import { KanbanDataContext } from "@/context/kanbanTable";
+import { reactQueryKeys } from "@/lib/react-query-keys";
+import { TaskItem } from "@/types";
 
 function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
@@ -57,8 +57,6 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
     }
     reset();
   };
-
-  //   console.log({ dataInput });
 
   return (
     <Flex flexDirection={"column"} gap={2}>
