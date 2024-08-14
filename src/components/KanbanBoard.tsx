@@ -188,6 +188,8 @@ function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
 
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+
+  console.log({ kanbanDataStore });
   const queryClient = useQueryClient();
   const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
     TaskItem[] | null

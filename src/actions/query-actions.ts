@@ -111,3 +111,14 @@ export const onChangeTaskState = async (dataInput: TaskInput) => {
     console.log("change task error: ", error);
   }
 };
+
+export const onDeleteTaskFunction = async (props: {
+  projectId: string;
+  taskId: string;
+}) => {
+  try {
+    return await server.delete(`/task/${props.projectId}/${props.taskId}`);
+  } catch (error) {
+    console.log("delete task error: ", error);
+  }
+};

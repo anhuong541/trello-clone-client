@@ -6,12 +6,17 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Text,
 } from "@chakra-ui/react";
 import { Button, useDisclosure } from "@chakra-ui/react";
-import { MouseEventHandler, ReactNode, useRef } from "react";
+import { MouseEventHandler, ReactNode, useContext, useRef } from "react";
 import { MdDeleteOutline, MdOutlineVideoLabel } from "react-icons/md";
-import { TaskItem } from "@/types";
+import { KanbanBoardType, TaskItem } from "@/types";
 import { TaskDescription } from "./OnTaskChange";
+import { useMutation } from "@tanstack/react-query";
+import { onDeleteTaskFunction } from "@/actions/query-actions";
+import { reactQueryKeys } from "@/lib/react-query-keys";
+import { KanbanDataContext } from "@/context/kanbanTable";
 
 export default function TaskDetail({
   children,
@@ -26,12 +31,35 @@ export default function TaskDetail({
   onCloseIcon?: () => void;
   data: TaskItem;
 }) {
+  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   // console.log({ data });
+
+  const onDeleteTaskAction = useMutation({
+    mutationFn: onDeleteTaskFunction,
+    mutationKey: [reactQueryKeys.deleteTask],
+  });
 
   const handleClose = () => {
     onClose();
     onCloseIcon && onCloseIcon();
+  };
+
+  const handleDeleteTask = async () => {
+    if (kanbanDataStore) {
+      let currKanbanDataStore = kanbanDataStore;
+      currKanbanDataStore[data.taskStatus].table = currKanbanDataStore[
+        data.taskStatus
+      ].table.filter((item) => item.taskId !== data.taskId);
+
+      setKanbanDataStore({ ...currKanbanDataStore });
+
+      await onDeleteTaskAction.mutateAsync({
+        projectId: data.projectId,
+        taskId: data.taskId,
+      });
+      handleClose();
+    }
   };
 
   // TODO: Update ui after edited
@@ -54,17 +82,21 @@ export default function TaskDetail({
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay>
           <ModalContent borderRadius={"12px"}>
-            <ModalHeader
-              fontSize="lg"
-              fontWeight="bold"
-              display="flex"
-              gap={2}
-              alignItems="center"
-            >
-              <MdOutlineVideoLabel className="w-6 h-6" /> {data.title}
-            </ModalHeader>
             <ModalCloseButton />
-
+            <ModalHeader display="flex" flexDirection="column" gap={2}>
+              <Text
+                fontSize="lg"
+                fontWeight="bold"
+                display="flex"
+                alignItems="center"
+                gap={2}
+              >
+                <MdOutlineVideoLabel className="w-6 h-6" /> {data.title}
+              </Text>
+              <Text fontSize="small" color="gray">
+                This task is from {data.taskStatus} list
+              </Text>
+            </ModalHeader>
             <ModalBody
               display="flex"
               flexDirection={"column"}
@@ -78,7 +110,7 @@ export default function TaskDetail({
             <ModalFooter>
               <Button
                 colorScheme="red"
-                onClick={handleClose}
+                onClick={handleDeleteTask}
                 ml={3}
                 display={"flex"}
                 alignItems={"center"}

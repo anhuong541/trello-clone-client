@@ -25,7 +25,6 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
     taskDescription: string;
   }> = async (data) => {
     if (kanbanDataStore) {
-      console.time("edit desc");
       console.log("data => ", data);
       const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
         .map((item) => item.taskId)
@@ -46,14 +45,12 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
         table: itemTable,
       };
 
-      setKanbanDataStore((prev) => (prev = dataChanging));
+      setKanbanDataStore({ ...dataChanging });
       await onUserEdit.mutateAsync({
         ...dataInput,
         description: data.taskDescription,
       });
-      // setOpenEdit(false);
-
-      console.timeEnd("edit desc");
+      setOpenEdit(false);
     }
     reset();
   };
