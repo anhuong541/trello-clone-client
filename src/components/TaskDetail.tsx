@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { Button, useDisclosure } from "@chakra-ui/react";
 import { MouseEventHandler, ReactNode, useRef } from "react";
-import { MdOutlineVideoLabel } from "react-icons/md";
+import { MdDeleteOutline, MdOutlineVideoLabel } from "react-icons/md";
 import { TaskItem } from "@/types";
 import { TaskDescription } from "./OnTaskChange";
 
@@ -27,7 +27,6 @@ export default function TaskDetail({
   data: TaskItem;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef(null);
   // console.log({ data });
 
   const handleClose = () => {
@@ -73,15 +72,19 @@ export default function TaskDetail({
               paddingTop={4}
               paddingBottom={4}
             >
-              <TaskDescription data={data} />
+              <TaskDescription dataInput={data} />
             </ModalBody>
 
             <ModalFooter>
-              <Button ref={cancelRef} onClick={handleClose} colorScheme="blue">
-                Edit
-              </Button>
-              <Button colorScheme="red" onClick={handleClose} ml={3}>
-                Delete
+              <Button
+                colorScheme="red"
+                onClick={handleClose}
+                ml={3}
+                display={"flex"}
+                alignItems={"center"}
+                gap={1}
+              >
+                <MdDeleteOutline className="w-5 h-5" /> Delete
               </Button>
             </ModalFooter>
           </ModalContent>

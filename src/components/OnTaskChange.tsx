@@ -2,17 +2,19 @@ import { onChangeTaskState } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { MdOutlineDescription } from "react-icons/md";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, useDisclosure, Flex, Text, Textarea } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { TaskItem } from "@/types";
+import { KanbanDataContext } from "@/context/kanbanTable";
 
-function TaskDescription({ data }: { data: TaskItem }) {
+function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
+  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const { register, handleSubmit, watch, reset } = useForm<{
     taskDescription: string;
   }>();
   const [openEdit, setOpenEdit] = useState(false);
-  const descriptionIsEmpty = data?.description?.length === 0;
+  const descriptionIsEmpty = dataInput?.description?.length === 0;
 
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
@@ -22,14 +24,58 @@ function TaskDescription({ data }: { data: TaskItem }) {
   const onSubmit: SubmitHandler<{
     taskDescription: string;
   }> = async (data) => {
-    console.log("data => ", data);
-    // await onUserEdit.mutateAsync({
-    //   ...data,
-    //   description: "",
-    // });
-    // setOpenEdit(false);
+    if (kanbanDataStore) {
+      //   console.log("data => ", data);
+      const labelIndex: number = kanbanDataStore
+        ?.map((item) => item.label)
+        .indexOf(dataInput.taskStatus);
+
+      console.time("table");
+
+      const tableItemIndex: any =
+        labelIndex >= 0 &&
+        kanbanDataStore[labelIndex].table
+          .map((item) => item.taskId)
+          .indexOf(dataInput.taskId); // it trigger false somewhere and i don't know where
+
+      let itemTable = kanbanDataStore[labelIndex].table;
+      if (tableItemIndex >= 0) {
+        itemTable[tableItemIndex] = {
+          ...itemTable[tableItemIndex],
+          description: data.taskDescription,
+        };
+      }
+
+      console.timeEnd("table");
+
+      console.log({
+        itemTable,
+        taskDescription: data.taskDescription,
+        tableItemIndex,
+      });
+
+      const arrChange = kanbanDataStore.map((item) => {
+        if (item.label !== dataInput.taskStatus) {
+          return item;
+        } else {
+          return {
+            label: item.label,
+            table: itemTable,
+          };
+        }
+      });
+
+      setKanbanDataStore((prev) => (prev = arrChange));
+      await onUserEdit.mutateAsync({
+        ...dataInput,
+        description: data.taskDescription,
+      });
+      setOpenEdit(false);
+    }
     reset();
   };
+
+  //   console.log({ dataInput });
 
   return (
     <Flex flexDirection={"column"} gap={2}>
@@ -48,12 +94,12 @@ function TaskDescription({ data }: { data: TaskItem }) {
           </Button>
         )}
       </Flex>
-      {!openEdit && !descriptionIsEmpty && data.description}
+      {!openEdit && !descriptionIsEmpty && dataInput?.description}
       {(openEdit || descriptionIsEmpty) && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex flexDirection={"column"} gap={2}>
             <Textarea
-              defaultValue={data.description}
+              defaultValue={dataInput?.description}
               {...register("taskDescription")}
             />
             <Flex gap={2}>

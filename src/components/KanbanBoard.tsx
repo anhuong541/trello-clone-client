@@ -9,7 +9,7 @@ import {
 } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   handleViewProjectTasks,
   onChangeTaskState,
@@ -88,7 +88,9 @@ function AddTask({
 }) {
   const queryClient = useQueryClient();
   const [openAddTask, setOpenAddTask] = useState(false);
-  const { register, handleSubmit, watch, reset } = useForm<TaskType>();
+  const { register, handleSubmit, watch, reset, setFocus } =
+    useForm<TaskType>();
+  const addRef = useRef<HTMLInputElement>(null);
 
   const addTaskAction = useMutation({
     mutationKey: [reactQueryKeys.addTask],
@@ -121,6 +123,12 @@ function AddTask({
       reset();
     }
   };
+
+  useEffect(() => {
+    if (openAddTask) {
+      setFocus("taskTitle");
+    }
+  }, [openAddTask, setFocus]);
 
   if (openAddTask) {
     return (
@@ -195,6 +203,7 @@ function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
 export default function KanbanBoard() {
   const { projectId }: { projectId: string } = useParams();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  console.log({ kanbanDataStore });
   const queryClient = useQueryClient();
   const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
     TaskItem[] | null
@@ -206,12 +215,6 @@ export default function KanbanBoard() {
   const queryProjectTasksList = useQuery({
     queryKey: [projectId, reactQueryKeys.viewProjectTasks],
     queryFn: async () => await handleViewProjectTasks(projectId),
-  });
-
-  console.log({
-    queryProjectTasksList:
-      queryProjectTasksList && (queryProjectTasksList.isSuccess ?? []),
-    projectId,
   });
 
   const updateTaskAction = useMutation({
