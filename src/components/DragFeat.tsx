@@ -10,9 +10,12 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { Position } from "postcss";
 import {
   CSSProperties,
+  MouseEventHandler,
   ReactNode,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -46,49 +49,31 @@ function Draggable(props: {
   children: ReactNode;
   className: string;
   dataItem: TaskItem;
+  disableDrag: boolean;
+  onMouseEnter?: MouseEventHandler<HTMLDivElement>;
+  onMouseLeave?: MouseEventHandler<HTMLDivElement>;
 }) {
   const ref = useRef<any>(null);
   const refOffsetWidth = useRef(0);
-  const refPosition = useRef({ top: 0, left: 0 });
-  const userMouseDown = useRef<"mouse-down" | null>(null);
-  const [userDrag, setUserDrag] = useState<"drag" | null>(null);
-  const [disableDrag, setDisableDrag] = useState(true);
+  const refPosition = useRef<{ top: number; left: number }>({
+    top: 0,
+    left: 0,
+  });
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: props.id,
     data: props.dataItem,
-    disabled: userDrag === "drag",
+    disabled: props.disableDrag,
   });
 
   useMemo(() => {
     if (attributes["aria-pressed"]) {
       const rect = ref.current?.getBoundingClientRect();
-
       refOffsetWidth.current = ref.current?.offsetWidth;
       refPosition.current = { top: rect?.top, left: rect?.left };
-
-      // console.log({
-      //   offsetWidth,
-      //   top: position?.top,
-      //   left: position?.left,
-      //   press: attributes["aria-pressed"],
-      // });
-      if (userDrag === null) {
-        userMouseDown.current = null;
-      }
     }
     // New drag take the old position
-  }, [attributes, userDrag]);
-
-  useEffect(() => {
-    if (userDrag === "drag") {
-      console.log("object");
-      setDisableDrag(false);
-    } else {
-      console.log("object 2");
-      setDisableDrag(true);
-    }
-  }, [userDrag]);
+  }, [attributes]);
 
   const style: CSSProperties | undefined = useMemo(() => {
     return transform
@@ -98,11 +83,12 @@ function Draggable(props: {
           width: refOffsetWidth.current,
           top: refPosition.current?.top,
           left: refPosition.current?.left,
+          zIndex: 99999,
+          border: "1px solid #3B82F6",
+          borderRadius: "8px",
         }
       : undefined;
   }, [transform]);
-
-  console.log({ attributes: userMouseDown.current, userDrag, disableDrag });
 
   return (
     <div
@@ -110,14 +96,11 @@ function Draggable(props: {
       style={style}
       {...listeners}
       {...attributes}
-      className={cn("", props.className)}
-      onMouseMove={() => {
-        if (userMouseDown.current === "mouse-down") {
-          setUserDrag("drag");
-        }
-      }}
+      // className={cn("")}
+      onMouseEnter={props.onMouseEnter}
+      onMouseLeave={props.onMouseLeave}
     >
-      <div ref={ref} className="space-y-2">
+      <div ref={ref} className={cn("space-y-2", props.className)}>
         {props.children}
       </div>
     </div>

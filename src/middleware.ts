@@ -1,6 +1,6 @@
+import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "./constants";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "./constants";
 import { server } from "./lib/network";
 import { removeSession } from "./actions/auth-action";
 

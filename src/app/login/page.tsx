@@ -2,13 +2,13 @@
 
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserLogin } from "@/actions/query-actions";
-import { useRouter } from "next/navigation";
 
 type LoginInput = {
   emailLogin: string;
@@ -37,8 +37,8 @@ export default function LoginPage() {
     });
 
     if (!submitErr && res?.status === 200) {
-      reset();
       router.push("/project");
+      reset();
     }
   };
 

@@ -1,12 +1,12 @@
 "use client";
 
+import { useParams, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import AddProjectPopover from "../AddProjectPopover";
 import { handleUserProjectList } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import { useQuery } from "@tanstack/react-query";
 import ProjectItemOption from "../ProjectItemOption";
-import { useParams, useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 

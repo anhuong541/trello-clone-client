@@ -1,7 +1,7 @@
+import { cookies } from "next/headers";
 import { handleUserInfo } from "@/actions/query-actions";
 import Header from "@/components/layouts/Header";
 import Sidebar from "@/components/layouts/Sidebar";
-import { cookies } from "next/headers";
 
 export default async function ProjectPage() {
   const data = await handleUserInfo(cookies());

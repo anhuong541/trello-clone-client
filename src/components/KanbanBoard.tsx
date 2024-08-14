@@ -4,6 +4,7 @@ import {
   MdAdd,
   MdClear,
   MdDeleteOutline,
+  MdOutlineEdit,
   MdOutlineSubject,
 } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -31,6 +32,7 @@ import { generateNewUid } from "@/lib/utils";
 import { Input } from "./common/Input";
 import { Button } from "./common/Button";
 import { Draggable, Droppable } from "./DragFeat";
+import TaskDetail from "./TaskDetail";
 
 interface TaskType {
   taskTitle: string;
@@ -126,13 +128,16 @@ function AddTask({
       >
         <Input {...register("taskTitle")} placeholder="Task name" />
         <div className="flex items-center gap-2">
-          <Button type="submit" className="py-1 px-2 w-[100px]">
-            Add Task
+          <Button type="submit" className="w-[80px]" size={"sm"}>
+            Add
           </Button>
           <Button
-            size="icon"
-            className="bg-blue-200 text-black hover:bg-gray-200"
-            onClick={() => setOpenAddTask(false)}
+            size={"sm"}
+            className="bg-blue-200 text-blue-800 hover:bg-blue-300 px-2"
+            onClick={() => {
+              setOpenAddTask(false);
+              reset();
+            }}
           >
             <MdClear className="w-6 h-6" />
           </Button>
@@ -142,7 +147,7 @@ function AddTask({
   } else {
     return (
       <button
-        className="py-1 px-2 mt-3 w-full flex items-center gap-1 text-sm hover:bg-gray-200 hover:text-gray-600 rounded-md font-bold"
+        className="py-1 px-2 mt-3 w-full flex items-center gap-1 text-sm hover:bg-blue-300 hover:text-blue-800 rounded-md font-bold"
         onClick={() => setOpenAddTask(true)}
       >
         <MdAdd className="h-6 w-6 font-medium" /> Add Task
@@ -152,11 +157,17 @@ function AddTask({
 }
 
 function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
+  const [hoverItem, setHoverItem] = useState(false);
+  const [disableDrag, setDisableDrag] = useState(false);
+
   return (
     <Draggable
       id={itemInput.taskId}
-      className="p-2 bg-gray-100 rounded-md hover:border-blue-500 active:border-gray-100 border border-gray-100 cursor-pointer"
+      className="relative p-2 bg-gray-100 rounded-md border border-gray-100 hover:border-blue-500 active:border-gray-100 cursor-pointer"
       dataItem={itemInput}
+      disableDrag={disableDrag}
+      onMouseEnter={() => setHoverItem(true)}
+      onMouseLeave={() => setHoverItem(false)}
     >
       <p className="text-sm font-medium">{itemInput.title}</p>
       <div className="flex items-center gap-2" id="icon-state">
@@ -164,6 +175,17 @@ function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
         <div className="text-xs">{itemInput.priority}</div>
         <div className="text-xs">{itemInput.storyPoint}</div>
       </div>
+
+      {hoverItem && (
+        <TaskDetail
+          onMouseEnter={() => setDisableDrag(true)}
+          onMouseLeave={() => setDisableDrag(false)}
+          onCloseIcon={() => setHoverItem(false)}
+          data={itemInput}
+        >
+          <MdOutlineEdit />
+        </TaskDetail>
+      )}
     </Draggable>
   );
 }
@@ -271,28 +293,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     }
   }, [kanbanData, queryProjectTasksList]);
 
-  const mouseSensor = useSensor(MouseSensor, {
-    onActivation: () => console.log("it trigger!!! mouseSensor"),
-    bypassActivationConstraint(props) {
-      console.log({ props });
-      return true;
-    },
-    activationConstraint: {
-      tolerance: 4000,
-      distance: 4000,
-      delay: 4000,
-    },
-  });
-  const touchSensor = useSensor(TouchSensor, {
-    onActivation: () => console.log("it trigger!!! touchSensor"),
-    activationConstraint: {
-      tolerance: 5,
-      delay: 200,
-    },
-  });
-
-  const sensors = useSensors(mouseSensor, touchSensor);
-
   if (projectId !== "") {
     return (
       <div className="col-span-8 w-full h-full bg-blue-100">
@@ -300,7 +300,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
         <DndContext
           onDragEnd={handleDragEnd}
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
-          sensors={sensors}
         >
           <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
             {(kanbanData ?? initialKanbanData).map((table) => {

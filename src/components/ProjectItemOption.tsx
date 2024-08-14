@@ -1,7 +1,7 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { onDeleteProject, onEditProject } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import * as Popover from "@radix-ui/react-popover";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MdOutlineClose, MdOutlineMoreHoriz } from "react-icons/md";
 import { ProjectListItem } from "./layouts/Sidebar";
 import { SubmitHandler, useForm } from "react-hook-form";

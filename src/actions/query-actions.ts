@@ -1,3 +1,4 @@
+import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { server } from "@/lib/network";
 import {
   CreateProjectInputType,
@@ -6,7 +7,6 @@ import {
   RegisterInputType,
   TaskInput,
 } from "@/types/query-types";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 export const onUserRegister = async (dataInput: RegisterInputType) => {
   try {

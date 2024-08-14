@@ -2,6 +2,7 @@
 
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { MouseEvent, useState } from "react";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -10,7 +11,6 @@ import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserRegister, onUserVerifyEmail } from "@/actions/query-actions";
-import { redirect, useRouter } from "next/navigation";
 
 type RegisterInput = {
   emailRegister: string;

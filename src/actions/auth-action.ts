@@ -1,8 +1,8 @@
 "use server";
 
-import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "@/constants";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "@/constants";
 
 export async function createSession(userId: string) {
   cookies().set("user_email", userId, {
