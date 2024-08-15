@@ -1,6 +1,10 @@
 import { Button, Flex, Input, Text, Textarea } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { MdNumbers, MdOutlineDescription } from "react-icons/md";
+import {
+  MdNumbers,
+  MdOutlineDescription,
+  MdOutlineVideoLabel,
+} from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
 import { useContext, useState } from "react";
 import { onChangeTaskState } from "@/actions/query-actions";
@@ -8,6 +12,91 @@ import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
+
+function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
+  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const [editTitle, setEditTitle] = useState(false);
+  const { register, handleSubmit, watch, reset } = useForm<{
+    taskTitle: string;
+  }>();
+
+  const onUserEdit = useMutation({
+    mutationFn: onChangeTaskState,
+    mutationKey: [reactQueryKeys.updateTask],
+  });
+
+  const onSubmit: SubmitHandler<{
+    taskTitle: string;
+  }> = async (data) => {
+    if (data.taskTitle === "") {
+      toast.error("A task can missing a name!");
+      return;
+    }
+
+    if (kanbanDataStore) {
+      console.log("data => ", data);
+      const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
+        .map((item) => item.taskId)
+        .indexOf(dataInput.taskId);
+
+      let itemTable = kanbanDataStore[dataInput.taskStatus].table;
+      if (tableItemIndex >= 0) {
+        // condition >= 0 because the logic read 0 is false
+        itemTable[tableItemIndex] = {
+          ...itemTable[tableItemIndex],
+          title: data.taskTitle,
+        };
+      }
+
+      setKanbanDataStore({
+        ...kanbanDataStore,
+        [dataInput.taskStatus]: {
+          ...kanbanDataStore[dataInput.taskStatus],
+          table: [...itemTable],
+        },
+      });
+
+      await onUserEdit.mutateAsync({
+        ...dataInput,
+        title: data.taskTitle,
+      });
+      setEditTitle(false);
+    }
+    reset();
+  };
+
+  if (!editTitle) {
+    return (
+      <Text
+        gap={2}
+        fontSize="lg"
+        display="flex"
+        fontWeight="bold"
+        alignItems="center"
+        onDoubleClick={() => setEditTitle(true)}
+      >
+        <MdOutlineVideoLabel className="w-6 h-6" /> {dataInput.title}
+      </Text>
+    );
+  } else {
+    return (
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="min-h-[27px] flex items-center gap-2 pr-8"
+      >
+        <MdOutlineVideoLabel className="w-6 h-6" />
+        <Input
+          type="text"
+          defaultValue={dataInput?.title}
+          placeholder="Can't miss the task name"
+          className="text-sm font-bold"
+          size={"md"}
+          {...register("taskTitle")}
+        />
+      </form>
+    );
+  }
+}
 
 function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
@@ -213,4 +302,4 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
   );
 }
 
-export { TaskDescription, TaskStoryPoint };
+export { TaskDescription, TaskStoryPoint, TaskTitle };

@@ -9,10 +9,17 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Button, useDisclosure } from "@chakra-ui/react";
-import { MouseEventHandler, ReactNode, useContext, useRef } from "react";
+import {
+  MouseEventHandler,
+  ReactNode,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import { MdDeleteOutline, MdOutlineVideoLabel } from "react-icons/md";
+import dayjs from "dayjs";
 import { TaskItem } from "@/types";
-import { TaskDescription, TaskStoryPoint } from "./OnTaskChange";
+import { TaskDescription, TaskStoryPoint, TaskTitle } from "./OnTaskChange";
 import { useMutation } from "@tanstack/react-query";
 import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -83,17 +90,12 @@ export default function TaskDetail({
           <ModalContent borderRadius={"12px"}>
             <ModalCloseButton />
             <ModalHeader display="flex" flexDirection="column" gap={2}>
-              <Text
-                fontSize="lg"
-                fontWeight="bold"
-                display="flex"
-                alignItems="center"
-                gap={2}
-              >
-                <MdOutlineVideoLabel className="w-6 h-6" /> {data.title}
+              <TaskTitle dataInput={data} />
+              <Text fontSize="small" color="gray">
+                This task is from <strong>{data.taskStatus}</strong> list
               </Text>
               <Text fontSize="small" color="gray">
-                This task is from {data.taskStatus} list
+                Created at {dayjs(data.startDate).format("DD-MM-YYYY")}
               </Text>
             </ModalHeader>
             <ModalBody
