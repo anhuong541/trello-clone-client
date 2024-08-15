@@ -1,4 +1,14 @@
-import { Button, Flex, Input, Text, Textarea } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  Stack,
+  Text,
+  Textarea,
+} from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   MdNumbers,
@@ -10,7 +20,7 @@ import { useContext, useState } from "react";
 import { onChangeTaskState } from "@/actions/query-actions";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import { StoryPointType, TaskItem } from "@/types";
+import { PriorityType, StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
 
 function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
@@ -302,4 +312,68 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
   );
 }
 
-export { TaskDescription, TaskStoryPoint, TaskTitle };
+function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
+  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const onUserEdit = useMutation({
+    mutationFn: onChangeTaskState,
+    mutationKey: [reactQueryKeys.updateTask],
+  });
+
+  const onSelectPriority = async (priority: PriorityType) => {
+    if (!kanbanDataStore) {
+      toast.error("Something wrong at the board! Please restart and do again!");
+      return;
+    }
+
+    console.log("data => ", priority);
+    const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
+      .map((item) => item.taskId)
+      .indexOf(dataInput.taskId);
+
+    let itemTable = kanbanDataStore[dataInput.taskStatus].table;
+    if (tableItemIndex >= 0) {
+      // condition >= 0 because the logic read 0 is false
+      itemTable[tableItemIndex] = {
+        ...itemTable[tableItemIndex],
+        priority,
+      };
+    }
+
+    setKanbanDataStore({
+      ...kanbanDataStore,
+      [dataInput.taskStatus]: {
+        ...kanbanDataStore[dataInput.taskStatus],
+        table: [...itemTable],
+      },
+    });
+
+    await onUserEdit.mutateAsync({
+      ...dataInput,
+      priority,
+    });
+  };
+
+  return (
+    <Flex flexDirection={"column"} gap={2}>
+      <Flex gap={4} justifyContent="space-between" alignItems="center">
+        <Flex gap={2}>
+          <MdNumbers className="w-6 h-6" />
+          <Text fontWeight={600} marginRight={6}>
+            Current priority is{" "}
+            <strong className="font-bold">{dataInput.priority}</strong>{" "}
+          </Text>
+        </Flex>
+      </Flex>
+      <Select
+        placeholder="Select your priority"
+        onChange={(e) => onSelectPriority(e.target?.value as PriorityType)}
+      >
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
+      </Select>
+    </Flex>
+  );
+}
+
+export { TaskDescription, TaskStoryPoint, TaskTitle, TaskPriority };

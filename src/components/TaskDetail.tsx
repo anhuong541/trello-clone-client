@@ -7,6 +7,7 @@ import {
   ModalBody,
   ModalCloseButton,
   Text,
+  Flex,
 } from "@chakra-ui/react";
 import { Button, useDisclosure } from "@chakra-ui/react";
 import {
@@ -19,7 +20,12 @@ import {
 import { MdDeleteOutline, MdOutlineVideoLabel } from "react-icons/md";
 import dayjs from "dayjs";
 import { TaskItem } from "@/types";
-import { TaskDescription, TaskStoryPoint, TaskTitle } from "./OnTaskChange";
+import {
+  TaskDescription,
+  TaskPriority,
+  TaskStoryPoint,
+  TaskTitle,
+} from "./OnTaskChange";
 import { useMutation } from "@tanstack/react-query";
 import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -68,8 +74,6 @@ export default function TaskDetail({
     }
   };
 
-  // TODO: Update ui after edited
-
   return (
     <div
       className="absolute top-[25%] -translate-y-1/4 right-2 z-10"
@@ -91,12 +95,14 @@ export default function TaskDetail({
             <ModalCloseButton />
             <ModalHeader display="flex" flexDirection="column" gap={2}>
               <TaskTitle dataInput={data} />
-              <Text fontSize="small" color="gray">
-                This task is from <strong>{data.taskStatus}</strong> list
-              </Text>
-              <Text fontSize="small" color="gray">
-                Created at {dayjs(data.startDate).format("DD-MM-YYYY")}
-              </Text>
+              <Flex flexDirection={"column"}>
+                <Text fontSize="small" color="gray">
+                  This task is from <strong>{data.taskStatus}</strong> list
+                </Text>
+                <Text fontSize="small" color="gray">
+                  Created at {dayjs(data.startDate).format("DD-MM-YYYY")}
+                </Text>
+              </Flex>
             </ModalHeader>
             <ModalBody
               display="flex"
@@ -107,11 +113,24 @@ export default function TaskDetail({
             >
               <TaskDescription dataInput={data} />
               <TaskStoryPoint dataInput={data} />
+              <TaskPriority dataInput={data} />
             </ModalBody>
 
             <ModalFooter>
               <Button
+                className="!bg-blue-400"
+                color={"white"}
+                onClick={handleClose}
+                ml={3}
+                display={"flex"}
+                alignItems={"center"}
+                gap={1}
+              >
+                Done
+              </Button>
+              <Button
                 colorScheme="red"
+                variant={"outline"}
                 onClick={handleDeleteTask}
                 ml={3}
                 display={"flex"}
