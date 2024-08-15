@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { handleUserInfo } from "@/actions/query-actions";
-import KanbanBoard from "@/components/KanbanBoard";
+import KanbanBoard from "@/components/KanbanTable/KanbanBoard";
 import Header from "@/components/layouts/Header";
-import Sidebar from "@/components/layouts/Sidebar";
+import { Sidebar } from "@/components/layouts/Sidebar";
 
 export default async function ProjectPage({
   params,

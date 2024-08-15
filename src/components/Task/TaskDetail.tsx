@@ -89,7 +89,7 @@ export default function TaskDetail({
         {children}
       </Button>
 
-      <Modal isOpen={isOpen} onClose={handleClose}>
+      <Modal isOpen={isOpen} onClose={handleClose} size={"xl"}>
         <ModalOverlay>
           <ModalContent borderRadius={"12px"}>
             <ModalCloseButton />

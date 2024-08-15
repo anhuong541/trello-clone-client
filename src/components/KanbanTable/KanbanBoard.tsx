@@ -21,12 +21,11 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
 import { generateNewUid } from "@/lib/utils";
 
-import { Input } from "./common/Input";
-import { Button } from "./common/Button";
-import { Draggable, Droppable } from "./DragFeat";
-import TaskDetail from "./TaskDetail";
+import { Input } from "../common/Input";
+import { Button } from "../common/Button";
+import { Draggable, Droppable } from "../DragFeat";
+import TaskDetail from "../Task/TaskDetail";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-import { useParams } from "next/navigation";
 import { Flex } from "@chakra-ui/react";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 

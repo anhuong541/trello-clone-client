@@ -5,8 +5,8 @@ import { MdOutlineClose, MdOutlineMoreHoriz } from "react-icons/md";
 import * as Popover from "@radix-ui/react-popover";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onDeleteProject, onEditProject } from "@/actions/query-actions";
-import { ProjectListItem } from "./layouts/Sidebar";
-import { Input } from "./common/Input";
+import { ProjectListItem } from "./Sidebar";
+import { Input } from "../../common/Input";
 
 interface ProjectItemOptionProps {
   itemData: ProjectListItem;

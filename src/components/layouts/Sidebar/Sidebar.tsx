@@ -3,13 +3,12 @@
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import AddProjectPopover from "../AddProjectPopover";
+import AddProjectPopover from "./AddProjectPopover";
 import { handleUserProjectList } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import ProjectItemOption from "../ProjectItemOption";
+import ProjectItemOption from "./ProjectItemOption";
 import { useContext, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 
 export interface ProjectListItem {
   description: string;

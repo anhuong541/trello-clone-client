@@ -1,25 +1,13 @@
 import { cn } from "@/lib/utils";
 import { TaskItem } from "@/types";
-import {
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  useDraggable,
-  useDroppable,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { Position } from "postcss";
 import {
   CSSProperties,
   MouseEventHandler,
   ReactNode,
-  useCallback,
-  useEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
 
 function Droppable(props: {

@@ -6,8 +6,8 @@ import * as Popover from "@radix-ui/react-popover";
 import { useRouter } from "next/navigation";
 import { MdAdd } from "react-icons/md";
 
-import { Button } from "./common/Button";
-import { Input } from "./common/Input";
+import { Button } from "@/components/common/Button";
+import { Input } from "@/components/common/Input";
 import { onCreateProject } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { toast } from "react-toastify";
