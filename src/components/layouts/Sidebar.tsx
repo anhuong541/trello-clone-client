@@ -9,7 +9,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import ProjectItemOption from "../ProjectItemOption";
 import { useContext, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { KanbanDataContext } from "@/context/kanbanTable";
+import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 
 export interface ProjectListItem {
   description: string;

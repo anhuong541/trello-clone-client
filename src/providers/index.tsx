@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 import { ToastContainer } from "react-toastify";
 import { ChakraProvider } from "@chakra-ui/react";
 import "react-toastify/ReactToastify.css";
-import KanbanDataContextProvider from "@/context/kanbanTable";
+import KanbanDataContextProvider from "@/context/KanbanDataContextProvider";
 // import "react-toastify/ReactToastify.min.css";
 
 const queryClient = new QueryClient();

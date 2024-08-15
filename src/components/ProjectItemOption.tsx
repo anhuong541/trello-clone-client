@@ -1,11 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { onDeleteProject, onEditProject } from "@/actions/query-actions";
-import { reactQueryKeys } from "@/lib/react-query-keys";
-import * as Popover from "@radix-ui/react-popover";
-import { MdOutlineClose, MdOutlineMoreHoriz } from "react-icons/md";
-import { ProjectListItem } from "./layouts/Sidebar";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { MouseEvent, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { MdOutlineClose, MdOutlineMoreHoriz } from "react-icons/md";
+import * as Popover from "@radix-ui/react-popover";
+import { reactQueryKeys } from "@/lib/react-query-keys";
+import { onDeleteProject, onEditProject } from "@/actions/query-actions";
+import { ProjectListItem } from "./layouts/Sidebar";
 import { Input } from "./common/Input";
 
 interface ProjectItemOptionProps {

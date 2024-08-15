@@ -23,8 +23,9 @@ export const checkJwtExpire = async (token: string) => {
 export async function middleware(request: NextRequest) {
   const tokenSession = request.cookies.get(SESSION_COOKIE_NAME)?.value || null;
   const firstParam = "/" + request.nextUrl.pathname.split("/")[1];
-
+  console.log("run middleware!");
   if (tokenSession) {
+    console.log("run middleware!", tokenSession);
     const checkToken = (await checkJwtExpire(tokenSession)) as any;
 
     if (

@@ -4,7 +4,7 @@ import { MdOutlineDescription } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
 import { useContext, useState } from "react";
 import { onChangeTaskState } from "@/actions/query-actions";
-import { KanbanDataContext } from "@/context/kanbanTable";
+import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskItem } from "@/types";
 

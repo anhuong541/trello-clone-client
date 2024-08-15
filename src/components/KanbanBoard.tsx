@@ -25,8 +25,10 @@ import { Input } from "./common/Input";
 import { Button } from "./common/Button";
 import { Draggable, Droppable } from "./DragFeat";
 import TaskDetail from "./TaskDetail";
-import { KanbanDataContext } from "@/context/kanbanTable";
+import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { useParams } from "next/navigation";
+import { Flex } from "@chakra-ui/react";
+import SortKanbanTablePopover from "./SortKanbanTablePopove";
 
 interface TaskType {
   taskTitle: string;
@@ -187,10 +189,8 @@ function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
 }
 
 export default function KanbanBoard({ projectId }: { projectId: string }) {
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
-
-  console.log({ kanbanDataStore });
   const queryClient = useQueryClient();
+  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
     TaskItem[] | null
   >(null);
@@ -306,7 +306,10 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   if (projectId !== "") {
     return (
       <div className="col-span-8 w-full h-full bg-blue-100">
-        <div className="w-full h-[49px]" />
+        <Flex width={"100%"} height={49} alignItems={"center"} paddingLeft={2}>
+          <SortKanbanTablePopover />
+        </Flex>
+        {/* <div className="w-full h-[49px]"></div> */}
         <DndContext
           onDragEnd={handleDragEnd}
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}

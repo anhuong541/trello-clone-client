@@ -11,12 +11,12 @@ import {
 import { Button, useDisclosure } from "@chakra-ui/react";
 import { MouseEventHandler, ReactNode, useContext, useRef } from "react";
 import { MdDeleteOutline, MdOutlineVideoLabel } from "react-icons/md";
-import { KanbanBoardType, TaskItem } from "@/types";
+import { TaskItem } from "@/types";
 import { TaskDescription } from "./OnTaskChange";
 import { useMutation } from "@tanstack/react-query";
 import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import { KanbanDataContext } from "@/context/kanbanTable";
+import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 
 export default function TaskDetail({
   children,
@@ -33,7 +33,6 @@ export default function TaskDetail({
 }) {
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // console.log({ data });
 
   const onDeleteTaskAction = useMutation({
     mutationFn: onDeleteTaskFunction,
