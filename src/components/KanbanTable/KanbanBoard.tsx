@@ -26,7 +26,7 @@ import { Button } from "../common/Button";
 import { Draggable, Droppable } from "../DragFeat";
 import TaskDetail from "../Task/TaskDetail";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-import { Flex } from "@chakra-ui/react";
+import { Flex, Text } from "@chakra-ui/react";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 
 interface TaskType {
@@ -166,9 +166,11 @@ function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
       onMouseEnter={() => setHoverItem(true)}
       onMouseLeave={() => setHoverItem(false)}
     >
-      <p className="text-sm font-medium">{itemInput.title}</p>
+      <Text fontSize={"sm"} fontWeight={600}>
+        {itemInput.title}
+      </Text>
       <div className="flex items-center gap-2" id="icon-state">
-        <MdOutlineSubject />
+        {itemInput?.description.length > 0 && <MdOutlineSubject />}
         <div className="text-xs">{itemInput.priority}</div>
         <div className="text-xs">{itemInput.storyPoint}</div>
       </div>

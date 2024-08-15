@@ -4,6 +4,7 @@ import {
   MdNumbers,
   MdOutlineDescription,
   MdOutlineVideoLabel,
+  MdPriorityHigh,
 } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
 import { useContext, useState } from "react";
@@ -347,7 +348,7 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
     <Flex flexDirection={"column"} gap={2}>
       <Flex gap={4} justifyContent="space-between" alignItems="center">
         <Flex gap={2}>
-          <MdNumbers className="w-6 h-6" />
+          <MdPriorityHigh className="w-6 h-6" />
           <Text fontWeight={600} marginRight={6}>
             Current priority is{" "}
             <strong className="font-bold">{dataInput.priority}</strong>{" "}
