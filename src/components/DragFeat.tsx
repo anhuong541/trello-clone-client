@@ -53,7 +53,8 @@ function Draggable(props: {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: props.id,
     data: props.dataItem,
-    disabled: props.disableDrag || Number(screenView) < 1024,
+    disabled:
+      props.disableDrag || (screenView ? Number(screenView) < 1024 : false),
   });
 
   useMemo(() => {

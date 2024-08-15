@@ -4,6 +4,12 @@ export default function useScreenView() {
   const [screenView, setScreenView] = useState(["null", null]);
 
   useEffect(() => {
+    if (!screenView[1]) {
+      setScreenView(getScreenView());
+    }
+  }, [screenView]);
+
+  useEffect(() => {
     function handleResize() {
       setScreenView(getScreenView());
     }

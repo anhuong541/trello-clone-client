@@ -7,7 +7,7 @@ import AddProjectPopover from "./AddProjectPopover";
 import { handleUserProjectList } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import ProjectItemOption from "./ProjectItemOption";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@chakra-ui/react";
 import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
@@ -67,9 +67,13 @@ export default function Sidebar({
   projectId: string;
 }) {
   const { screenView } = useScreenView();
-  const [openSidebar, setOpenSidebar] = useState(
-    screenView ? (Number(screenView) < 1024 ? false : true) : true
-  );
+  const [openSidebar, setOpenSidebar] = useState(true);
+
+  useEffect(() => {
+    if (screenView) {
+      setOpenSidebar(Number(screenView) > 1024);
+    }
+  }, [screenView]);
 
   const queryUserProjectList = useQuery({
     queryKey: [reactQueryKeys.projectList],
