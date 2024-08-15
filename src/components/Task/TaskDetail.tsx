@@ -10,15 +10,8 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { Button, useDisclosure } from "@chakra-ui/react";
-import {
-  MouseEventHandler,
-  ReactNode,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { MdDeleteOutline, MdOutlineVideoLabel } from "react-icons/md";
+import { MouseEventHandler, ReactNode, useContext, useMemo } from "react";
+import { MdDeleteOutline } from "react-icons/md";
 import dayjs from "dayjs";
 import { TaskItem } from "@/types";
 import {
@@ -32,6 +25,7 @@ import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import useScreenView from "@/hooks/ScreenView";
+import UpdateTaskStatus from "./UpdateTaskStatus";
 
 export default function TaskDetail({
   children,
@@ -106,9 +100,9 @@ export default function TaskDetail({
             <ModalHeader display="flex" flexDirection="column" gap={2}>
               <TaskTitle dataInput={data} />
               <Flex flexDirection={"column"}>
-                <Text fontSize="small" color="gray">
-                  This task is from <strong>{data.taskStatus}</strong> list
-                </Text>
+                <div className="text-sm text-[#808080]">
+                  This task is from <UpdateTaskStatus dataInput={data} /> list
+                </div>
                 <Text fontSize="small" color="gray">
                   Created at {dayjs(data.startDate).format("DD-MM-YYYY")}
                 </Text>

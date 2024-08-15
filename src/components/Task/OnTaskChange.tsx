@@ -14,6 +14,9 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { PriorityType, StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
 
+// TODO: Update task dueDate everytime update
+// TODO: Update last time edit text render
+
 function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const [editTitle, setEditTitle] = useState(false);

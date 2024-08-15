@@ -25,11 +25,7 @@ export const onUserVerifyEmail = async (email: string) => {
 };
 
 export const onUserLogin = async (dataInput: LoginInputType) => {
-  try {
-    return await server.post("/user/login", dataInput);
-  } catch (error) {
-    console.log("login error: ", error);
-  }
+  return await server.post("/user/login", dataInput);
 };
 
 export const onUserLogout = async () => {
