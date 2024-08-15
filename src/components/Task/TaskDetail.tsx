@@ -20,7 +20,7 @@ import {
   TaskStoryPoint,
   TaskTitle,
 } from "./OnTaskChange";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
@@ -40,6 +40,7 @@ export default function TaskDetail({
   onCloseIcon?: () => void;
   data: TaskItem;
 }) {
+  const queryClient = useQueryClient();
   const { screenViewType } = useScreenView();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -124,7 +125,12 @@ export default function TaskDetail({
               <Button
                 className="!bg-blue-400"
                 color={"white"}
-                onClick={handleClose}
+                onClick={() => {
+                  handleClose();
+                  queryClient.refetchQueries({
+                    queryKey: [reactQueryKeys.projectList],
+                  });
+                }}
                 ml={3}
                 display={"flex"}
                 alignItems={"center"}

@@ -17,7 +17,7 @@ import {
   ListItem,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import { toast } from "react-toastify";
 
@@ -33,6 +33,7 @@ export default function UpdateTaskStatus({
 }: {
   dataInput: TaskItem;
 }) {
+  const queryClient = useQueryClient();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -60,6 +61,9 @@ export default function UpdateTaskStatus({
       dueDate: Date.now(),
     });
     onClose();
+    queryClient.refetchQueries({
+      queryKey: [reactQueryKeys.projectList],
+    });
   };
 
   return (
