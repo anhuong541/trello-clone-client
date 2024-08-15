@@ -26,7 +26,14 @@ import { Button } from "../common/Button";
 import { Draggable, Droppable } from "../DragFeat";
 import TaskDetail from "../Task/TaskDetail";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-import { Flex, Skeleton, SkeletonText, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Skeleton,
+  SkeletonText,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 
 interface TaskType {
@@ -307,10 +314,15 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   if (projectId !== "") {
     return (
       <div className="col-span-8 w-full h-full bg-blue-100">
-        <Flex width={"100%"} height={49} alignItems={"center"} paddingLeft={2}>
-          <SortKanbanTablePopover />
+        <Flex
+          width={"100%"}
+          height="55px"
+          alignItems={"center"}
+          paddingLeft={2}
+        >
+          {!queryProjectTasksList.isLoading && <SortKanbanTablePopover />}
         </Flex>
-        {/* <div className="w-full h-[49px]"></div> */}
+
         <DndContext
           onDragEnd={handleDragEnd}
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
@@ -357,19 +369,25 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   }
 }
 
+const dataEx = [
+  ["", "", "", "", ""],
+  ["", "", "", ""],
+  ["", "", ""],
+  ["", "", "", ""],
+];
+
 function SkeletonKanbanBoardTable() {
-  return ["", "", "", ""].map((string: string, index: number) => {
+  return ["", "", "", ""].map((_: string, index: number) => {
     return (
       <div key={index}>
         <div className="flex flex-col gap-3 px-2 py-2 bg-blue-200 rounded-lg">
           <Skeleton height="30px" borderRadius={8} />
           <div className="flex flex-col gap-3">
-            {["", "", "", ""].map((item: string, index: number) => {
-              if (index === 3) {
-                return <Skeleton key={index} height="40px" borderRadius={8} />;
+            {dataEx[index].map((_: string, idx: number) => {
+              if (idx === dataEx[index].length - 1) {
+                return <Skeleton key={idx} height="40px" borderRadius={8} />;
               }
-
-              return <Skeleton key={index} height="60px" borderRadius={8} />;
+              return <Skeleton key={idx} height="60px" borderRadius={8} />;
             })}
           </div>
         </div>
