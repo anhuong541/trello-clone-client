@@ -9,6 +9,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import ProjectItemOption from "./ProjectItemOption";
 import { useContext, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import { Skeleton, Stack } from "@chakra-ui/react";
 
 export interface ProjectListItem {
   description: string;
@@ -104,9 +105,13 @@ export default function Sidebar({
           <AddProjectPopover userId={userId} />
         </div>
         <div className="flex flex-col">
-          {userProjectList.map((item: ProjectListItem, index: number) => {
-            return <ProjectSelect item={item} key={index} />;
-          })}
+          {queryUserProjectList.isLoading ? (
+            <Skeleton height="60px" />
+          ) : (
+            userProjectList.map((item: ProjectListItem, index: number) => {
+              return <ProjectSelect item={item} key={index} />;
+            })
+          )}
         </div>
       </div>
     </div>

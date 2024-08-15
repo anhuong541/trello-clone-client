@@ -26,7 +26,7 @@ import { Button } from "../common/Button";
 import { Draggable, Droppable } from "../DragFeat";
 import TaskDetail from "../Task/TaskDetail";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex, Skeleton, SkeletonText, Stack, Text } from "@chakra-ui/react";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 
 interface TaskType {
@@ -316,43 +316,64 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
         >
           <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
-            {listTableKey.map((key: TaskStatusType) => {
-              // initialKanbanData
-              // kanbanDataStore
-              // console.log({ kanbanDataStore });
-              const table = (kanbanDataStore ?? initialKanbanData)[key];
-
-              return (
-                <Droppable
-                  className="flex flex-col h-full"
-                  key={table.label}
-                  id={table.label}
-                >
-                  <div className="flex-col px-2 py-2 bg-blue-200 rounded-lg">
-                    <h4 className="p-2 font-bold">{table.label}</h4>
-                    <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
-                      {(table.table ?? []).map((item: TaskItem) => {
-                        return (
-                          <TaskableItem itemInput={item} key={item.taskId} />
-                        );
-                      })}
-                      {dragOverId === table.label && (
-                        <div className="rounded-md bg-gray-200 h-[60px] w-full" />
-                      )}
+            {queryProjectTasksList.isLoading ? (
+              <SkeletonKanbanBoardTable />
+            ) : (
+              listTableKey.map((key: TaskStatusType) => {
+                const table = (kanbanDataStore ?? initialKanbanData)[key];
+                return (
+                  <Droppable
+                    className="flex flex-col h-full"
+                    key={table.label}
+                    id={table.label}
+                  >
+                    <div className="flex-col px-2 py-2 bg-blue-200 rounded-lg">
+                      <h4 className="p-2 font-bold">{table.label}</h4>
+                      <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
+                        {(table.table ?? []).map((item: TaskItem) => {
+                          return (
+                            <TaskableItem itemInput={item} key={item.taskId} />
+                          );
+                        })}
+                        {dragOverId === table.label && (
+                          <div className="rounded-md bg-gray-200 h-[60px] w-full" />
+                        )}
+                      </div>
+                      <AddTask
+                        projectId={projectId}
+                        taskStatus={table.label}
+                        onAddTableData={setKanbanDataStore}
+                        kanbanData={kanbanDataStore ?? initialKanbanData}
+                      />
                     </div>
-                    <AddTask
-                      projectId={projectId}
-                      taskStatus={table.label}
-                      onAddTableData={setKanbanDataStore}
-                      kanbanData={kanbanDataStore ?? initialKanbanData}
-                    />
-                  </div>
-                </Droppable>
-              );
-            })}
+                  </Droppable>
+                );
+              })
+            )}
           </ul>
         </DndContext>
       </div>
     );
   }
+}
+
+function SkeletonKanbanBoardTable() {
+  return ["", "", "", ""].map((string: string, index: number) => {
+    return (
+      <div key={index}>
+        <div className="flex flex-col gap-3 px-2 py-2 bg-blue-200 rounded-lg">
+          <Skeleton height="30px" borderRadius={8} />
+          <div className="flex flex-col gap-3">
+            {["", "", "", ""].map((item: string, index: number) => {
+              if (index === 3) {
+                return <Skeleton key={index} height="40px" borderRadius={8} />;
+              }
+
+              return <Skeleton key={index} height="60px" borderRadius={8} />;
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  });
 }
