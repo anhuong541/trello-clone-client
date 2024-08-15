@@ -12,7 +12,7 @@ import { Button, useDisclosure } from "@chakra-ui/react";
 import { MouseEventHandler, ReactNode, useContext, useRef } from "react";
 import { MdDeleteOutline, MdOutlineVideoLabel } from "react-icons/md";
 import { TaskItem } from "@/types";
-import { TaskDescription } from "./OnTaskChange";
+import { TaskDescription, TaskStoryPoint } from "./OnTaskChange";
 import { useMutation } from "@tanstack/react-query";
 import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -99,11 +99,12 @@ export default function TaskDetail({
             <ModalBody
               display="flex"
               flexDirection={"column"}
-              gap={4}
+              gap={8}
               paddingTop={4}
               paddingBottom={4}
             >
               <TaskDescription dataInput={data} />
+              <TaskStoryPoint dataInput={data} />
             </ModalBody>
 
             <ModalFooter>
