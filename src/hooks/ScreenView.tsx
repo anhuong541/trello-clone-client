@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export default function useScreenView() {
-  const [screenView, setScreenView] = useState(["null", 0]);
+  const [screenView, setScreenView] = useState(["null", null]);
 
   useEffect(() => {
     function handleResize() {
@@ -18,7 +18,7 @@ export default function useScreenView() {
   return { screenViewType: screenView[0], screenView: screenView[1] };
 }
 
-function getScreenView() {
+function getScreenView(): any {
   const width = window.innerWidth;
 
   if (width <= 320) {

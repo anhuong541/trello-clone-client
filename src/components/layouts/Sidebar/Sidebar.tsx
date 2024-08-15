@@ -68,7 +68,7 @@ export default function Sidebar({
 }) {
   const { screenView } = useScreenView();
   const [openSidebar, setOpenSidebar] = useState(
-    Number(screenView) < 1024 ? false : true
+    screenView ? (Number(screenView) < 1024 ? false : true) : true
   );
 
   const queryUserProjectList = useQuery({
@@ -97,7 +97,7 @@ export default function Sidebar({
   return (
     <div
       className={cn(
-        openSidebar ? "max-lg:w-[300px] sm:w-[400px]" : "w-[16px]",
+        openSidebar ? "max-lg:w-[300px] max-lg:sm:w-[400px]" : "w-[16px]",
         "relative col-span-2 lg:flex flex-shrink-0 flex-col bg-blue-200 transition-all duration-300"
       )}
     >
