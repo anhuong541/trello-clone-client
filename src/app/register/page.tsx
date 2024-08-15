@@ -36,7 +36,7 @@ export default function RegisterPage() {
 
   const onSubmit: SubmitHandler<RegisterInput> = async (data) => {
     if (data.passwordRegister !== data.confirmPasswordRegister) {
-      console.log("Trigger Toast Password is not the same");
+      toast.warning("Password is not the same with confirm");
       return;
     }
     let submitErr = true;

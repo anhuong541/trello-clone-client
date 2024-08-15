@@ -9,6 +9,9 @@ import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserLogin } from "@/actions/query-actions";
+import { toast } from "react-toastify";
+import { useState } from "react";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 type LoginInput = {
   emailLogin: string;
@@ -17,6 +20,9 @@ type LoginInput = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const [emailErr, setEmailErr] = useState(false);
+  const [passwordErr, setPasswordError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
 
   const loginAction = useMutation({
@@ -26,18 +32,31 @@ export default function LoginPage() {
 
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     if (data.emailLogin === "" || data.passwordLogin === "") {
-      console.log("Trigger Toast input is empty");
+      toast.warning("You need to fill all the input first!");
       return;
     }
     let submitErr = false;
-
-    const res = await loginAction.mutateAsync({
-      email: data.emailLogin,
-      password: data.passwordLogin,
-    });
+    const res = await loginAction
+      .mutateAsync({
+        email: data.emailLogin,
+        password: data.passwordLogin,
+      })
+      .catch((err) => {
+        if (err.response.status === 404) {
+          setEmailErr(true);
+          setPasswordError(false);
+        } else if (err.response.status === 401) {
+          setEmailErr(false);
+          setPasswordError(true);
+        }
+        setErrorMsg(capitalizeFirstLetter(err.response.data.error));
+        // toast.error(capitalizeFirstLetter(err.response.data.error));
+        // console.log("error: ", err);
+      });
 
     if (!submitErr && res?.status === 200) {
       router.push("/project");
+      setEmailErr(false);
       reset();
     }
   };
@@ -53,19 +72,28 @@ export default function LoginPage() {
             className="flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Input
-              {...register("emailLogin")}
-              required={true}
-              type="email"
-              placeholder="Enter your email"
-            />
+            <label className="flex flex-col gap-1" htmlFor="emailLogin">
+              <Input
+                {...register("emailLogin")}
+                required={true}
+                type="email"
+                placeholder="Enter your email"
+              />
+              {emailErr && <p className="text-xs text-red-500">{errorMsg}</p>}
+            </label>
 
-            <Input
-              {...register("passwordLogin")}
-              required={true}
-              type="password"
-              placeholder="Enter your Password"
-            />
+            <label className="flex flex-col gap-1" htmlFor="emailLogin">
+              <Input
+                {...register("passwordLogin")}
+                required={true}
+                type="password"
+                placeholder="Enter your Password"
+              />
+              {passwordErr && (
+                <p className="text-xs text-red-500">{errorMsg}</p>
+              )}
+            </label>
+
             <Button type="submit">Sign in</Button>
           </form>
           <Link
