@@ -1,3 +1,4 @@
+import useScreenView from "@/hooks/ScreenView";
 import { cn } from "@/lib/utils";
 import { TaskItem } from "@/types";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
@@ -41,6 +42,7 @@ function Draggable(props: {
   onMouseEnter?: MouseEventHandler<HTMLDivElement>;
   onMouseLeave?: MouseEventHandler<HTMLDivElement>;
 }) {
+  const { screenView } = useScreenView();
   const ref = useRef<any>(null);
   const refOffsetWidth = useRef(0);
   const refPosition = useRef<{ top: number; left: number }>({
@@ -51,7 +53,7 @@ function Draggable(props: {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: props.id,
     data: props.dataItem,
-    disabled: props.disableDrag,
+    disabled: props.disableDrag || Number(screenView) < 1024,
   });
 
   useMemo(() => {

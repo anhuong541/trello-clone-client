@@ -160,7 +160,7 @@ function AddTask({
   }
 }
 
-function TaskableItem({ itemInput }: { itemInput: TaskItem }) {
+function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
   const [hoverItem, setHoverItem] = useState(false);
   const [disableDrag, setDisableDrag] = useState(false);
 
@@ -313,58 +313,63 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   if (projectId !== "") {
     return (
-      <div className="col-span-8 w-full h-full bg-blue-100">
-        <Flex
-          width={"100%"}
-          height="55px"
-          alignItems={"center"}
-          paddingLeft={2}
-        >
-          {!queryProjectTasksList.isLoading && <SortKanbanTablePopover />}
-        </Flex>
+      <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
+        <div className="min-w-[1100px] h-full bg-blue-100">
+          <Flex
+            width={"100%"}
+            height="55px"
+            alignItems={"center"}
+            className="lg:pl-2 pl-8"
+          >
+            {!queryProjectTasksList.isLoading && <SortKanbanTablePopover />}
+          </Flex>
 
-        <DndContext
-          onDragEnd={handleDragEnd}
-          onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
-        >
-          <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-49px)]">
-            {queryProjectTasksList.isLoading ? (
-              <SkeletonKanbanBoardTable />
-            ) : (
-              listTableKey.map((key: TaskStatusType) => {
-                const table = (kanbanDataStore ?? initialKanbanData)[key];
-                return (
-                  <Droppable
-                    className="flex flex-col h-full"
-                    key={table.label}
-                    id={table.label}
-                  >
-                    <div className="flex-col px-2 py-2 bg-blue-200 rounded-lg">
-                      <h4 className="p-2 font-bold">{table.label}</h4>
-                      <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
-                        {(table.table ?? []).map((item: TaskItem) => {
-                          return (
-                            <TaskableItem itemInput={item} key={item.taskId} />
-                          );
-                        })}
-                        {dragOverId === table.label && (
-                          <div className="rounded-md bg-gray-200 h-[60px] w-full" />
-                        )}
+          <DndContext
+            onDragEnd={handleDragEnd}
+            onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
+          >
+            <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
+              {queryProjectTasksList.isLoading ? (
+                <SkeletonKanbanBoardTable />
+              ) : (
+                listTableKey.map((key: TaskStatusType) => {
+                  const table = (kanbanDataStore ?? initialKanbanData)[key];
+                  return (
+                    <Droppable
+                      className="flex flex-col h-full"
+                      key={table.label}
+                      id={table.label}
+                    >
+                      <div className="flex-col px-2 py-2 bg-blue-200 rounded-lg">
+                        <h4 className="p-2 font-bold">{table.label}</h4>
+                        <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
+                          {(table.table ?? []).map((item: TaskItem) => {
+                            return (
+                              <TaskDrableItem
+                                itemInput={item}
+                                key={item.taskId}
+                              />
+                            );
+                          })}
+                          {dragOverId === table.label && (
+                            <div className="rounded-md bg-gray-200 h-[60px] w-full" />
+                          )}
+                        </div>
+                        <AddTask
+                          projectId={projectId}
+                          taskStatus={table.label}
+                          onAddTableData={setKanbanDataStore}
+                          kanbanData={kanbanDataStore ?? initialKanbanData}
+                        />
                       </div>
-                      <AddTask
-                        projectId={projectId}
-                        taskStatus={table.label}
-                        onAddTableData={setKanbanDataStore}
-                        kanbanData={kanbanDataStore ?? initialKanbanData}
-                      />
-                    </div>
-                  </Droppable>
-                );
-              })
-            )}
-          </ul>
-        </DndContext>
-      </div>
+                    </Droppable>
+                  );
+                })
+              )}
+            </ul>
+          </DndContext>
+        </div>
+      </Box>
     );
   }
 }

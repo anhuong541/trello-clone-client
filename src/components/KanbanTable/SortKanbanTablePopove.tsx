@@ -122,7 +122,7 @@ export default function SortKanbanTablePopover() {
   };
 
   return (
-    <Popover placement="bottom-start">
+    <Popover placement="bottom-end">
       <PopoverTrigger>
         <Button display="flex" gap={1} className="!bg-blue-400" color={"white"}>
           <MdSort className="w-6 h-6" /> Sort

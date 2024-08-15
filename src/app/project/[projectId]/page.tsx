@@ -14,7 +14,7 @@ export default async function ProjectPage({
   return (
     <main className="h-screen w-screen flex flex-col">
       <Header userInfo={data} />
-      <div className="grid grid-cols-10 h-full">
+      <div className="lg:grid lg:grid-cols-10 flex h-full">
         <Sidebar projectId={params.projectId} userId={data?.data?.uid} />
         <KanbanBoard projectId={params.projectId} />
       </div>

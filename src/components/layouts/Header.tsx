@@ -21,11 +21,13 @@ export default function Header({ userInfo }: { userInfo: any }) {
   };
 
   return (
-    <header className="h-[70px] bg-blue-200 w-full flex justify-between items-center border-b shadow-sm shadow-white px-4">
-      <h1 className="font-bold text-blue-700 text-4xl">Trello Clone</h1>
+    <header className="h-[70px] bg-blue-200 w-full flex justify-between items-center gap-2 border-b shadow-sm shadow-white px-4">
+      <h1 className="font-bold text-blue-700 md:text-4xl text-2xl">
+        Trello Clone
+      </h1>
       <Popover.Root>
-        <Popover.Trigger className="flex justify-end items-center gap-4 relative hover:opacity-70">
-          <p className="font-bold">{userInfo.data.username}</p>
+        <Popover.Trigger className="flex justify-end items-center md:gap-4 gap-2 relative hover:opacity-70">
+          <p className="font-bold hidden md:block">{userInfo.data.username}</p>
           <Image
             height={40}
             width={40}
@@ -38,7 +40,7 @@ export default function Header({ userInfo }: { userInfo: any }) {
         <Popover.Portal>
           <Popover.Content
             side="bottom"
-            className="translate-x-5 z-10 bg-blue-400 text-white hover:bg-blue-300 flex flex-col border rounded-md px-5 py-3"
+            className="md:translate-x-5 -translate-x-2 z-10 bg-blue-400 text-white hover:bg-blue-300 flex flex-col border rounded-md px-5 py-3"
           >
             <button onClick={handleLogout} className="flex gap-1 items-center">
               <MdLogout className="h-5 w-5" />

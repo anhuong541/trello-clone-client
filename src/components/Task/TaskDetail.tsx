@@ -14,6 +14,7 @@ import {
   MouseEventHandler,
   ReactNode,
   useContext,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -30,6 +31,7 @@ import { useMutation } from "@tanstack/react-query";
 import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
+import useScreenView from "@/hooks/ScreenView";
 
 export default function TaskDetail({
   children,
@@ -44,6 +46,7 @@ export default function TaskDetail({
   onCloseIcon?: () => void;
   data: TaskItem;
 }) {
+  const { screenViewType } = useScreenView();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -73,6 +76,13 @@ export default function TaskDetail({
       handleClose();
     }
   };
+  const modalSize = useMemo(() => {
+    return screenViewType === "smallMobile"
+      ? "sm"
+      : screenViewType === "superSmallMobile"
+      ? "xs"
+      : "lg";
+  }, [screenViewType]);
 
   return (
     <div
@@ -89,7 +99,7 @@ export default function TaskDetail({
         {children}
       </Button>
 
-      <Modal isOpen={isOpen} onClose={handleClose} size={"xl"}>
+      <Modal isOpen={isOpen} onClose={handleClose} size={modalSize}>
         <ModalOverlay>
           <ModalContent borderRadius={"12px"}>
             <ModalCloseButton />
