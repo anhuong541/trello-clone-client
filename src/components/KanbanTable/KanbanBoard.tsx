@@ -3,7 +3,6 @@
 import {
   MdAdd,
   MdClear,
-  MdDeleteOutline,
   MdOutlineEdit,
   MdOutlineSubject,
 } from "react-icons/md";
@@ -26,14 +25,7 @@ import { Button } from "../common/Button";
 import { Draggable, Droppable } from "../DragFeat";
 import TaskDetail from "../Task/TaskDetail";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-import {
-  Box,
-  Flex,
-  Skeleton,
-  SkeletonText,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Flex, Skeleton, Text } from "@chakra-ui/react";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 
 interface TaskType {
@@ -199,9 +191,6 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
-  const [currentProjectTaskList, setCurrentProjectTaskList] = useState<
-    TaskItem[] | null
-  >(null);
   const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(
     null
   );
@@ -225,48 +214,30 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   const handleDragEnd = async (e: DragEndEvent) => {
     setDragOverId(null);
-    if (e?.over?.id && e.over.id !== e.active.data.current?.taskStatus) {
+    if (
+      kanbanDataStore &&
+      e?.over?.id &&
+      e.over.id !== e.active.data.current?.taskStatus
+    ) {
       const dataInput: any = {
         ...e.active.data.current,
         taskStatus: e.over?.id,
         dueDate: Date.now(),
       };
+
+      console.log({ dataInput });
       const createKanbanMap = new Map();
-      const projectTasksList = currentProjectTaskList
-        ? currentProjectTaskList
-        : queryProjectTasksList.data?.data?.data ?? [];
+      let dataChangeOnDrag: KanbanBoardType = kanbanDataStore;
 
-      const newValue: TaskItem[] = projectTasksList.map((item: TaskItem) => {
-        if (item.taskId !== e.active.data.current?.taskId) {
-          const value = createKanbanMap.get(item.taskStatus) ?? [];
-          createKanbanMap.set(item.taskStatus, [...value, item]);
-          return item;
-        } else {
-          const value = createKanbanMap.get(e.over?.id) ?? [];
-          createKanbanMap.set(e.over?.id, [...value, dataInput]);
-          return dataInput;
-        }
-      });
+      dataChangeOnDrag[
+        e.active.data.current?.taskStatus as TaskStatusType
+      ].table = kanbanDataStore[
+        e.active.data.current?.taskStatus as TaskStatusType
+      ].table.filter((item) => item.taskId !== dataInput.taskId);
 
-      setCurrentProjectTaskList([...newValue]);
-      setKanbanDataStore({
-        Open: {
-          label: "Open",
-          table: createKanbanMap.get("Open") ?? [],
-        },
-        "In-progress": {
-          label: "In-progress",
-          table: createKanbanMap.get("In-progress") ?? [],
-        },
-        Resolved: {
-          label: "Resolved",
-          table: createKanbanMap.get("Resolved") ?? [],
-        },
-        Closed: {
-          label: "Closed",
-          table: createKanbanMap.get("Closed") ?? [],
-        },
-      });
+      dataChangeOnDrag[e.over.id as TaskStatusType].table.push(dataInput);
+
+      setKanbanDataStore({ ...dataChangeOnDrag });
       createKanbanMap.clear();
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
       await updateTaskAction.mutateAsync(dataInput);
