@@ -5,7 +5,7 @@ import { Button } from "@/components/common/Button";
 import { server } from "@/lib/network";
 export default function DemoPage() {
   const getApi = async () => {
-    await handleUserInfo();
+    // await handleUserInfo();
   };
 
   return (

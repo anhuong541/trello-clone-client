@@ -8,10 +8,12 @@ const protectedRoutes = [HOME_ROUTE];
 const routesBanWhenUserSignin = ["/login", "/register", ROOT_ROUTE];
 
 export const checkJwtExpire = async (token: string) => {
-  "use client";
-
   try {
-    return await server.get("/user/token-verify");
+    return await server.get("/user/token-verify", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   } catch (error) {
     // console.log("check jwt expire error: ", error);
     return error;
@@ -19,7 +21,35 @@ export const checkJwtExpire = async (token: string) => {
 };
 
 export async function middleware(request: NextRequest) {
-  console.log("run middleware! 2");
+  const tokenSession = request.cookies.get(SESSION_COOKIE_NAME)?.value || null;
+  const firstParam = "/" + request.nextUrl.pathname.split("/")[1];
+  console.log("run middleware!", tokenSession);
+  if (tokenSession) {
+    console.log("run middleware!", tokenSession);
+    const checkToken = (await checkJwtExpire(tokenSession)) as any;
+
+    if (
+      checkToken?.response?.status === 401 &&
+      protectedRoutes.includes(firstParam)
+    ) {
+      console.log("it token fail!!!");
+      removeSession();
+      const absoluteURL = new URL("/login", request.nextUrl.origin);
+      return NextResponse.redirect(absoluteURL.toString());
+    }
+
+    if (
+      checkToken?.status === 200 &&
+      routesBanWhenUserSignin.includes(request.nextUrl.pathname)
+    ) {
+      const absoluteURL = new URL(HOME_ROUTE, request.nextUrl.origin);
+      return NextResponse.redirect(absoluteURL.toString());
+    }
+  } else if (protectedRoutes.includes(firstParam)) {
+    const absoluteURL = new URL("/login", request.nextUrl.origin);
+    return NextResponse.redirect(absoluteURL.toString());
+  }
+
   // const checkToken = (await checkJwtExpire("tokenSession")) as any;
 }
 

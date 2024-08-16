@@ -7,7 +7,6 @@ import {
   RegisterInputType,
   TaskInput,
 } from "@/types/query-types";
-import { redirect } from "next/navigation";
 
 export const onUserRegister = async (dataInput: RegisterInputType) => {
   try {
@@ -37,12 +36,16 @@ export const onUserLogout = async () => {
   }
 };
 
-export const handleUserInfo = async () => {
+export const handleUserInfo = async (cookie: ReadonlyRequestCookies) => {
+  const token = cookie.get("user_session")?.value;
   try {
-    return await server.get("/user").then((res) => res.data);
+    return await server
+      .get("/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => res.data);
   } catch (error) {
     console.log("user info error: ", error);
-    redirect("/login");
   }
 };
 
