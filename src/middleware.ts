@@ -8,12 +8,10 @@ const protectedRoutes = [HOME_ROUTE];
 const routesBanWhenUserSignin = ["/login", "/register", ROOT_ROUTE];
 
 export const checkJwtExpire = async (token: string) => {
+  "use client";
+
   try {
-    return await server.get("/user/token-verify", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return await server.get("/user/token-verify");
   } catch (error) {
     // console.log("check jwt expire error: ", error);
     return error;
