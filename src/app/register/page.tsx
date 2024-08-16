@@ -11,6 +11,7 @@ import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserRegister } from "@/actions/query-actions";
+import { getRegisterLogin } from "@/actions/api-action";
 
 type RegisterInput = {
   emailRegister: string;
@@ -24,7 +25,7 @@ export default function RegisterPage() {
   const { register, handleSubmit, watch, reset } = useForm<RegisterInput>();
 
   const registerAction = useMutation({
-    mutationFn: onUserRegister,
+    mutationFn: getRegisterLogin,
     mutationKey: [reactQueryKeys.register],
   });
 

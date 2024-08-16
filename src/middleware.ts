@@ -49,8 +49,6 @@ export async function middleware(request: NextRequest) {
     const absoluteURL = new URL("/login", request.nextUrl.origin);
     return NextResponse.redirect(absoluteURL.toString());
   }
-
-  // const checkToken = (await checkJwtExpire("tokenSession")) as any;
 }
 
 // See "Matching Paths" below to learn more

@@ -7,6 +7,7 @@ import * as Popover from "@radix-ui/react-popover";
 import { useMutation } from "@tanstack/react-query";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserLogout } from "@/actions/query-actions";
+import { removeSession } from "@/actions/auth-action";
 
 export default function Header({ userInfo }: { userInfo: any }) {
   const route = useRouter();
@@ -16,6 +17,7 @@ export default function Header({ userInfo }: { userInfo: any }) {
   });
 
   const handleLogout = async () => {
+    await removeSession();
     await logoutAction.mutateAsync();
     route.push("/login");
   };

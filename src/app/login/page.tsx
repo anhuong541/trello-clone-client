@@ -8,10 +8,10 @@ import Link from "next/link";
 import { Input } from "@/components/common/Input";
 import { Button } from "@/components/common/Button";
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import { onUserLogin } from "@/actions/query-actions";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { getApiLogin } from "@/actions/api-action";
 
 type LoginInput = {
   emailLogin: string;
@@ -26,7 +26,7 @@ export default function LoginPage() {
   const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
 
   const loginAction = useMutation({
-    mutationFn: onUserLogin,
+    mutationFn: getApiLogin,
     mutationKey: [reactQueryKeys.login],
   });
 
