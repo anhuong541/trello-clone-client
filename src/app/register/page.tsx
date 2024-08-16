@@ -22,7 +22,6 @@ type RegisterInput = {
 export default function RegisterPage() {
   const router = useRouter();
   const { register, handleSubmit, watch, reset } = useForm<RegisterInput>();
-  const [emailVerified, setEmailVerified] = useState(false);
 
   const registerAction = useMutation({
     mutationFn: onUserRegister,
@@ -36,11 +35,17 @@ export default function RegisterPage() {
     }
     let submitErr = true;
 
-    const res = await registerAction.mutateAsync({
-      email: data.emailRegister,
-      password: data.passwordRegister,
-      username: data.usernameRegister,
-    });
+    const res = await registerAction
+      .mutateAsync({
+        email: data.emailRegister,
+        password: data.passwordRegister,
+        username: data.usernameRegister,
+      })
+      .catch((err) => {
+        if (err?.response?.status === 409) {
+          toast.warning("This is email have been used!!!");
+        }
+      });
 
     submitErr = false;
     if (!submitErr && res?.status === 200) {
@@ -97,9 +102,7 @@ export default function RegisterPage() {
                 </div>
               );
             })}
-            <Button type="submit" disabled={!emailVerified}>
-              Sign up
-            </Button>
+            <Button type="submit">Sign up</Button>
           </form>
           <Link
             href="/login"

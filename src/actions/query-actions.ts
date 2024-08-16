@@ -9,11 +9,7 @@ import {
 } from "@/types/query-types";
 
 export const onUserRegister = async (dataInput: RegisterInputType) => {
-  try {
-    return await server.post("/user/register", dataInput);
-  } catch (error) {
-    console.log("user register error: ", error);
-  }
+  return await server.post("/user/register", dataInput);
 };
 
 export const onUserLogin = async (dataInput: LoginInputType) => {
