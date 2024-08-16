@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 
 export default async function ProjectPage() {
   const data = await handleUserInfo(cookies());
+
   // const queryData = useQuery({
   //   queryKey: [reactQueryKeys.userInfo],
   //   queryFn: handleUserInfo,
