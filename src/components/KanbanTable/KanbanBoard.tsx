@@ -178,7 +178,10 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
         <TaskDetail
           onMouseEnter={() => setDisableDrag(true)}
           onMouseLeave={() => setDisableDrag(false)}
-          onCloseIcon={() => setHoverItem(false)}
+          onCloseIcon={() => {
+            setHoverItem(false);
+            setDisableDrag(false);
+          }}
           data={itemInput}
         >
           <MdOutlineEdit />

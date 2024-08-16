@@ -201,22 +201,19 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
   );
 }
 
-type StorySubmitType = { taskStoryPoint: StoryPointType };
+const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
 
 function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const [openEditSP, setOpenEditSP] = useState(false);
-  const { register, handleSubmit, watch, reset } = useForm<StorySubmitType>();
 
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
     mutationKey: [reactQueryKeys.updateTask],
   });
 
-  const onSubmit: SubmitHandler<StorySubmitType> = async (data) => {
-    const storyPoint = Number(data.taskStoryPoint);
-    const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
-    if (!listStoryPointAccepted.includes(storyPoint)) {
+  const onSelectStoryPoint = async (point: StoryPointType) => {
+    if (!listStoryPointAccepted.includes(point)) {
       toast.error("The Story Point is not valid");
       return;
     }
@@ -226,7 +223,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       return;
     }
 
-    console.log("data => ", data);
+    console.log("data => ", point);
     const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
       .map((item) => item.taskId)
       .indexOf(dataInput.taskId);
@@ -236,7 +233,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       // condition >= 0 because the logic read 0 is false
       itemTable[tableItemIndex] = {
         ...itemTable[tableItemIndex],
-        storyPoint: storyPoint as StoryPointType,
+        storyPoint: point,
       };
     }
 
@@ -250,10 +247,9 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
 
     await onUserEdit.mutateAsync({
       ...dataInput,
-      storyPoint: storyPoint as StoryPointType,
+      storyPoint: point,
     });
     setOpenEditSP(false);
-    reset();
   };
 
   return (
@@ -277,30 +273,24 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
         )}
       </Flex>
       {openEditSP && (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex flexDirection={"column"} gap={2}>
-            <Input
-              type="number"
-              placeholder="Only allow 1 | 2 | 3 | 5 | 8 | 13 | 21"
-              {...register("taskStoryPoint")}
-            />
-            <Flex gap={2}>
-              <Button size={"sm"} type="submit" colorScheme="blue">
-                Save
-              </Button>
-              <Button
-                size={"sm"}
-                colorScheme="gray"
-                onClick={() => {
-                  setOpenEditSP(false);
-                  reset();
-                }}
-              >
-                Cancel
-              </Button>
-            </Flex>
-          </Flex>
-        </form>
+        <Flex flexDirection={"column"} gap={2}>
+          <Select
+            placeholder="Select your story point"
+            onChange={async (e) =>
+              await onSelectStoryPoint(
+                Number(e.target?.value) as StoryPointType
+              )
+            }
+          >
+            {listStoryPointAccepted.map((point) => {
+              return (
+                <option value={point} key={point}>
+                  {point}
+                </option>
+              );
+            })}
+          </Select>
+        </Flex>
       )}
     </Flex>
   );
@@ -319,7 +309,6 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
       return;
     }
 
-    console.log("data => ", priority);
     const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
       .map((item) => item.taskId)
       .indexOf(dataInput.taskId);
@@ -348,18 +337,15 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
   };
 
   return (
-    <Flex flexDirection={"column"} gap={2}>
-      <Flex gap={4} justifyContent="space-between" alignItems="center">
-        <Flex gap={2}>
-          <MdPriorityHigh className="w-6 h-6" />
-          <Text fontWeight={600} marginRight={6}>
-            Current priority is{" "}
-            <strong className="font-bold">{dataInput.priority}</strong>{" "}
-          </Text>
-        </Flex>
+    <Flex gap={4} justifyContent="space-between" alignItems="center">
+      <Flex gap={2} className="flex-shrink-0">
+        <MdPriorityHigh className="w-6 h-6" />
+        <Text fontWeight={600} marginRight={6}>
+          Current priority is{" "}
+          <strong className="font-bold">{dataInput.priority}</strong>{" "}
+        </Text>
       </Flex>
       <Select
-        placeholder="Select your priority"
         onChange={(e) => onSelectPriority(e.target?.value as PriorityType)}
       >
         <option value="Low">Low</option>
