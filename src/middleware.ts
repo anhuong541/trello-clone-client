@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
   const firstParam = "/" + request.nextUrl.pathname.split("/")[1];
   console.log("run middleware!", tokenSession);
   if (tokenSession) {
-    console.log("run middleware!", tokenSession);
+    console.log("middleware! is running");
     const checkToken = (await checkJwtExpire(tokenSession)) as any;
 
     if (
