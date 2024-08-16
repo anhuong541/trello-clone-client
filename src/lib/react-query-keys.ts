@@ -3,7 +3,6 @@ export const reactQueryKeys = {
   login: "login",
   logout: "logout",
   userInfo: "user-info",
-  emailVerify: "email-verify",
   projectList: "project-list",
   addProject: "add-project",
   deleteProject: "delete-project",

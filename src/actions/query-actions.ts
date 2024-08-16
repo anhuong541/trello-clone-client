@@ -16,14 +16,6 @@ export const onUserRegister = async (dataInput: RegisterInputType) => {
   }
 };
 
-export const onUserVerifyEmail = async (email: string) => {
-  try {
-    return await server.post("/user/email-verify", { email });
-  } catch (error) {
-    console.log("email verify error: ", error);
-  }
-};
-
 export const onUserLogin = async (dataInput: LoginInputType) => {
   return await server.post("/user/login", dataInput);
 };
