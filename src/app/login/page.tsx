@@ -42,17 +42,19 @@ export default function LoginPage() {
         password: data.passwordLogin,
       })
       .catch((err) => {
-        if (err.response.status === 404) {
+        if (err?.response?.status === 404) {
           setEmailErr(true);
           setPasswordError(false);
-        } else if (err.response.status === 401) {
+        } else if (err?.response?.status === 401) {
           setEmailErr(false);
           setPasswordError(true);
         }
-        setErrorMsg(capitalizeFirstLetter(err.response.data.error));
+        setErrorMsg(capitalizeFirstLetter(err?.response?.data?.error));
         // toast.error(capitalizeFirstLetter(err.response.data.error));
-        // console.log("error: ", err);
+        console.log("error: ", err);
       });
+
+    console.log("object", !submitErr && res?.status === 200);
 
     if (!submitErr && res?.status === 200) {
       router.push("/project");
