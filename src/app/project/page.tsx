@@ -9,7 +9,15 @@ import { useQuery } from "@tanstack/react-query";
 import { cookies } from "next/headers";
 
 export default async function ProjectPage() {
-  const data = await handleUserInfo(cookies());
+  // const data = await handleUserInfo(cookies());
+
+  const data = {
+    data: {
+      data: {
+        uid: "518df0473a0c6ad7f1375062fc6dfe54333",
+      },
+    },
+  };
 
   // const queryData = useQuery({
   //   queryKey: [reactQueryKeys.userInfo],
