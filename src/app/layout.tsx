@@ -11,11 +11,6 @@ export const metadata: Metadata = {
   description: "Trello Clone",
 };
 
-export function generateStaticParams() {
-  const pages = ["login", "demo", "testing", "register", "project"];
-  return pages.map((page) => ({ name: page }));
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{

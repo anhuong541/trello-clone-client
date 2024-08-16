@@ -1,37 +1,10 @@
-// "use client";
-
 import { handleUserInfo } from "@/actions/query-actions";
 import Header from "@/components/layouts/Header";
 import { Sidebar } from "@/components/layouts/Sidebar";
-import { reactQueryKeys } from "@/lib/react-query-keys";
-import { Skeleton } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
 import { cookies } from "next/headers";
 
 export default async function ProjectPage() {
-  // const data = await handleUserInfo(cookies());
-
-  const data = {
-    data: {
-      data: {
-        uid: "518df0473a0c6ad7f1375062fc6dfe54333",
-      },
-    },
-  };
-
-  // const queryData = useQuery({
-  //   queryKey: [reactQueryKeys.userInfo],
-  //   queryFn: handleUserInfo,
-  // });
-
-  // if (queryData.isLoading) {
-  //   return (
-  //     <main className="h-screen w-screen flex flex-col">
-  //       <Skeleton height="60px" />
-  //       <div className="grid grid-cols-10 h-full bg-blue-100"></div>
-  //     </main>
-  //   );
-  // }
+  const data = await handleUserInfo(cookies());
 
   return (
     <main className="h-screen w-screen flex flex-col">

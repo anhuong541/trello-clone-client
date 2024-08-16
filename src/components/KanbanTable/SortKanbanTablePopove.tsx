@@ -1,18 +1,14 @@
-import { ReactNode, useContext, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverHeader,
   PopoverBody,
-  PopoverFooter,
   PopoverArrow,
   PopoverCloseButton,
-  PopoverAnchor,
-  Button,
-  List,
-  ListItem,
 } from "@chakra-ui/react";
+import { Button, List, ListItem } from "@chakra-ui/react";
 import { MdSort } from "react-icons/md";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { listTableKey } from "./KanbanBoard";

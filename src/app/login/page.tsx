@@ -54,8 +54,6 @@ export default function LoginPage() {
         console.log("error: ", err);
       });
 
-    console.log("object", !submitErr && res?.status === 200);
-
     if (!submitErr && res?.status === 200) {
       router.push("/project");
       setEmailErr(false);
