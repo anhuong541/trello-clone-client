@@ -1,15 +1,11 @@
 "use client";
 
+import { handleUserInfo } from "@/actions/query-actions";
 import { Button } from "@/components/common/Button";
 import { server } from "@/lib/network";
 export default function DemoPage() {
   const getApi = async () => {
-    try {
-      const res = await server.get("/user");
-      console.log({ res });
-    } catch (error) {
-      console.log("error from client: ", error);
-    }
+    await handleUserInfo();
   };
 
   return (

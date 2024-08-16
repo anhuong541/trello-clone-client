@@ -27,7 +27,9 @@ export default function Header({ userInfo }: { userInfo: any }) {
       </h1>
       <Popover.Root>
         <Popover.Trigger className="flex justify-end items-center md:gap-4 gap-2 relative hover:opacity-70">
-          <p className="font-bold hidden md:block">{userInfo.data.username}</p>
+          <p className="font-bold hidden md:block">
+            {userInfo?.data?.username}
+          </p>
           <Image
             height={40}
             width={40}
