@@ -3,7 +3,6 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { MouseEvent, useState } from "react";
 import { toast } from "react-toastify";
 import Link from "next/link";
 
@@ -11,7 +10,7 @@ import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserRegister } from "@/actions/query-actions";
-import { getRegisterLogin } from "@/actions/api-action";
+import { createSession } from "@/actions/auth-action";
 
 type RegisterInput = {
   emailRegister: string;
@@ -25,7 +24,7 @@ export default function RegisterPage() {
   const { register, handleSubmit, watch, reset } = useForm<RegisterInput>();
 
   const registerAction = useMutation({
-    mutationFn: getRegisterLogin,
+    mutationFn: onUserRegister,
     mutationKey: [reactQueryKeys.register],
   });
 
@@ -50,8 +49,9 @@ export default function RegisterPage() {
 
     submitErr = false;
     if (!submitErr && res?.status === 200) {
-      reset();
+      // await createSession(res.data.userId);
       router.push("/project");
+      reset();
     }
   };
 

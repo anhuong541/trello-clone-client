@@ -26,8 +26,12 @@ export async function middleware(request: NextRequest) {
   console.log("run middleware!", tokenSession);
   if (tokenSession) {
     console.log("middleware! is running");
-    const checkToken = (await checkJwtExpire(tokenSession)) as any;
-
+    // const checkToken = (await checkJwtExpire(tokenSession)) as any;
+    const checkToken: any = null;
+    if (!checkToken) {
+      return;
+    }
+    console.log({ checkToken });
     if (
       checkToken?.response?.status === 401 &&
       protectedRoutes.includes(firstParam)
@@ -37,7 +41,6 @@ export async function middleware(request: NextRequest) {
       const absoluteURL = new URL("/login", request.nextUrl.origin);
       return NextResponse.redirect(absoluteURL.toString());
     }
-
     if (
       checkToken?.status === 200 &&
       routesBanWhenUserSignin.includes(request.nextUrl.pathname)

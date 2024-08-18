@@ -11,7 +11,8 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { getApiLogin } from "@/actions/api-action";
+import { createSession } from "@/actions/auth-action";
+import { onUserLogin } from "@/actions/query-actions";
 
 type LoginInput = {
   emailLogin: string;
@@ -26,7 +27,7 @@ export default function LoginPage() {
   const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
 
   const loginAction = useMutation({
-    mutationFn: getApiLogin,
+    mutationFn: onUserLogin,
     mutationKey: [reactQueryKeys.login],
   });
 
@@ -55,6 +56,7 @@ export default function LoginPage() {
       });
 
     if (!submitErr && res?.status === 200) {
+      // await createSession(res.data.userId);
       router.push("/project");
       setEmailErr(false);
       reset();
