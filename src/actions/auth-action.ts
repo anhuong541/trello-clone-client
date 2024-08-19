@@ -17,7 +17,6 @@ export async function createSession(userId: string) {
 }
 
 export async function removeSession() {
-  console.log("it trigger !!!!, it clear the cookie");
   cookies().delete(SESSION_COOKIE_NAME);
   redirect(ROOT_ROUTE);
 }

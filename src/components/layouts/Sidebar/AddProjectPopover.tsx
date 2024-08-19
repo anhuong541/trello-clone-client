@@ -31,7 +31,7 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
 
   const onSubmit: SubmitHandler<AddProjectInput> = async (data) => {
     if (data.projectName === "") {
-      console.log("trigger Toast");
+      toast.warning("missing project name");
       return;
     }
 

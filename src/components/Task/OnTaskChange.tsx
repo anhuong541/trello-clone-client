@@ -38,7 +38,6 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
     }
 
     if (kanbanDataStore) {
-      console.log("data => ", data);
       const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
         .map((item) => item.taskId)
         .indexOf(dataInput.taskId);
@@ -119,7 +118,6 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
     taskDescription: string;
   }> = async (data) => {
     if (kanbanDataStore) {
-      console.log("data => ", data);
       const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
         .map((item) => item.taskId)
         .indexOf(dataInput.taskId);
@@ -223,7 +221,6 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       return;
     }
 
-    console.log("data => ", point);
     const tableItemIndex = kanbanDataStore[dataInput.taskStatus].table
       .map((item) => item.taskId)
       .indexOf(dataInput.taskId);

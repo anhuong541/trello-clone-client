@@ -7,7 +7,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   res.send("hello workld");
-  console.log("hello woatbfasf");
   const dataInput = req.body;
 
   return res.status(200).json({ message: "it work!!!" });
