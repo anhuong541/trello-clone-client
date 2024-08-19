@@ -11,7 +11,6 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { createSession } from "@/actions/auth-action";
 import { onUserLogin } from "@/actions/query-actions";
 
 type LoginInput = {
@@ -56,7 +55,6 @@ export default function LoginPage() {
       });
 
     if (!submitErr && res?.status === 200) {
-      // await createSession(res.data.userId);
       router.push("/project");
       setEmailErr(false);
       reset();

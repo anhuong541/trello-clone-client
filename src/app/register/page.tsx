@@ -10,7 +10,6 @@ import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserRegister } from "@/actions/query-actions";
-import { createSession } from "@/actions/auth-action";
 
 type RegisterInput = {
   emailRegister: string;
@@ -49,7 +48,6 @@ export default function RegisterPage() {
 
     submitErr = false;
     if (!submitErr && res?.status === 200) {
-      // await createSession(res.data.userId);
       router.push("/project");
       reset();
     }

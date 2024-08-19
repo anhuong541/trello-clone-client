@@ -1,6 +1,6 @@
 services:
 - type: web
-  name: next-js
+  name: trello-clone
   runtime: node
   plan: starter
   buildCommand: yarn; yarn build
@@ -9,3 +9,6 @@ services:
   envVars:
   - key: NEXT_PUBLIC_SERVER_DOMAIN
     value: https://trello-clone-mor-backend.onrender.com/
+
+
+    
