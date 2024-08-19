@@ -14,22 +14,49 @@ import {
   onChangeTaskState,
   onCreateNewTask,
 } from "@/actions/query-actions";
-import { KanbanBoardType, TaskItem, TaskStatusType } from "@/types";
+import {
+  KanbanBoardType,
+  PriorityType,
+  StoryPointType,
+  TaskItem,
+  TaskStatusType,
+} from "@/types";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
 import { generateNewUid } from "@/lib/utils";
 
-import { Input } from "../common/Input";
-import { Button } from "../common/Button";
 import { Draggable, Droppable } from "../DragFeat";
 import TaskDetail from "../Task/TaskDetail";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-import { Box, Flex, Skeleton, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Input,
+  Select,
+  Skeleton,
+  Text,
+  Textarea,
+  useDisclosure,
+} from "@chakra-ui/react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
+import { toast } from "react-toastify";
 
 interface TaskType {
   taskTitle: string;
+  taskDescription: string;
+  taskPriority: PriorityType | "";
+  taskStoryPoint: StoryPointType | "";
 }
 
 const initialKanbanData: KanbanBoardType = {
@@ -76,10 +103,12 @@ function AddTask({
   onAddTableData: any;
   kanbanData: KanbanBoardType;
 }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
-  const [openAddTask, setOpenAddTask] = useState(false);
   const { register, handleSubmit, watch, reset, setFocus } =
     useForm<TaskType>();
+
+  const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
 
   const addTaskAction = useMutation({
     mutationKey: [reactQueryKeys.addTask],
@@ -87,69 +116,128 @@ function AddTask({
   });
 
   const onSubmit: SubmitHandler<TaskType> = async (data) => {
-    if (data.taskTitle !== "") {
-      const newTaskId = generateNewUid();
-      const dataAddTask: TaskInput = {
-        taskId: newTaskId,
-        projectId,
-        title: data.taskTitle,
-        priority: "Low", // auto Low edit next time
-        description: "",
-        dueDate: Date.now(),
-        startDate: Date.now(),
-        taskStatus, // need to change after create by status take from props
-        storyPoint: 1,
-      };
-
-      setOpenAddTask(false);
-      const dataLater = addTaskToStatusGroup(kanbanData, dataAddTask);
-      onAddTableData({ ...dataLater }); // check if got some error
-      await addTaskAction.mutateAsync(dataAddTask);
-      queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
-      reset();
+    if (data.taskTitle === "") {
+      toast.warning("Misisng task title");
+      return;
     }
+    if (data.taskPriority === "") {
+      toast.warning("Misisng task priority");
+      return;
+    }
+
+    const newTaskId = generateNewUid();
+    const dataAddTask: TaskInput = {
+      taskId: newTaskId,
+      projectId,
+      title: data.taskTitle,
+      priority: data.taskPriority,
+      description: data.taskDescription,
+      dueDate: Date.now(),
+      startDate: Date.now(),
+      taskStatus,
+      storyPoint: data.taskStoryPoint === "" ? 1 : data.taskStoryPoint,
+    };
+
+    const dataLater = addTaskToStatusGroup(kanbanData, dataAddTask);
+    onAddTableData({ ...dataLater });
+    await addTaskAction.mutateAsync(dataAddTask);
+    queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
+    onClose();
+    reset();
   };
 
   useEffect(() => {
-    if (openAddTask) {
+    if (isOpen) {
       setFocus("taskTitle");
     }
-  }, [openAddTask, setFocus]);
+  }, [isOpen, setFocus]);
 
-  if (openAddTask) {
-    return (
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-2 mt-3"
-      >
-        <Input {...register("taskTitle")} placeholder="Task name" />
-        <div className="flex items-center gap-2">
-          <Button type="submit" className="w-[80px]" size={"sm"}>
-            Add
-          </Button>
-          <Button
-            size={"sm"}
-            className="bg-blue-200 text-blue-800 hover:bg-blue-300 px-2"
-            onClick={() => {
-              setOpenAddTask(false);
-              reset();
-            }}
-          >
-            <MdClear className="w-6 h-6" />
-          </Button>
-        </div>
-      </form>
-    );
-  } else {
-    return (
+  const modalOnClose = () => {
+    onClose();
+    reset();
+  };
+
+  return (
+    <>
       <button
         className="py-1 px-2 mt-3 w-full flex items-center gap-1 text-sm hover:bg-blue-300 hover:text-blue-800 rounded-md font-bold"
-        onClick={() => setOpenAddTask(true)}
+        onClick={onOpen}
       >
         <MdAdd className="h-6 w-6 font-medium" /> Add Task
       </button>
-    );
-  }
+
+      <Modal isOpen={isOpen} onClose={modalOnClose}>
+        <ModalOverlay />
+        <ModalCloseButton />
+        <ModalContent>
+          <ModalHeader>Add new task</ModalHeader>
+          <ModalCloseButton />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ModalBody className="flex flex-col gap-2">
+              <label className="flex flex-col gap-1" htmlFor="taskTitle">
+                <Text fontSize={"sm"} fontWeight={600}>
+                  Title
+                </Text>
+                <Input
+                  placeholder="Task title"
+                  type="text"
+                  {...register("taskTitle")}
+                />
+              </label>
+              <label className="flex flex-col gap-1" htmlFor="taskDescription">
+                <Text fontSize={"sm"} fontWeight={600}>
+                  Description
+                </Text>
+                <Textarea
+                  placeholder="Task description"
+                  {...register("taskDescription")}
+                />
+              </label>
+              <label className="flex flex-col gap-1" htmlFor="taskPriority">
+                <Text fontSize={"sm"} fontWeight={600}>
+                  Priority
+                </Text>
+                <Select
+                  placeholder="Task priority"
+                  {...register("taskPriority")}
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </Select>
+              </label>
+              <label className="flex flex-col gap-1" htmlFor="taskStoryPoint">
+                <Text fontSize={"sm"} fontWeight={600}>
+                  Story Point
+                </Text>
+                <Select
+                  placeholder="Task story point"
+                  {...register("taskStoryPoint")}
+                >
+                  {listStoryPointAccepted.map((point) => {
+                    return (
+                      <option value={point} key={point}>
+                        {point}
+                      </option>
+                    );
+                  })}
+                </Select>
+              </label>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} type="submit">
+                Add
+              </Button>
+              <Button variant="ghost" onClick={modalOnClose}>
+                Cancel
+              </Button>
+            </ModalFooter>
+          </form>
+        </ModalContent>
+      </Modal>
+    </>
+  );
 }
 
 function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
@@ -228,7 +316,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
         dueDate: Date.now(),
       };
 
-      console.log({ dataInput });
       const createKanbanMap = new Map();
       let dataChangeOnDrag: KanbanBoardType = kanbanDataStore;
 
@@ -308,6 +395,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
               ) : (
                 listTableKey.map((key: TaskStatusType) => {
                   const table = (kanbanDataStore ?? initialKanbanData)[key];
+
                   return (
                     <Droppable
                       className="flex flex-col h-full"
