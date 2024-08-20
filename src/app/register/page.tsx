@@ -48,7 +48,7 @@ export default function RegisterPage() {
 
     submitErr = false;
     if (!submitErr && res?.status === 200) {
-      router.push("/project");
+      router.push("/active");
       reset();
     }
   };

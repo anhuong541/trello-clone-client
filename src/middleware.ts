@@ -15,7 +15,7 @@ export const checkJwtExpire = async (token: string) => {
       },
     });
   } catch (error) {
-    // console.log("check jwt expire error: ", error);
+    console.log("check jwt expire error");
     return error;
   }
 };
@@ -26,12 +26,22 @@ export async function middleware(request: NextRequest) {
   console.log("run middleware!", tokenSession);
   if (tokenSession) {
     console.log("middleware! is running");
-    // const checkToken = (await checkJwtExpire(tokenSession)) as any;
-    const checkToken: any = null;
+    const checkToken = (await checkJwtExpire(tokenSession)) as any;
+    // const checkToken: any = null;
     if (!checkToken) {
       return;
     }
-    console.log({ checkToken });
+
+    if (
+      checkToken?.response?.status === 403 &&
+      protectedRoutes.includes(firstParam)
+    ) {
+      console.log("User didn't active !!!");
+      removeSession();
+      const absoluteURL = new URL("/active", request.nextUrl.origin);
+      return NextResponse.redirect(absoluteURL.toString());
+    }
+
     if (
       checkToken?.response?.status === 401 &&
       protectedRoutes.includes(firstParam)
@@ -56,5 +66,12 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/", "/project", "/login", "/register", "/project/:path*"],
+  matcher: [
+    "/",
+    "/project",
+    "/login",
+    "/register",
+    "/active",
+    "/project/:path*",
+  ],
 };

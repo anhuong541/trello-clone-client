@@ -44,7 +44,7 @@ export default function Header({ userInfo }: { userInfo: any }) {
         <Popover.Portal>
           <Popover.Content
             side="bottom"
-            className="md:translate-x-5 -translate-x-2 z-10 bg-blue-400 text-white hover:bg-blue-300 flex flex-col border rounded-md px-5 py-3"
+            className="md:-translate-x-4 -translate-x-2 z-10 bg-blue-400 text-white hover:bg-blue-300 flex flex-col border rounded-md px-5 py-3"
           >
             <button onClick={handleLogout} className="flex gap-1 items-center">
               <MdLogout className="h-5 w-5" />

@@ -42,7 +42,7 @@ export default function LoginPage() {
         password: data.passwordLogin,
       })
       .catch((err) => {
-        if (err?.response?.status === 404) {
+        if (err?.response?.status === 404 || err?.response?.status === 403) {
           setEmailErr(true);
           setPasswordError(false);
         } else if (err?.response?.status === 401) {
@@ -50,7 +50,9 @@ export default function LoginPage() {
           setPasswordError(true);
         }
         setErrorMsg(capitalizeFirstLetter(err?.response?.data?.error));
-        // toast.error(capitalizeFirstLetter(err.response.data.error));
+        if (err?.response?.status === 403) {
+          toast.error(capitalizeFirstLetter("You need to active your account"));
+        }
         console.log("error: ", err);
       });
 
