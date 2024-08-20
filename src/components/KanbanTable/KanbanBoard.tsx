@@ -87,8 +87,8 @@ export const listTableKey: TaskStatusType[] = [
 
 const addTaskToStatusGroup = (data: KanbanBoardType, newTask: TaskInput) => {
   let dataReturn = data;
-  const newTaskTable = dataReturn[newTask.taskStatus].table;
-  dataReturn[newTask.taskStatus].table = [...newTaskTable, newTask];
+  const selectTaskTable = dataReturn[newTask.taskStatus].table;
+  dataReturn[newTask.taskStatus].table = [...selectTaskTable, newTask];
   return dataReturn;
 };
 
@@ -304,31 +304,25 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   }, [projectId]);
 
   const handleDragEnd = async (e: DragEndEvent) => {
+    const dragStatus = e.active.data.current?.taskStatus as TaskStatusType;
     setDragOverId(null);
-    if (
-      kanbanDataStore &&
-      e?.over?.id &&
-      e.over.id !== e.active.data.current?.taskStatus
-    ) {
+    if (kanbanDataStore && e?.over?.id && e.over.id !== dragStatus) {
       const dataInput: any = {
         ...e.active.data.current,
         taskStatus: e.over?.id,
         dueDate: Date.now(),
       };
 
-      const createKanbanMap = new Map();
       let dataChangeOnDrag: KanbanBoardType = kanbanDataStore;
 
-      dataChangeOnDrag[
-        e.active.data.current?.taskStatus as TaskStatusType
-      ].table = kanbanDataStore[
-        e.active.data.current?.taskStatus as TaskStatusType
+      const removeDraggingDataFromCurrentTable = kanbanDataStore[
+        dragStatus
       ].table.filter((item) => item.taskId !== dataInput.taskId);
+      dataChangeOnDrag[dragStatus].table = removeDraggingDataFromCurrentTable;
 
       dataChangeOnDrag[e.over.id as TaskStatusType].table.push(dataInput);
 
       setKanbanDataStore({ ...dataChangeOnDrag });
-      createKanbanMap.clear();
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
       await updateTaskAction.mutateAsync(dataInput);
     }
