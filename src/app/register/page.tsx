@@ -10,6 +10,7 @@ import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserRegister } from "@/actions/query-actions";
+import { useState } from "react";
 
 type RegisterInput = {
   emailRegister: string;
@@ -20,6 +21,7 @@ type RegisterInput = {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
   const { register, handleSubmit, watch, reset } = useForm<RegisterInput>();
 
   const registerAction = useMutation({
@@ -28,6 +30,7 @@ export default function RegisterPage() {
   });
 
   const onSubmit: SubmitHandler<RegisterInput> = async (data) => {
+    setIsLoadingSubmit(true);
     if (data.passwordRegister !== data.confirmPasswordRegister) {
       toast.warning("Password is not the same with confirm");
       return;
@@ -51,6 +54,7 @@ export default function RegisterPage() {
       router.push("/active");
       reset();
     }
+    setIsLoadingSubmit(false);
   };
 
   const registerFormData = [
@@ -101,7 +105,9 @@ export default function RegisterPage() {
                 </div>
               );
             })}
-            <Button type="submit">Sign up</Button>
+            <Button type="submit" disabled={isLoadingSubmit}>
+              Sign up
+            </Button>
           </form>
           <Link
             href="/login"

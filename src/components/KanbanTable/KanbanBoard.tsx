@@ -116,6 +116,7 @@ function AddTask({
   });
 
   const onSubmit: SubmitHandler<TaskType> = async (data) => {
+    onClose();
     if (data.taskTitle === "") {
       toast.warning("Misisng task title");
       return;
@@ -142,7 +143,6 @@ function AddTask({
     onAddTableData({ ...dataLater });
     await addTaskAction.mutateAsync(dataAddTask);
     queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
-    onClose();
     reset();
   };
 
