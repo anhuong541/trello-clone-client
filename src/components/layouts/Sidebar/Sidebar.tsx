@@ -28,7 +28,7 @@ export interface ProjectSelectProps {
 function ProjectSelect({ item }: ProjectSelectProps) {
   const route = useRouter();
   const params = useParams();
-  const ProjectSelected = params.projectId === item.projectId;
+  const ProjectSelected = params?.projectId === item.projectId;
 
   const onSelectProject = async () => {
     route.push(`/project/${item.projectId}`);
