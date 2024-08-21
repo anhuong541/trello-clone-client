@@ -138,14 +138,14 @@ export default function SortKanbanTablePopover() {
           gap={2}
           alignItems={"center"}
         >
-          Sort By {sortName ?? "..."}{" "}
           {sortState.current === "asc" ? (
             <MdOutlineArrowUpward />
           ) : sortState.current === "dec" ? (
             <MdOutlineArrowDownward />
           ) : (
             ""
-          )}
+          )}{" "}
+          Sort By {sortName ?? "..."}
         </PopoverHeader>
         <PopoverBody>
           <List>
