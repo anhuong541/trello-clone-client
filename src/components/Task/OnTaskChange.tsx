@@ -203,7 +203,7 @@ const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
 
 function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
-  const [openEditSP, setOpenEditSP] = useState(false);
+  const [currentPoint, setCurrentPoint] = useState("0");
 
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
@@ -246,49 +246,35 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       ...dataInput,
       storyPoint: point,
     });
-    setOpenEditSP(false);
   };
 
   return (
-    <Flex flexDirection={"column"} gap={2}>
-      <Flex gap={4} justifyContent="space-between" alignItems="center">
-        <Flex gap={2}>
-          <MdNumbers className="w-6 h-6" />
-          <Text fontWeight={600} marginRight={6}>
-            Cost <strong className="font-bold">{dataInput.storyPoint}</strong>{" "}
-            Story Point
-          </Text>
-        </Flex>
-        {!openEditSP && (
-          <Button
-            variant={"outline"}
-            size={"sm"}
-            onClick={() => setOpenEditSP(true)}
-          >
-            Change
-          </Button>
-        )}
+    <Flex gap={4} justifyContent="space-between" alignItems="center">
+      <Flex gap={2} className="flex-shrink-0">
+        <MdNumbers className="w-6 h-6" />
+        <Text fontWeight={600} marginRight={6}>
+          Cost <strong className="font-bold">{dataInput.storyPoint}</strong>{" "}
+          Story Point
+        </Text>
       </Flex>
-      {openEditSP && (
-        <Flex flexDirection={"column"} gap={2}>
-          <Select
-            placeholder="Select your story point"
-            onChange={async (e) =>
-              await onSelectStoryPoint(
-                Number(e.target?.value) as StoryPointType
-              )
-            }
-          >
-            {listStoryPointAccepted.map((point) => {
-              return (
-                <option value={point} key={point}>
-                  {point}
-                </option>
-              );
-            })}
-          </Select>
-        </Flex>
-      )}
+
+      <Flex flexDirection={"column"} gap={2}>
+        <Select
+          placeholder={currentPoint}
+          onChange={async (e) => {
+            await onSelectStoryPoint(Number(e.target?.value) as StoryPointType);
+            setCurrentPoint(String(e.target?.value));
+          }}
+        >
+          {listStoryPointAccepted.map((point) => {
+            return (
+              <option value={point} key={point}>
+                {point}
+              </option>
+            );
+          })}
+        </Select>
+      </Flex>
     </Flex>
   );
 }
