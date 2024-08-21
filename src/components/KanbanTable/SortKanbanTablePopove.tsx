@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react";
 import { Button, List, ListItem } from "@chakra-ui/react";
 import {
-  MdOutlineArrowBack,
   MdOutlineArrowDownward,
   MdOutlineArrowUpward,
   MdSort,

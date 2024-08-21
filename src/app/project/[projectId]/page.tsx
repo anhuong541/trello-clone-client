@@ -3,6 +3,7 @@ import { handleUserInfo } from "@/actions/query-actions";
 import KanbanBoard from "@/components/KanbanTable/KanbanBoard";
 import Header from "@/components/layouts/Header";
 import { Sidebar } from "@/components/layouts/Sidebar";
+import { socket } from "@/lib/socket";
 
 export default async function ProjectPage({
   params,

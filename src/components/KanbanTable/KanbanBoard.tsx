@@ -51,6 +51,7 @@ import {
 } from "@chakra-ui/react";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 import { toast } from "react-toastify";
+import { socket } from "@/lib/socket";
 
 interface TaskType {
   taskTitle: string;
@@ -282,14 +283,15 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const [projectTasksList, setProjectTasksList] = useState<TaskItem[]>([]);
   const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(
     null
   );
 
-  const queryProjectTasksList = useQuery({
-    queryKey: [projectId, reactQueryKeys.viewProjectTasks],
-    queryFn: async () => await handleViewProjectTasks(projectId),
-  });
+  // const queryProjectTasksList = useQuery({
+  //   queryKey: [projectId, reactQueryKeys.viewProjectTasks],
+  //   queryFn: async () => await handleViewProjectTasks(projectId),
+  // });
 
   const updateTaskAction = useMutation({
     mutationFn: onChangeTaskState,
@@ -300,6 +302,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     if (kanbanDataStore && projectId) {
       setKanbanDataStore(null);
     }
+    socket.emit("project_room", projectId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
@@ -329,42 +332,85 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   };
 
   useEffect(() => {
-    if (!kanbanDataStore) {
-      const createKanbanMap = new Map();
-      const projectTasksList = queryProjectTasksList.data?.data?.data ?? [];
-      const filterProject = projectTasksList.forEach((item: TaskItem) => {
-        const value = createKanbanMap.get(item.taskStatus) ?? [];
-        createKanbanMap.set(item.taskStatus, [...value, item]);
-      });
+    socket.on(`project_room_${projectId}`, (data) => {
+      console.log("it trigger!!!", data);
+      setProjectTasksList([...data]);
+    });
 
-      if (projectTasksList.length > 0) {
-        setKanbanDataStore({
-          Open: {
-            label: "Open",
-            table: createKanbanMap.get("Open") ?? [],
-          },
-          "In-progress": {
-            label: "In-progress",
-            table: createKanbanMap.get("In-progress") ?? [],
-          },
-          Resolved: {
-            label: "Resolved",
-            table: createKanbanMap.get("Resolved") ?? [],
-          },
-          Closed: {
-            label: "Closed",
-            table: createKanbanMap.get("Closed") ?? [],
-          },
-        });
-      }
-      createKanbanMap.clear();
+    return () => {
+      socket.off(`project_room_${projectId}`);
+    };
+  }, [projectId]);
+
+  useEffect(() => {
+    const createKanbanMap = new Map();
+    console.log({ projectTasksList });
+    // const projectTasksList = queryProjectTasksList.data?.data?.data ?? [];
+    projectTasksList.forEach((item: TaskItem) => {
+      const value = createKanbanMap.get(item.taskStatus) ?? [];
+      createKanbanMap.set(item.taskStatus, [...value, item]);
+    });
+
+    if (projectTasksList.length > 0) {
+      setKanbanDataStore({
+        Open: {
+          label: "Open",
+          table: createKanbanMap.get("Open") ?? [],
+        },
+        "In-progress": {
+          label: "In-progress",
+          table: createKanbanMap.get("In-progress") ?? [],
+        },
+        Resolved: {
+          label: "Resolved",
+          table: createKanbanMap.get("Resolved") ?? [],
+        },
+        Closed: {
+          label: "Closed",
+          table: createKanbanMap.get("Closed") ?? [],
+        },
+      });
     }
-  }, [
-    kanbanDataStore,
-    queryProjectTasksList.data?.data?.data,
-    queryProjectTasksList.isFetching,
-    setKanbanDataStore,
-  ]);
+    createKanbanMap.clear();
+  }, [projectTasksList, setKanbanDataStore]);
+
+  // useEffect(() => {
+  //   if (!kanbanDataStore) {
+  //     const createKanbanMap = new Map();
+  //     const projectTasksList = queryProjectTasksList.data?.data?.data ?? [];
+  //     const filterProject = projectTasksList.forEach((item: TaskItem) => {
+  //       const value = createKanbanMap.get(item.taskStatus) ?? [];
+  //       createKanbanMap.set(item.taskStatus, [...value, item]);
+  //     });
+
+  //     if (projectTasksList.length > 0) {
+  //       setKanbanDataStore({
+  //         Open: {
+  //           label: "Open",
+  //           table: createKanbanMap.get("Open") ?? [],
+  //         },
+  //         "In-progress": {
+  //           label: "In-progress",
+  //           table: createKanbanMap.get("In-progress") ?? [],
+  //         },
+  //         Resolved: {
+  //           label: "Resolved",
+  //           table: createKanbanMap.get("Resolved") ?? [],
+  //         },
+  //         Closed: {
+  //           label: "Closed",
+  //           table: createKanbanMap.get("Closed") ?? [],
+  //         },
+  //       });
+  //     }
+  //     createKanbanMap.clear();
+  //   }
+  // }, [
+  //   kanbanDataStore,
+  //   queryProjectTasksList.data?.data?.data,
+  //   queryProjectTasksList.isFetching,
+  //   setKanbanDataStore,
+  // ]);
 
   if (projectId !== "") {
     return (
@@ -376,7 +422,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
             alignItems={"center"}
             className="lg:pl-2 pl-8"
           >
-            {!queryProjectTasksList.isLoading && <SortKanbanTablePopover />}
+            {/* {!queryProjectTasksList.isLoading && <SortKanbanTablePopover />} */}
           </Flex>
 
           <DndContext
@@ -384,9 +430,10 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
             onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
           >
             <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
-              {queryProjectTasksList.isLoading ? (
-                <SkeletonKanbanBoardTable />
-              ) : (
+              {
+                // queryProjectTasksList.isLoading ? (
+                //   <SkeletonKanbanBoardTable />
+                // ) : (
                 listTableKey.map((key: TaskStatusType) => {
                   const table = (kanbanDataStore ?? initialKanbanData)[key];
 
@@ -421,7 +468,8 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                     </Droppable>
                   );
                 })
-              )}
+                // )
+              }
             </ul>
           </DndContext>
         </div>
