@@ -26,6 +26,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import useScreenView from "@/hooks/ScreenView";
 import UpdateTaskStatus from "./UpdateTaskStatus";
+import { socket } from "@/lib/socket";
 
 export default function TaskDetail({
   children,
@@ -42,7 +43,7 @@ export default function TaskDetail({
 }) {
   const queryClient = useQueryClient();
   const { screenViewType } = useScreenView();
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onDeleteTaskAction = useMutation({
@@ -62,7 +63,11 @@ export default function TaskDetail({
         data.taskStatus
       ].table.filter((item) => item.taskId !== data.taskId);
 
-      setKanbanDataStore({ ...currKanbanDataStore });
+      socket.emit(
+        "realtime_update_project",
+        data.projectId,
+        currKanbanDataStore
+      );
 
       await onDeleteTaskAction.mutateAsync({
         projectId: data.projectId,

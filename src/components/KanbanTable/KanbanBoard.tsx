@@ -96,12 +96,10 @@ const addTaskToStatusGroup = (data: KanbanBoardType, newTask: TaskInput) => {
 function AddTask({
   projectId,
   taskStatus,
-  onAddTableData,
   kanbanData,
 }: {
   projectId: string;
   taskStatus: TaskStatusType;
-  onAddTableData: any;
   kanbanData: KanbanBoardType;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -140,10 +138,10 @@ function AddTask({
       storyPoint: data.taskStoryPoint === "" ? 1 : data.taskStoryPoint,
     };
 
-    const dataLater = addTaskToStatusGroup(kanbanData, dataAddTask);
-    onAddTableData({ ...dataLater });
-    await addTaskAction.mutateAsync(dataAddTask);
+    const dataAfter = addTaskToStatusGroup(kanbanData, dataAddTask);
+    socket.emit("realtime_update_project", projectId, dataAfter);
     queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
+    await addTaskAction.mutateAsync(dataAddTask);
     reset();
   };
 
@@ -283,15 +281,9 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
-  const [projectTasksList, setProjectTasksList] = useState<TaskItem[]>([]);
   const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(
     null
   );
-
-  // const queryProjectTasksList = useQuery({
-  //   queryKey: [projectId, reactQueryKeys.viewProjectTasks],
-  //   queryFn: async () => await handleViewProjectTasks(projectId),
-  // });
 
   const updateTaskAction = useMutation({
     mutationFn: onChangeTaskState,
@@ -302,7 +294,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     if (kanbanDataStore && projectId) {
       setKanbanDataStore(null);
     }
-    socket.emit("project_room", projectId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
@@ -322,95 +313,63 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
         dragStatus
       ].table.filter((item) => item.taskId !== dataInput.taskId);
       dataChangeOnDrag[dragStatus].table = removeDraggingDataFromCurrentTable;
-
       dataChangeOnDrag[e.over.id as TaskStatusType].table.push(dataInput);
-
-      setKanbanDataStore({ ...dataChangeOnDrag });
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
+      socket.emit("realtime_update_project", projectId, dataChangeOnDrag);
       await updateTaskAction.mutateAsync(dataInput);
     }
   };
 
   useEffect(() => {
-    socket.on(`project_room_${projectId}`, (data) => {
-      console.log("it trigger!!!", data);
-      setProjectTasksList([...data]);
-    });
+    socket.emit(`join_project_room`, projectId);
 
     return () => {
-      socket.off(`project_room_${projectId}`);
+      socket.off(`join_project_room`);
     };
   }, [projectId]);
 
   useEffect(() => {
-    const createKanbanMap = new Map();
-    console.log({ projectTasksList });
-    // const projectTasksList = queryProjectTasksList.data?.data?.data ?? [];
-    projectTasksList.forEach((item: TaskItem) => {
-      const value = createKanbanMap.get(item.taskStatus) ?? [];
-      createKanbanMap.set(item.taskStatus, [...value, item]);
+    socket.on("realtime_update_project_client", (data) => {
+      setKanbanDataStore({ ...data });
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on(`view_project`, (data) => {
+      const createKanbanMap = new Map();
+      data.forEach((item: TaskItem) => {
+        const value = createKanbanMap.get(item.taskStatus) ?? [];
+        createKanbanMap.set(item.taskStatus, [...value, item]);
+      });
+
+      if (data.length > 0) {
+        setKanbanDataStore({
+          Open: {
+            label: "Open",
+            table: createKanbanMap.get("Open") ?? [],
+          },
+          "In-progress": {
+            label: "In-progress",
+            table: createKanbanMap.get("In-progress") ?? [],
+          },
+          Resolved: {
+            label: "Resolved",
+            table: createKanbanMap.get("Resolved") ?? [],
+          },
+          Closed: {
+            label: "Closed",
+            table: createKanbanMap.get("Closed") ?? [],
+          },
+        });
+      }
+
+      createKanbanMap.clear();
     });
 
-    if (projectTasksList.length > 0) {
-      setKanbanDataStore({
-        Open: {
-          label: "Open",
-          table: createKanbanMap.get("Open") ?? [],
-        },
-        "In-progress": {
-          label: "In-progress",
-          table: createKanbanMap.get("In-progress") ?? [],
-        },
-        Resolved: {
-          label: "Resolved",
-          table: createKanbanMap.get("Resolved") ?? [],
-        },
-        Closed: {
-          label: "Closed",
-          table: createKanbanMap.get("Closed") ?? [],
-        },
-      });
-    }
-    createKanbanMap.clear();
-  }, [projectTasksList, setKanbanDataStore]);
-
-  // useEffect(() => {
-  //   if (!kanbanDataStore) {
-  //     const createKanbanMap = new Map();
-  //     const projectTasksList = queryProjectTasksList.data?.data?.data ?? [];
-  //     const filterProject = projectTasksList.forEach((item: TaskItem) => {
-  //       const value = createKanbanMap.get(item.taskStatus) ?? [];
-  //       createKanbanMap.set(item.taskStatus, [...value, item]);
-  //     });
-
-  //     if (projectTasksList.length > 0) {
-  //       setKanbanDataStore({
-  //         Open: {
-  //           label: "Open",
-  //           table: createKanbanMap.get("Open") ?? [],
-  //         },
-  //         "In-progress": {
-  //           label: "In-progress",
-  //           table: createKanbanMap.get("In-progress") ?? [],
-  //         },
-  //         Resolved: {
-  //           label: "Resolved",
-  //           table: createKanbanMap.get("Resolved") ?? [],
-  //         },
-  //         Closed: {
-  //           label: "Closed",
-  //           table: createKanbanMap.get("Closed") ?? [],
-  //         },
-  //       });
-  //     }
-  //     createKanbanMap.clear();
-  //   }
-  // }, [
-  //   kanbanDataStore,
-  //   queryProjectTasksList.data?.data?.data,
-  //   queryProjectTasksList.isFetching,
-  //   setKanbanDataStore,
-  // ]);
+    return () => {
+      socket.off(`view_project`);
+    };
+  }, []);
 
   if (projectId !== "") {
     return (
@@ -437,6 +396,13 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                 listTableKey.map((key: TaskStatusType) => {
                   const table = (kanbanDataStore ?? initialKanbanData)[key];
 
+                  if (!table?.label)
+                    return (
+                      <p key={key} className="text-red-500 font-medium">
+                        data table error
+                      </p>
+                    );
+
                   return (
                     <Droppable
                       className="flex flex-col h-full"
@@ -461,7 +427,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                         <AddTask
                           projectId={projectId}
                           taskStatus={table.label}
-                          onAddTableData={setKanbanDataStore}
                           kanbanData={kanbanDataStore ?? initialKanbanData}
                         />
                       </div>

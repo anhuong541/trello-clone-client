@@ -13,12 +13,13 @@ import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { PriorityType, StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
+import { socket } from "@/lib/socket";
 
 // TODO: Update task dueDate everytime update
 // TODO: Update last time edit text render
 
 function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = useContext(KanbanDataContext);
   const [editTitle, setEditTitle] = useState(false);
   const { register, handleSubmit, watch, reset } = useForm<{
     taskTitle: string;
@@ -51,13 +52,15 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
         };
       }
 
-      setKanbanDataStore({
+      const dataAfter = {
         ...kanbanDataStore,
         [dataInput.taskStatus]: {
           ...kanbanDataStore[dataInput.taskStatus],
           table: [...itemTable],
         },
-      });
+      };
+
+      socket.emit("realtime_update_project", dataInput.projectId, dataAfter);
 
       await onUserEdit.mutateAsync({
         ...dataInput,
@@ -102,7 +105,7 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
 }
 
 function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = useContext(KanbanDataContext);
   const { register, handleSubmit, watch, reset } = useForm<{
     taskDescription: string;
   }>();
@@ -137,11 +140,13 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
         table: itemTable,
       };
 
-      setKanbanDataStore({ ...dataChanging });
+      socket.emit("realtime_update_project", dataInput.projectId, dataChanging);
+
       await onUserEdit.mutateAsync({
         ...dataInput,
         description: data.taskDescription,
       });
+
       setOpenEdit(false);
     }
     reset();
@@ -202,7 +207,7 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
 const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
 
 function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = useContext(KanbanDataContext);
   const [currentPoint, setCurrentPoint] = useState("0");
 
   const onUserEdit = useMutation({
@@ -234,13 +239,15 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       };
     }
 
-    setKanbanDataStore({
+    const dataAfter = {
       ...kanbanDataStore,
       [dataInput.taskStatus]: {
         ...kanbanDataStore[dataInput.taskStatus],
         table: [...itemTable],
       },
-    });
+    };
+
+    socket.emit("realtime_update_project", dataInput.projectId, dataAfter);
 
     await onUserEdit.mutateAsync({
       ...dataInput,
@@ -280,7 +287,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
 }
 
 function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = useContext(KanbanDataContext);
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
     mutationKey: [reactQueryKeys.updateTask],
@@ -305,13 +312,15 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
       };
     }
 
-    setKanbanDataStore({
+    const dataAfter = {
       ...kanbanDataStore,
       [dataInput.taskStatus]: {
         ...kanbanDataStore[dataInput.taskStatus],
         table: [...itemTable],
       },
-    });
+    };
+
+    socket.emit("realtime_update_project", dataInput.projectId, dataAfter);
 
     await onUserEdit.mutateAsync({
       ...dataInput,

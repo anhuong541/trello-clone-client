@@ -1,6 +1,7 @@
 import { onChangeTaskState } from "@/actions/query-actions";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
+import { socket } from "@/lib/socket";
 import { PriorityType, TaskItem, TaskStatusType } from "@/types";
 import {
   Popover,
@@ -34,7 +35,7 @@ export default function UpdateTaskStatus({
   dataInput: TaskItem;
 }) {
   const queryClient = useQueryClient();
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onUserEdit = useMutation({
@@ -53,7 +54,12 @@ export default function UpdateTaskStatus({
       dataInput.taskStatus
     ].table.filter((item) => item.taskId !== dataInput.taskId);
     dataBoardEditing[taskStatus].table.push({ ...dataInput, taskStatus });
-    setKanbanDataStore({ ...dataBoardEditing });
+
+    socket.emit(
+      "realtime_update_project",
+      dataInput.projectId,
+      dataBoardEditing
+    );
 
     await onUserEdit.mutateAsync({
       ...dataInput,
