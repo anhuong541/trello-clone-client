@@ -322,6 +322,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     socket.emit(`join_project_room`, projectId);
+    console.log("it trigger!!!");
 
     return () => {
       socket.off(`join_project_room`);
@@ -330,8 +331,13 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     socket.on("realtime_update_project_client", (data) => {
+      console.log("it trigger!!!");
       setKanbanDataStore({ ...data });
     });
+
+    return () => {
+      socket.off(`realtime_update_project_client`);
+    };
   }, []);
 
   useEffect(() => {

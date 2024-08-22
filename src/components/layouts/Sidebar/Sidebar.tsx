@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import AddProjectPopover from "./AddProjectPopover";
@@ -23,13 +23,11 @@ export interface ProjectListItem {
 
 export interface ProjectSelectProps {
   item: ProjectListItem;
+  ProjectSelected: boolean;
 }
 
-function ProjectSelect({ item }: ProjectSelectProps) {
+function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
   const route = useRouter();
-  const params = useParams();
-  const ProjectSelected = params?.projectId === item.projectId;
-
   const onSelectProject = async () => {
     route.push(`/project/${item.projectId}`);
   };
@@ -152,7 +150,13 @@ export default function Sidebar({
               <Skeleton height="60px" />
             ) : (
               userProjectList.map((item: ProjectListItem, index: number) => {
-                return <ProjectSelect item={item} key={index} />;
+                return (
+                  <ProjectSelect
+                    item={item}
+                    ProjectSelected={projectId === item.projectId}
+                    key={index}
+                  />
+                );
               })
             )}
           </div>
