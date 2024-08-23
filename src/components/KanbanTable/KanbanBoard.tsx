@@ -1,26 +1,11 @@
 "use client";
 
-import {
-  MdAdd,
-  MdClear,
-  MdOutlineEdit,
-  MdOutlineSubject,
-} from "react-icons/md";
+import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect, useState } from "react";
-import {
-  handleViewProjectTasks,
-  onChangeTaskState,
-  onCreateNewTask,
-} from "@/actions/query-actions";
-import {
-  KanbanBoardType,
-  PriorityType,
-  StoryPointType,
-  TaskItem,
-  TaskStatusType,
-} from "@/types";
+import { onChangeTaskState, onCreateNewTask } from "@/actions/query-actions";
+import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
@@ -29,17 +14,8 @@ import { generateNewUid } from "@/lib/utils";
 import { Draggable, Droppable } from "../DragFeat";
 import TaskDetail from "../Task/TaskDetail";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-import {
-  Box,
-  Button,
-  Flex,
-  Input,
-  Select,
-  Skeleton,
-  Text,
-  Textarea,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Input, Select } from "@chakra-ui/react";
+import { Skeleton, Text, Textarea, useDisclosure } from "@chakra-ui/react";
 import {
   Modal,
   ModalOverlay,
@@ -79,12 +55,7 @@ const initialKanbanData: KanbanBoardType = {
   },
 };
 
-export const listTableKey: TaskStatusType[] = [
-  "Open",
-  "In-progress",
-  "Resolved",
-  "Closed",
-];
+export const listTableKey: TaskStatusType[] = ["Open", "In-progress", "Resolved", "Closed"];
 
 const addTaskToStatusGroup = (data: KanbanBoardType, newTask: TaskInput) => {
   let dataReturn = data;
@@ -104,8 +75,7 @@ function AddTask({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, watch, reset, setFocus } =
-    useForm<TaskType>();
+  const { register, handleSubmit, watch, reset, setFocus } = useForm<TaskType>();
 
   const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
 
@@ -177,29 +147,19 @@ function AddTask({
                 <Text fontSize={"sm"} fontWeight={600}>
                   Title
                 </Text>
-                <Input
-                  placeholder="Task title"
-                  type="text"
-                  {...register("taskTitle")}
-                />
+                <Input placeholder="Task title" type="text" {...register("taskTitle")} />
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskDescription">
                 <Text fontSize={"sm"} fontWeight={600}>
                   Description
                 </Text>
-                <Textarea
-                  placeholder="Task description"
-                  {...register("taskDescription")}
-                />
+                <Textarea placeholder="Task description" {...register("taskDescription")} />
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskPriority">
                 <Text fontSize={"sm"} fontWeight={600}>
                   Priority
                 </Text>
-                <Select
-                  placeholder="Task priority"
-                  {...register("taskPriority")}
-                >
+                <Select placeholder="Task priority" {...register("taskPriority")}>
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
@@ -209,10 +169,7 @@ function AddTask({
                 <Text fontSize={"sm"} fontWeight={600}>
                   Story Point
                 </Text>
-                <Select
-                  placeholder="Task story point"
-                  {...register("taskStoryPoint")}
-                >
+                <Select placeholder="Task story point" {...register("taskStoryPoint")}>
                   {listStoryPointAccepted.map((point) => {
                     return (
                       <option value={point} key={point}>
@@ -280,10 +237,9 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
 
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
+  const [authorized, setAuthorized] = useState<boolean>(false);
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
-  const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(
-    null
-  );
+  const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(null);
 
   const updateTaskAction = useMutation({
     mutationFn: onChangeTaskState,
@@ -309,9 +265,9 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
       let dataChangeOnDrag: KanbanBoardType = kanbanDataStore;
 
-      const removeDraggingDataFromCurrentTable = kanbanDataStore[
-        dragStatus
-      ].table.filter((item) => item.taskId !== dataInput.taskId);
+      const removeDraggingDataFromCurrentTable = kanbanDataStore[dragStatus].table.filter(
+        (item) => item.taskId !== dataInput.taskId
+      );
       dataChangeOnDrag[dragStatus].table = removeDraggingDataFromCurrentTable;
       dataChangeOnDrag[e.over.id as TaskStatusType].table.push(dataInput);
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
@@ -338,10 +294,16 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     return () => {
       socket.off(`realtime_update_project_client`);
     };
-  }, []);
+  }, [setKanbanDataStore]);
 
   useEffect(() => {
     socket.on(`view_project`, (data) => {
+      if (data?.error) {
+        setAuthorized(false);
+        return console.error(data.error);
+      }
+      setAuthorized(true);
+
       const createKanbanMap = new Map();
       data.forEach((item: TaskItem) => {
         const value = createKanbanMap.get(item.taskStatus) ?? [];
@@ -375,78 +337,82 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     return () => {
       socket.off(`view_project`);
     };
-  }, []);
+  }, [setKanbanDataStore]);
 
-  if (projectId !== "") {
+  if (!authorized && projectId !== "") {
     return (
       <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
         <div className="min-w-[1100px] h-full bg-blue-100">
-          <Flex
-            width={"100%"}
-            height="55px"
-            alignItems={"center"}
-            className="lg:pl-2 pl-8"
-          >
-            {/* {!queryProjectTasksList.isLoading && <SortKanbanTablePopover />} */}
+          <Flex width={"100%"} height="55px" alignItems={"center"} className="lg:pl-2 pl-8">
+            <p className="text-red-500 font-bold">You are not the member of this project!!!</p>
           </Flex>
-
           <DndContext
             onDragEnd={handleDragEnd}
             onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
           >
             <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
-              {
-                // queryProjectTasksList.isLoading ? (
-                //   <SkeletonKanbanBoardTable />
-                // ) : (
-                listTableKey.map((key: TaskStatusType) => {
-                  const table = (kanbanDataStore ?? initialKanbanData)[key];
-
-                  if (!table?.label)
-                    return (
-                      <p key={key} className="text-red-500 font-medium">
-                        data table error
-                      </p>
-                    );
-
-                  return (
-                    <Droppable
-                      className="flex flex-col h-full"
-                      key={table.label}
-                      id={table.label}
-                    >
-                      <div className="flex-col px-2 py-2 bg-blue-200 rounded-lg">
-                        <h4 className="p-2 font-bold">{table.label}</h4>
-                        <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
-                          {(table.table ?? []).map((item: TaskItem) => {
-                            return (
-                              <TaskDrableItem
-                                itemInput={item}
-                                key={item.taskId}
-                              />
-                            );
-                          })}
-                          {dragOverId === table.label && (
-                            <div className="rounded-md bg-gray-200 h-[60px] w-full" />
-                          )}
-                        </div>
-                        <AddTask
-                          projectId={projectId}
-                          taskStatus={table.label}
-                          kanbanData={kanbanDataStore ?? initialKanbanData}
-                        />
-                      </div>
-                    </Droppable>
-                  );
-                })
-                // )
-              }
+              <SkeletonKanbanBoardTable />
             </ul>
           </DndContext>
         </div>
       </Box>
     );
   }
+
+  return (
+    <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
+      <div className="min-w-[1100px] h-full bg-blue-100">
+        <Flex width={"100%"} height="55px" alignItems={"center"} className="lg:pl-2 pl-8">
+          {/* {!queryProjectTasksList.isLoading && <SortKanbanTablePopover />} */}
+        </Flex>
+
+        <DndContext
+          onDragEnd={handleDragEnd}
+          onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
+        >
+          <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
+            {
+              // queryProjectTasksList.isLoading ? (
+              //   <SkeletonKanbanBoardTable />
+              // ) : (
+              listTableKey.map((key: TaskStatusType) => {
+                const table = (kanbanDataStore ?? initialKanbanData)[key];
+
+                if (!table?.label)
+                  return (
+                    <p key={key} className="text-red-500 font-medium">
+                      data table error
+                    </p>
+                  );
+
+                return (
+                  <Droppable className="flex flex-col h-full" key={table.label} id={table.label}>
+                    <div className="flex-col px-2 py-2 bg-blue-200 rounded-lg">
+                      <h4 className="p-2 font-bold">{table.label}</h4>
+                      <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
+                        {(table.table ?? []).map((item: TaskItem) => {
+                          return <TaskDrableItem itemInput={item} key={item.taskId} />;
+                        })}
+                        {dragOverId === table.label && (
+                          <div className="rounded-md bg-gray-200 h-[60px] w-full" />
+                        )}
+                      </div>
+                      <AddTask
+                        projectId={projectId}
+                        taskStatus={table.label}
+                        kanbanData={kanbanDataStore ?? initialKanbanData}
+                      />
+                    </div>
+                  </Droppable>
+                );
+              })
+              // )
+            }
+          </ul>
+        </DndContext>
+      </div>
+    </Box>
+  );
 }
 
 const dataEx = [

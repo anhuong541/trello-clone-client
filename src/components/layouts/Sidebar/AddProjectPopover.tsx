@@ -64,27 +64,17 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
         <Popover.Content
           side="right"
           className="translate-x-5 translate-y-20 z-10 bg-blue-50 flex border rounded-md p-4"
+          onInteractOutside={() => setOpenPop(false)}
         >
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit(onSubmit)}
-          >
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-2">
               <label htmlFor="name-project" className="flex flex-col gap-1">
                 <p className="text-xs font-medium">Project Name</p>
-                <Input
-                  {...register("projectName")}
-                  type="text"
-                  id="name-project"
-                />
+                <Input {...register("projectName")} type="text" id="name-project" />
               </label>
               <label htmlFor="name-project" className="flex flex-col gap-1">
                 <p className="text-xs font-medium">Description</p>
-                <Input
-                  {...register("projectDescription")}
-                  type="text"
-                  id="description-project"
-                />
+                <Input {...register("projectDescription")} type="text" id="description-project" />
               </label>
             </div>
             <Button type="submit">Add Project</Button>
