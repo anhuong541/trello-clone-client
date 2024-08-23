@@ -16,7 +16,6 @@ export const checkJwtExpire = async (token: string) => {
     });
   } catch (error) {
     console.log("check jwt expire error");
-    return error;
   }
 };
 
@@ -32,29 +31,20 @@ export async function middleware(request: NextRequest) {
       return;
     }
 
-    if (
-      checkToken?.response?.status === 403 &&
-      protectedRoutes.includes(firstParam)
-    ) {
+    if (checkToken?.response?.status === 403 && protectedRoutes.includes(firstParam)) {
       console.log("User didn't active !!!");
       removeSession();
       const absoluteURL = new URL("/active", request.nextUrl.origin);
       return NextResponse.redirect(absoluteURL.toString());
     }
 
-    if (
-      checkToken?.response?.status === 401 &&
-      protectedRoutes.includes(firstParam)
-    ) {
+    if (checkToken?.response?.status === 401 && protectedRoutes.includes(firstParam)) {
       console.log("it token fail!!!");
       removeSession();
       const absoluteURL = new URL("/login", request.nextUrl.origin);
       return NextResponse.redirect(absoluteURL.toString());
     }
-    if (
-      checkToken?.status === 200 &&
-      routesBanWhenUserSignin.includes(request.nextUrl.pathname)
-    ) {
+    if (checkToken?.status === 200 && routesBanWhenUserSignin.includes(request.nextUrl.pathname)) {
       const absoluteURL = new URL(HOME_ROUTE, request.nextUrl.origin);
       return NextResponse.redirect(absoluteURL.toString());
     }
@@ -67,12 +57,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: [
-    "/",
-    "/project",
-    "/login",
-    "/register",
-    "/active",
-    "/project/:path*",
-  ],
+  matcher: ["/", "/project", "/login", "/register", "/active", "/project/:path*"],
 };
