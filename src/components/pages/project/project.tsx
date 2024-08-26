@@ -1,6 +1,6 @@
-import KanbanBoard from "@/components/pages/project/kanbanTable/KanbanBoard";
 import { Sidebar } from "@/components/layouts/Sidebar";
-import SelectProjectMobileView from "./SelectProjectMobileView";
+import KanbanBoard from "@/components/pages/project/kanbanTable/KanbanBoard";
+import SelectProjectMobileView from "@/components/pages/project/SelectProjectMobileView";
 
 export default function Project({ projectId }: { projectId: string }) {
   if (projectId === "") {

@@ -82,7 +82,7 @@ export default function ProjectItemOption({ itemData }: ProjectItemOptionProps) 
   return (
     <Popover.Root open={openPop}>
       <Popover.Trigger
-        className="h-8 w-8 flex justify-center items-center"
+        className="h-8 w-8 flex justify-center items-center hover:text-white"
         onClick={() => setOpenPop((prev) => !prev)}
       >
         <MdOutlineMoreHoriz />

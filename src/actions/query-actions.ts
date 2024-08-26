@@ -26,6 +26,7 @@ export const onUserLogout = async () => {
 
 export const handleUserInfo = async (cookie: ReadonlyRequestCookies) => {
   const token = cookie.get("user_session")?.value;
+
   try {
     return await server
       .get("/user", {
@@ -42,6 +43,14 @@ export const handleUserProjectList = async () => {
     return await server.get(`/project`);
   } catch (error) {
     console.log("user project list error: ", error);
+  }
+};
+
+export const handleProjectInfo = async (projectId: string) => {
+  try {
+    return await server.get(`/project/${projectId}`);
+  } catch (error) {
+    console.log("user project info error: ", error);
   }
 };
 

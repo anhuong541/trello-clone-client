@@ -10,8 +10,17 @@ import ProjectItemOption from "./ProjectItemOption";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@chakra-ui/react";
-import { MdArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
+import {
+  MdArrowBackIosNew,
+  MdArrowForwardIos,
+  MdEditDocument,
+  MdOutlineGroup,
+  MdOutlinePostAdd,
+  MdOutlineTextSnippet,
+  MdPostAdd,
+} from "react-icons/md";
 import useScreenView from "@/hooks/ScreenView";
+import Link from "next/link";
 
 export interface ProjectListItem {
   description: string;
@@ -42,7 +51,10 @@ function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
         )}
         onClick={onSelectProject}
       >
-        <p className="font-medium">{item.projectName}</p>
+        <div className="flex items-center gap-2">
+          <MdOutlineTextSnippet className="w-5 h-5" />
+          <p className="font-medium text-sm">{item.projectName}</p>
+        </div>
       </div>
       <div
         className={cn(
@@ -126,8 +138,22 @@ export default function Sidebar({ projectId }: { projectId: string }) {
 
       {openSidebar && (
         <div className="flex flex-col gap-2 h-[calc(100%-55px)] py-2">
+          {projectId !== "" && (
+            <Link
+              href={`/project/members/${projectId}`}
+              className="px-4 py-2 font-medium text-sm hover:bg-blue-300/60 flex items-center gap-2 bg-blue-300"
+            >
+              <MdOutlineGroup className="w-5 h-5" /> Members
+            </Link>
+          )}
+
           <div className="flex items-center justify-between px-4">
-            <h3 className="font-semibold overflow-hidden whitespace-nowrap">Project List</h3>
+            <div className="flex items-center gap-2">
+              <MdOutlinePostAdd className="w-5 h-5" />
+              <h3 className="font-semibold text-sm overflow-hidden whitespace-nowrap">
+                Project List
+              </h3>
+            </div>
             <AddProjectPopover />
           </div>
           <div className="flex flex-col overflow-hidden whitespace-nowrap">

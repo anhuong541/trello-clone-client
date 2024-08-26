@@ -67,6 +67,7 @@ export default function TaskDetail({
       handleClose();
     }
   };
+
   const modalSize = useMemo(() => {
     return screenViewType === "smallMobile"
       ? "sm"
@@ -81,7 +82,7 @@ export default function TaskDetail({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <Button onClick={onOpen} size="icon" variant="outline" className="px-2 py-2">
+      <Button onClick={onOpen} size="icon" variant="outline" className="px-2 py-2 bg-blue-100">
         {children}
       </Button>
 

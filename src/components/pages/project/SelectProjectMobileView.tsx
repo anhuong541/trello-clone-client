@@ -23,8 +23,6 @@ export default function SelectProjectMobileView() {
     return formatDataUserProjectList;
   }, [queryUserProjectList]);
 
-  console.log({ userProjectList });
-
   return (
     <div className="col-span-8 bg-blue-100 pt-4 h-full lg:hidden">
       <div className="flex flex-col">
