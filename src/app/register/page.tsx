@@ -4,13 +4,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import Link from "next/link";
 
-import { Button } from "@/components/common/Button";
-import { Input } from "@/components/common/Input";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserRegister } from "@/actions/query-actions";
 import { useState } from "react";
+import { AuthFormInput } from "@/types";
+import AuthForm from "@/components/common/auth-form";
 
 type RegisterInput = {
   emailRegister: string;
@@ -23,6 +22,9 @@ export default function RegisterPage() {
   const router = useRouter();
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
   const { register, handleSubmit, watch, reset } = useForm<RegisterInput>();
+  const [emailErr, setEmailErr] = useState<boolean>(false);
+  const [passwordErr, setPasswordErr] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
   const registerAction = useMutation({
     mutationFn: onUserRegister,
@@ -30,12 +32,16 @@ export default function RegisterPage() {
   });
 
   const onSubmit: SubmitHandler<RegisterInput> = async (data) => {
+    setEmailErr(false);
+    setPasswordErr(false);
     setIsLoadingSubmit(true);
     if (data.passwordRegister !== data.confirmPasswordRegister) {
-      toast.warning("Password is not the same with confirm");
+      toast.warning("Passwords do not match. Please ensure both entries are identical.");
+      setPasswordErr(true);
+      setErrorMsg("Passwords do not match");
+      setIsLoadingSubmit(false);
       return;
     }
-    let submitErr = true;
 
     const res = await registerAction
       .mutateAsync({
@@ -45,78 +51,64 @@ export default function RegisterPage() {
       })
       .catch((err) => {
         if (err?.response?.status === 409) {
-          toast.warning("This is email have been used!!!");
+          toast.warning("This email have been used!!!");
+          setEmailErr(true);
+          setErrorMsg("This email have been used!!!");
         }
       });
 
-    submitErr = false;
-    if (!submitErr && res?.status === 200) {
+    if (res?.status === 200) {
       router.push("/active");
       reset();
     }
     setIsLoadingSubmit(false);
   };
 
-  const registerFormData = [
-    {
-      register: { ...register("emailRegister") },
-      id: "email-register",
-      type: "email",
-      placeholder: "Enter your email",
+  const data: AuthFormInput = {
+    title: "Register",
+    form: [
+      {
+        register: { ...register("emailRegister") },
+        id: "email-register",
+        type: "email",
+        placeholder: "Enter your email",
+        err: emailErr,
+        errorMsg: errorMsg,
+      },
+      {
+        register: { ...register("usernameRegister") },
+        id: "username-register",
+        type: "text",
+        placeholder: "Enter your Username",
+      },
+      {
+        register: { ...register("passwordRegister") },
+        id: "password-register",
+        type: "password",
+        placeholder: "Enter your Password",
+        err: passwordErr,
+        errorMsg: errorMsg,
+      },
+      {
+        register: { ...register("confirmPasswordRegister") },
+        id: "confirm-password-register",
+        type: "password",
+        placeholder: "Confirm your Password",
+      },
+    ],
+    submit: {
+      text: "Sign up",
+      isLoadingSubmit,
     },
-    {
-      register: { ...register("usernameRegister") },
-      id: "username-register",
-      type: "text",
-      placeholder: "Enter your Username",
+    link: {
+      href: "/login",
+      text: "You already have an account?",
     },
-    {
-      register: { ...register("passwordRegister") },
-      id: "password-register",
-      type: "password",
-      placeholder: "Enter your Password",
-    },
-    {
-      register: { ...register("confirmPasswordRegister") },
-      id: "confirm-password-register",
-      type: "password",
-      placeholder: "Confirm your Password",
-    },
-  ];
+  };
 
   return (
     <main className="flex h-screen container m-auto">
-      <div className="m-auto shadow-md shadow-dark-600 py-10 px-6 sm:w-[440px] w-full">
-        <div className="flex flex-col gap-4">
-          <h1 className="font-bold text-blue-500 text-4xl">Register</h1>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            {registerFormData.map(({ register, id, type, placeholder }) => {
-              return (
-                <div key={id} className="flex gap-2">
-                  <Input
-                    id={id}
-                    type={type}
-                    placeholder={placeholder}
-                    {...register}
-                  />
-                </div>
-              );
-            })}
-            <Button type="submit" disabled={isLoadingSubmit}>
-              Sign up
-            </Button>
-          </form>
-          <Link
-            href="/login"
-            className="text-blue-500 hover:opacity-80 active:opacity-50 hover:underline"
-          >
-            You already have an account?
-          </Link>
-        </div>
-      </div>
+      <AuthForm data={data} onSubmit={handleSubmit(onSubmit)} />
     </main>
   );
 }

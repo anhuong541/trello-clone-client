@@ -63,7 +63,7 @@ export default function AddProjectPopover() {
       <Popover.Portal>
         <Popover.Content
           side="right"
-          className="translate-x-5 translate-y-20 z-10 bg-blue-50 flex border rounded-md p-4"
+          className="translate-x-5 translate-y-28 z-10 bg-blue-50 flex border rounded-md p-4"
           onInteractOutside={() => setOpenPop(false)}
         >
           <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>

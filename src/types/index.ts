@@ -1,3 +1,5 @@
+import { HTMLInputTypeAttribute } from "react";
+
 export type TaskStatusType = "Open" | "In-progress" | "Resolved" | "Closed";
 export type PriorityType = "Low" | "Medium" | "High";
 export type StoryPointType = 1 | 2 | 3 | 5 | 8 | 13 | 21;
@@ -22,3 +24,23 @@ interface KanbanColumn {
 export type KanbanBoardType = {
   [status in TaskStatusType]: KanbanColumn;
 };
+
+export interface AuthFormInput {
+  title: string;
+  form: {
+    register: any;
+    id: string;
+    type: HTMLInputTypeAttribute;
+    placeholder: string;
+    err?: boolean;
+    errorMsg?: string;
+  }[];
+  submit: {
+    text: string;
+    isLoadingSubmit: boolean;
+  };
+  link: {
+    href: string;
+    text: string;
+  };
+}

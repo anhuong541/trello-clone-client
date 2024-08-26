@@ -11,8 +11,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
 import { generateNewUid } from "@/lib/utils";
 
-import { Draggable, Droppable } from "../DragFeat";
-import TaskDetail from "../Task/TaskDetail";
+import { Draggable, Droppable } from "../../../DragFeat";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { Box, Flex, Input, Select } from "@chakra-ui/react";
 import { Skeleton, Text, Textarea, useDisclosure } from "@chakra-ui/react";
@@ -27,7 +26,8 @@ import {
 } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import { socket } from "@/lib/socket";
-import { Button } from "../common/Button";
+import { Button } from "../../../common/Button";
+import { TaskDetail } from "../Task";
 
 interface TaskType {
   taskTitle: string;

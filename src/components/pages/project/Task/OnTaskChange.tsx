@@ -14,7 +14,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { PriorityType, StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
 import { socket } from "@/lib/socket";
-import { Button } from "../common/Button";
+import { Button } from "@/components/common/Button";
 
 // TODO: Update task dueDate everytime update
 // TODO: Update last time edit text render

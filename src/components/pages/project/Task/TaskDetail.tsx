@@ -21,7 +21,7 @@ import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import useScreenView from "@/hooks/ScreenView";
 import UpdateTaskStatus from "./UpdateTaskStatus";
 import { socket } from "@/lib/socket";
-import { Button } from "../common/Button";
+import { Button } from "@/components/common/Button";
 
 export default function TaskDetail({
   children,

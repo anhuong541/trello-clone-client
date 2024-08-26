@@ -102,7 +102,7 @@ export default function Sidebar({ projectId }: { projectId: string }) {
               width={40}
               className="w-8 h-8 object-contain rounded-full"
             />
-            <h2 className="font-medium text-lg overflow-hidden whitespace-nowrap">{projectName}</h2>
+            <h2 className="font-bold text-lg overflow-hidden whitespace-nowrap">{projectName}</h2>
           </div>
           {Number(screenView) < 1024 && (
             <button

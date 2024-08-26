@@ -90,19 +90,19 @@ export default function ProjectItemOption({ itemData }: ProjectItemOptionProps) 
       <Popover.Portal>
         <Popover.Content
           side="right"
-          className="translate-x-5 translate-y-20 z-10 flex flex-col border rounded-md py-2 w-[230px] bg-blue-50 text-gray-700"
+          className="translate-x-5 translate-y-24 z-10 flex flex-col border rounded-md py-2 bg-blue-50 text-gray-700"
           onInteractOutside={() => setOpenPop(false)}
         >
           <div className="flex justify-center px-4 relative">
             <h4 className="py-2 font-bold text-sm text-center">{itemData.projectName}</h4>
             <Popover.Close
-              className="absolute top-0 right-2 hover:bg-blue-100 p-2 rounded-md"
+              className="absolute top-[2px] right-2 hover:bg-blue-100 p-2 rounded-md"
               onClick={() => setOpenPop(false)}
             >
               <MdOutlineClose />
             </Popover.Close>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2 px-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 px-4">
             <label htmlFor="name-project" className="flex flex-col gap-1">
               <p className="text-xs font-medium">Project Name</p>
               <Input
