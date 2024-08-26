@@ -286,17 +286,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   }, [projectId]);
 
   useEffect(() => {
-    socket.on("realtime_update_project_client", (data) => {
-      console.log("it trigger!!!");
-      setKanbanDataStore({ ...data });
-    });
-
-    return () => {
-      socket.off(`realtime_update_project_client`);
-    };
-  }, [setKanbanDataStore]);
-
-  useEffect(() => {
     socket.on(`view_project`, (data) => {
       if (data?.error) {
         setAuthorized(false);
@@ -339,7 +328,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     };
   }, [setKanbanDataStore]);
 
-  if (!authorized && projectId !== "") {
+  if (kanbanDataStore && !authorized && projectId !== "") {
     return (
       <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
         <div className="min-w-[1100px] h-full bg-blue-100">
