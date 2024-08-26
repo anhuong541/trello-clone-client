@@ -14,7 +14,7 @@ import { generateNewUid } from "@/lib/utils";
 import { Draggable, Droppable } from "../DragFeat";
 import TaskDetail from "../Task/TaskDetail";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-import { Box, Button, Flex, Input, Select } from "@chakra-ui/react";
+import { Box, Flex, Input, Select } from "@chakra-ui/react";
 import { Skeleton, Text, Textarea, useDisclosure } from "@chakra-ui/react";
 import {
   Modal,
@@ -25,9 +25,9 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import SortKanbanTablePopover from "./SortKanbanTablePopove";
 import { toast } from "react-toastify";
 import { socket } from "@/lib/socket";
+import { Button } from "../common/Button";
 
 interface TaskType {
   taskTitle: string;
@@ -129,7 +129,7 @@ function AddTask({
   return (
     <>
       <button
-        className="py-1 px-2 mt-3 w-full flex items-center gap-1 text-sm hover:bg-blue-300 hover:text-blue-800 rounded-md font-bold"
+        className="py-1 px-2 mt-3 w-full flex items-center gap-1 text-sm hover:bg-blue-300/60 hover:text-blue-800 rounded-md font-bold"
         onClick={onOpen}
       >
         <MdAdd className="h-6 w-6 font-medium" /> Add Task
@@ -181,10 +181,8 @@ function AddTask({
               </label>
             </ModalBody>
 
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} type="submit">
-                Add
-              </Button>
+            <ModalFooter display="flex" alignItems="center" justifyContent="end" gap={2}>
+              <Button type="submit">Add</Button>
               <Button variant="ghost" onClick={modalOnClose}>
                 Cancel
               </Button>

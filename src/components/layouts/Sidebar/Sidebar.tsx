@@ -57,13 +57,7 @@ function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
   );
 }
 
-export default function Sidebar({
-  userId,
-  projectId,
-}: {
-  userId: string;
-  projectId: string;
-}) {
+export default function Sidebar({ projectId }: { projectId: string }) {
   const { screenView } = useScreenView();
   const [openSidebar, setOpenSidebar] = useState(true);
 
@@ -82,18 +76,13 @@ export default function Sidebar({
     const data: ProjectListItem[] =
       (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
 
-    const formatDataUserProjectList = data.sort(
-      (a, b) => b?.dueTime - a?.dueTime
-    );
+    const formatDataUserProjectList = data.sort((a, b) => b?.dueTime - a?.dueTime);
 
     return formatDataUserProjectList;
   }, [queryUserProjectList]);
 
   const projectName = useMemo(() => {
-    return (
-      userProjectList.find((item) => item?.projectId === projectId)
-        ?.projectName ?? []
-    );
+    return userProjectList.find((item) => item?.projectId === projectId)?.projectName ?? [];
   }, [projectId, userProjectList]);
 
   return (
@@ -113,9 +102,7 @@ export default function Sidebar({
               width={40}
               className="w-8 h-8 object-contain rounded-full"
             />
-            <h2 className="font-medium text-lg overflow-hidden whitespace-nowrap">
-              {projectName}
-            </h2>
+            <h2 className="font-medium text-lg overflow-hidden whitespace-nowrap">{projectName}</h2>
           </div>
           {Number(screenView) < 1024 && (
             <button
@@ -140,10 +127,8 @@ export default function Sidebar({
       {openSidebar && (
         <div className="flex flex-col gap-2 h-[calc(100%-55px)] py-2">
           <div className="flex items-center justify-between px-4">
-            <h3 className="font-semibold overflow-hidden whitespace-nowrap">
-              Project List
-            </h3>
-            <AddProjectPopover userId={userId} />
+            <h3 className="font-semibold overflow-hidden whitespace-nowrap">Project List</h3>
+            <AddProjectPopover />
           </div>
           <div className="flex flex-col overflow-hidden whitespace-nowrap">
             {queryUserProjectList.isLoading ? (

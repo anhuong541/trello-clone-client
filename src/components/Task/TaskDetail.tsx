@@ -9,17 +9,11 @@ import {
   Text,
   Flex,
 } from "@chakra-ui/react";
-import { Button, useDisclosure } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 import { MouseEventHandler, ReactNode, useContext, useMemo } from "react";
-import { MdDeleteOutline } from "react-icons/md";
 import dayjs from "dayjs";
 import { TaskItem } from "@/types";
-import {
-  TaskDescription,
-  TaskPriority,
-  TaskStoryPoint,
-  TaskTitle,
-} from "./OnTaskChange";
+import { TaskDescription, TaskPriority, TaskStoryPoint, TaskTitle } from "./OnTaskChange";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -27,6 +21,7 @@ import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import useScreenView from "@/hooks/ScreenView";
 import UpdateTaskStatus from "./UpdateTaskStatus";
 import { socket } from "@/lib/socket";
+import { Button } from "../common/Button";
 
 export default function TaskDetail({
   children,
@@ -63,11 +58,7 @@ export default function TaskDetail({
         data.taskStatus
       ].table.filter((item) => item.taskId !== data.taskId);
 
-      socket.emit(
-        "realtime_update_project",
-        data.projectId,
-        currKanbanDataStore
-      );
+      socket.emit("realtime_update_project", data.projectId, currKanbanDataStore);
 
       await onDeleteTaskAction.mutateAsync({
         projectId: data.projectId,
@@ -90,12 +81,7 @@ export default function TaskDetail({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <Button
-        onClick={onOpen}
-        size="icon"
-        className="px-2 py-2"
-        colorScheme="blue"
-      >
+      <Button onClick={onOpen} size="icon" variant="outline" className="px-2 py-2">
         {children}
       </Button>
 
@@ -126,9 +112,8 @@ export default function TaskDetail({
               <TaskPriority dataInput={data} />
             </ModalBody>
 
-            <ModalFooter>
+            <ModalFooter className="flex items-center justify-end gap-2">
               <Button
-                className="!bg-blue-400"
                 color={"white"}
                 onClick={() => {
                   handleClose();
@@ -136,23 +121,11 @@ export default function TaskDetail({
                     queryKey: [reactQueryKeys.projectList],
                   });
                 }}
-                ml={3}
-                display={"flex"}
-                alignItems={"center"}
-                gap={1}
               >
                 Done
               </Button>
-              <Button
-                colorScheme="red"
-                variant={"outline"}
-                onClick={handleDeleteTask}
-                ml={3}
-                display={"flex"}
-                alignItems={"center"}
-                gap={1}
-              >
-                <MdDeleteOutline className="w-5 h-5" /> Delete
+              <Button variant="destruction" onClick={handleDeleteTask}>
+                Delete
               </Button>
             </ModalFooter>
           </ModalContent>

@@ -6,7 +6,8 @@ import * as Popover from "@radix-ui/react-popover";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onDeleteProject, onEditProject } from "@/actions/query-actions";
 import { ProjectListItem } from "./Sidebar";
-import { Input } from "../../common/Input";
+import { Input, Textarea } from "@chakra-ui/react";
+import { Button } from "@/components/common/Button";
 
 interface ProjectItemOptionProps {
   itemData: ProjectListItem;
@@ -17,9 +18,7 @@ interface EditProjectInput {
   projectDescription: string;
 }
 
-export default function ProjectItemOption({
-  itemData,
-}: ProjectItemOptionProps) {
+export default function ProjectItemOption({ itemData }: ProjectItemOptionProps) {
   const [openPop, setOpenPop] = useState(false);
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<EditProjectInput>();
@@ -95,9 +94,7 @@ export default function ProjectItemOption({
           onInteractOutside={() => setOpenPop(false)}
         >
           <div className="flex justify-center px-4 relative">
-            <h4 className="py-2 font-bold text-sm text-center">
-              {itemData.projectName}
-            </h4>
+            <h4 className="py-2 font-bold text-sm text-center">{itemData.projectName}</h4>
             <Popover.Close
               className="absolute top-0 right-2 hover:bg-blue-100 p-2 rounded-md"
               onClick={() => setOpenPop(false)}
@@ -105,49 +102,44 @@ export default function ProjectItemOption({
               <MdOutlineClose />
             </Popover.Close>
           </div>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-2 px-4"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2 px-4">
             <label htmlFor="name-project" className="flex flex-col gap-1">
               <p className="text-xs font-medium">Project Name</p>
               <Input
                 {...register("projectName")}
                 type="text"
                 id="name-project"
+                backgroundColor="white"
+                placeholder="Edit name"
               />
             </label>
-            <label
-              htmlFor="description-project"
-              className="flex flex-col gap-1"
-            >
+            <label htmlFor="description-project" className="flex flex-col gap-1">
               <p className="text-xs font-medium">Project Description</p>
-              <Input
+              <Textarea
                 {...register("projectDescription")}
-                type="text"
                 id="description-project"
+                backgroundColor="white"
+                placeholder="Edit description"
               />
             </label>
             <div className="flex justify-between gap-1">
               {listProjectItenOption.map((item, index) => {
                 if (item.label === "Edit") {
                   return (
-                    <button
-                      key={index}
-                      className="hover:bg-blue-400 bg-blue-500 text-white active:opacity-60 rounded-md px-4 py-2 w-full font-medium"
-                    >
+                    <Button key={index} className="w-full">
                       {item.label}
-                    </button>
+                    </Button>
                   );
                 } else {
                   return (
-                    <button
+                    <Button
                       key={index}
-                      className="hover:bg-red-500 hover:text-white border border-red-500 text-red-500 active:opacity-60 rounded-md px-4 py-2 w-full font-medium"
+                      className="w-full"
+                      variant="destruction"
                       onClick={item.action}
                     >
                       {item.label}
-                    </button>
+                    </Button>
                   );
                 }
               })}

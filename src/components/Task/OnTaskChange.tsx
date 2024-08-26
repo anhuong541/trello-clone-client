@@ -1,4 +1,4 @@
-import { Button, Flex, Input, Select, Text, Textarea } from "@chakra-ui/react";
+import { Flex, Input, Select, Text, Textarea } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import {
   MdNumbers,
@@ -14,6 +14,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { PriorityType, StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
 import { socket } from "@/lib/socket";
+import { Button } from "../common/Button";
 
 // TODO: Update task dueDate everytime update
 // TODO: Update last time edit text render
@@ -86,10 +87,7 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
     );
   } else {
     return (
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="min-h-[27px] flex items-center gap-2 pr-8"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="min-h-[27px] flex items-center gap-2 pr-8">
         <MdOutlineVideoLabel className="w-6 h-6" />
         <Input
           type="text"
@@ -160,34 +158,25 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
           <Text fontWeight={600}>Description</Text>
         </Flex>
         {!openEdit && !descriptionIsEmpty && (
-          <Button
-            variant={"outline"}
-            size={"sm"}
-            onClick={() => setOpenEdit(true)}
-          >
+          <Button variant="outline" size="sm" onClick={() => setOpenEdit(true)}>
             Edit
           </Button>
         )}
       </Flex>
 
-      {!openEdit && !descriptionIsEmpty && (
-        <Text className="pl-8">{dataInput?.description}</Text>
-      )}
+      {!openEdit && !descriptionIsEmpty && <Text className="pl-8">{dataInput?.description}</Text>}
       {(openEdit || descriptionIsEmpty) && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex flexDirection={"column"} gap={2}>
-            <Textarea
-              defaultValue={dataInput?.description}
-              {...register("taskDescription")}
-            />
+            <Textarea defaultValue={dataInput?.description} {...register("taskDescription")} />
             <Flex gap={2}>
-              <Button size={"sm"} type="submit" colorScheme="blue">
+              <Button size="sm" type="submit">
                 Save
               </Button>
               {!descriptionIsEmpty && (
                 <Button
-                  variant={"outline"}
-                  size={"sm"}
+                  variant="ghost"
+                  size="sm"
                   onClick={(e) => {
                     e.preventDefault();
                     setOpenEdit(false);
@@ -208,7 +197,7 @@ const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
 
 function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore } = useContext(KanbanDataContext);
-  const [currentPoint, setCurrentPoint] = useState("0");
+  const [currentPoint, setCurrentPoint] = useState(String(dataInput.storyPoint));
 
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
@@ -260,8 +249,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       <Flex gap={2} className="flex-shrink-0">
         <MdNumbers className="w-6 h-6" />
         <Text fontWeight={600} marginRight={6}>
-          Cost <strong className="font-bold">{dataInput.storyPoint}</strong>{" "}
-          Story Point
+          Cost <strong className="font-bold">{dataInput.storyPoint}</strong> Story Point
         </Text>
       </Flex>
 
@@ -333,13 +321,10 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
       <Flex gap={2} className="flex-shrink-0">
         <MdPriorityHigh className="w-6 h-6" />
         <Text fontWeight={600} marginRight={6}>
-          Current priority is{" "}
-          <strong className="font-bold">{dataInput.priority}</strong>{" "}
+          Current priority is <strong className="font-bold">{dataInput.priority}</strong>{" "}
         </Text>
       </Flex>
-      <Select
-        onChange={(e) => onSelectPriority(e.target?.value as PriorityType)}
-      >
+      <Select onChange={(e) => onSelectPriority(e.target?.value as PriorityType)}>
         <option value="Low">Low</option>
         <option value="Medium">Medium</option>
         <option value="High">High</option>

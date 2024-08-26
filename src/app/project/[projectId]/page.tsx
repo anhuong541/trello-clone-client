@@ -3,20 +3,15 @@ import { handleUserInfo } from "@/actions/query-actions";
 import KanbanBoard from "@/components/KanbanTable/KanbanBoard";
 import Header from "@/components/layouts/Header";
 import { Sidebar } from "@/components/layouts/Sidebar";
-import { socket } from "@/lib/socket";
 
-export default async function ProjectPage({
-  params,
-}: {
-  params: { projectId: string };
-}) {
+export default async function ProjectPage({ params }: { params: { projectId: string } }) {
   const data = await handleUserInfo(cookies());
 
   return (
     <main className="h-screen w-screen flex flex-col">
       <Header userInfo={data?.data} />
       <div className="lg:grid lg:grid-cols-10 flex h-full">
-        <Sidebar projectId={params.projectId} userId={data?.data.uid} />
+        <Sidebar projectId={params.projectId} />
         <KanbanBoard projectId={params.projectId} />
       </div>
     </main>

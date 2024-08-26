@@ -6,19 +6,19 @@ import * as Popover from "@radix-ui/react-popover";
 import { useRouter } from "next/navigation";
 import { MdAdd } from "react-icons/md";
 
-import { Button } from "@/components/common/Button";
-import { Input } from "@/components/common/Input";
 import { onCreateProject } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { toast } from "react-toastify";
 import { useState } from "react";
+import { Input, Textarea } from "@chakra-ui/react";
+import { Button } from "@/components/common/Button";
 
 interface AddProjectInput {
   projectName: string;
   projectDescription: string;
 }
 
-export default function AddProjectPopover({ userId }: { userId: string }) {
+export default function AddProjectPopover() {
   const route = useRouter();
   const [openPop, setOpenPop] = useState(false);
   const queryClient = useQueryClient();
@@ -70,11 +70,22 @@ export default function AddProjectPopover({ userId }: { userId: string }) {
             <div className="flex flex-col gap-2">
               <label htmlFor="name-project" className="flex flex-col gap-1">
                 <p className="text-xs font-medium">Project Name</p>
-                <Input {...register("projectName")} type="text" id="name-project" />
+                <Input
+                  {...register("projectName")}
+                  type="text"
+                  id="name-project"
+                  backgroundColor="white"
+                  placeholder="Project name"
+                />
               </label>
-              <label htmlFor="name-project" className="flex flex-col gap-1">
+              <label htmlFor="description-project" className="flex flex-col gap-1">
                 <p className="text-xs font-medium">Description</p>
-                <Input {...register("projectDescription")} type="text" id="description-project" />
+                <Textarea
+                  {...register("projectDescription")}
+                  id="description-project"
+                  backgroundColor="white"
+                  placeholder="Project description"
+                />
               </label>
             </div>
             <Button type="submit">Add Project</Button>
