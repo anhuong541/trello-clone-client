@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
 import { handleUserInfo } from "@/actions/query-actions";
-import KanbanBoard from "@/components/pages/project/kanbanTable/KanbanBoard";
 import Header from "@/components/layouts/Header";
-import { Sidebar } from "@/components/layouts/Sidebar";
+import Project from "@/components/pages/project";
 
 export default async function ProjectPage({ params }: { params: { projectId: string } }) {
   const data = await handleUserInfo(cookies());
@@ -10,10 +9,7 @@ export default async function ProjectPage({ params }: { params: { projectId: str
   return (
     <main className="h-screen w-screen flex flex-col">
       <Header userInfo={data?.data} />
-      <div className="lg:grid lg:grid-cols-10 flex h-full">
-        <Sidebar projectId={params.projectId} />
-        <KanbanBoard projectId={params.projectId} />
-      </div>
+      <Project projectId={params.projectId} />
     </main>
   );
 }
