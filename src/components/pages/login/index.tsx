@@ -1,16 +1,16 @@
 "use client";
 
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import { toast } from "react-toastify";
-import { useState } from "react";
-import { capitalizeFirstLetter } from "@/lib/utils";
 import { onUserLogin } from "@/actions/query-actions";
-import { AuthFormInput } from "@/types";
 import AuthForm from "@/components/common/auth-form";
+import { capitalizeFirstLetter } from "@/lib/utils";
+import { AuthFormInput } from "@/types";
 
 type LoginInput = {
   emailLogin: string;

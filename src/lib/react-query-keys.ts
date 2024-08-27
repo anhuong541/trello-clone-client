@@ -12,4 +12,7 @@ export const reactQueryKeys = {
   addTask: "add-task",
   updateTask: "update-task",
   deleteTask: "delete-task",
+  viewProjectMember: "view-project-member",
+  removeMember: "remove-project-member",
+  addMember: "add-project-member",
 };

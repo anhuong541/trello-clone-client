@@ -2,6 +2,7 @@ import { HTMLInputTypeAttribute } from "react";
 
 export type TaskStatusType = "Open" | "In-progress" | "Resolved" | "Closed";
 export type PriorityType = "Low" | "Medium" | "High";
+export type AuthorityType = "Edit" | "View" | "Owner";
 export type StoryPointType = 1 | 2 | 3 | 5 | 8 | 13 | 21;
 
 export interface TaskItem {
@@ -43,4 +44,14 @@ export interface AuthFormInput {
     href: string;
     text: string;
   };
+}
+
+export interface ProjectUser {
+  isActive: boolean;
+  email: string;
+  uid: string;
+  activationHash: string | null;
+  createAt: number;
+  username: string;
+  authority: AuthorityType[];
 }

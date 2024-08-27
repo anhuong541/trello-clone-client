@@ -38,10 +38,7 @@ export default function DemoPage() {
             placeholder="chat message"
             className="border px-2 py-1"
           />
-          <button
-            className="border px-2 py-1 active:bg-gray-50 hover:bg-gray-100"
-            type="submit"
-          >
+          <button className="border px-2 py-1 active:bg-gray-50 hover:bg-gray-100" type="submit">
             send
           </button>
         </form>

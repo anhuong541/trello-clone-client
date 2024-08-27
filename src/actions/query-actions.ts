@@ -7,6 +7,7 @@ import {
   RegisterInputType,
   TaskInput,
 } from "@/types/query-types";
+import { AuthorityType } from "@/types";
 
 export const onUserRegister = async (dataInput: RegisterInputType) => {
   return await server.post("/user/register", dataInput);
@@ -111,4 +112,33 @@ export const onDeleteTaskFunction = async (props: { projectId: string; taskId: s
   } catch (error) {
     console.log("delete task error: ", error);
   }
+};
+
+// members
+export const viewProjectMemberAction = async (projectId: string) => {
+  try {
+    return await server.get(`/member/${projectId}`);
+  } catch (error) {
+    console.log("view members error: ", error);
+  }
+};
+
+export const onRemoveMemberOutOfProject = async (props: { projectId: string; email: string }) => {
+  try {
+    return await server.delete(`/member/${props.projectId}/${props.email}`);
+  } catch (error) {
+    console.log("remove member error: ", error);
+  }
+};
+
+type MemberAuthorityType = {
+  email: string;
+  memberAuthority: AuthorityType[];
+};
+
+export const onAddMemberOnProject = async (props: {
+  projectId: string;
+  dataInput: MemberAuthorityType;
+}) => {
+  return await server.post(`/member/${props.projectId}`, props.dataInput);
 };

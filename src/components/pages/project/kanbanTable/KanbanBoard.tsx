@@ -144,19 +144,19 @@ function AddTask({
           <form onSubmit={handleSubmit(onSubmit)}>
             <ModalBody className="flex flex-col gap-2">
               <label className="flex flex-col gap-1" htmlFor="taskTitle">
-                <Text fontSize={"sm"} fontWeight={600}>
+                <Text fontSize="sm" fontWeight={600}>
                   Title
                 </Text>
                 <Input placeholder="Task title" type="text" {...register("taskTitle")} />
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskDescription">
-                <Text fontSize={"sm"} fontWeight={600}>
+                <Text fontSize="sm" fontWeight={600}>
                   Description
                 </Text>
                 <Textarea placeholder="Task description" {...register("taskDescription")} />
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskPriority">
-                <Text fontSize={"sm"} fontWeight={600}>
+                <Text fontSize="sm" fontWeight={600}>
                   Priority
                 </Text>
                 <Select placeholder="Task priority" {...register("taskPriority")}>
@@ -166,7 +166,7 @@ function AddTask({
                 </Select>
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskStoryPoint">
-                <Text fontSize={"sm"} fontWeight={600}>
+                <Text fontSize="sm" fontWeight={600}>
                   Story Point
                 </Text>
                 <Select placeholder="Task story point" {...register("taskStoryPoint")}>
@@ -207,7 +207,7 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
       onMouseEnter={() => setHoverItem(true)}
       onMouseLeave={() => setHoverItem(false)}
     >
-      <Text fontSize={"sm"} fontWeight={600}>
+      <Text fontSize="sm" fontWeight={600}>
         {itemInput.title}
       </Text>
       <div className="flex items-center gap-2" id="icon-state">

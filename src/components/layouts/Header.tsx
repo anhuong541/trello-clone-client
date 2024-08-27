@@ -1,14 +1,19 @@
 "use client";
 
-import Image from "next/image";
-import { MdLogout } from "react-icons/md";
-import * as Popover from "@radix-ui/react-popover";
+import { UserDataContext, UserType } from "@/context/UserInfoContextProvider";
 import { useMutation } from "@tanstack/react-query";
+import * as Popover from "@radix-ui/react-popover";
+import { useContext, useEffect } from "react";
+import { MdLogout } from "react-icons/md";
+import Image from "next/image";
+
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserLogout } from "@/actions/query-actions";
 import { removeSession } from "@/actions/auth-action";
 
-export default function Header({ userInfo }: { userInfo: any }) {
+export default function Header({ userInfo }: { userInfo: UserType }) {
+  const { setUserDataStore } = useContext(UserDataContext);
+
   const logoutAction = useMutation({
     mutationKey: [reactQueryKeys.logout],
     mutationFn: onUserLogout,
@@ -18,6 +23,10 @@ export default function Header({ userInfo }: { userInfo: any }) {
     await removeSession();
     await logoutAction.mutateAsync();
   };
+
+  useEffect(() => {
+    setUserDataStore(userInfo);
+  }, [setUserDataStore, userInfo]);
 
   return (
     <header className="h-[70px] bg-blue-200 w-full flex justify-between items-center gap-2 px-4">

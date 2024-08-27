@@ -1,15 +1,16 @@
-import useScreenView from "@/hooks/ScreenView";
-import { cn } from "@/lib/utils";
-import { TaskItem } from "@/types";
-import { useDraggable, useDroppable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
 import {
   CSSProperties,
   MouseEventHandler,
   ReactNode,
+  useEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
+import useScreenView from "@/hooks/ScreenView";
+import { TaskItem } from "@/types";
+import { cn } from "@/lib/utils";
 
 function Droppable(props: {
   id: string;
@@ -53,8 +54,7 @@ function Draggable(props: {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: props.id,
     data: props.dataItem,
-    disabled:
-      props.disableDrag || (screenView ? Number(screenView) < 1024 : false),
+    disabled: props.disableDrag || (screenView ? Number(screenView) < 1024 : false),
   });
 
   useMemo(() => {
@@ -63,20 +63,21 @@ function Draggable(props: {
       refOffsetWidth.current = ref.current?.offsetWidth;
       refPosition.current = { top: rect?.top, left: rect?.left };
     }
-    // New drag take the old position
+    // forgot the reason why i use Memo but it work so don't touch it :p
   }, [attributes]);
 
   const style: CSSProperties | undefined = useMemo(() => {
     return transform
       ? {
-          transform: CSS.Translate.toString(transform),
+          transform: `translate3d(${transform.x}px, ${transform.y}px, 0) rotate(5deg)`,
           position: "fixed",
           width: refOffsetWidth.current,
           top: refPosition.current?.top,
           left: refPosition.current?.left,
           zIndex: 99999,
-          border: "1px solid #3B82F6",
+          // border: "1px solid #3B82F6",
           borderRadius: "8px",
+          opacity: 0.8,
         }
       : undefined;
   }, [transform]);

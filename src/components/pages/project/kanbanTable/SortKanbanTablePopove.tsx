@@ -9,11 +9,7 @@ import {
   PopoverCloseButton,
 } from "@chakra-ui/react";
 import { Button, List, ListItem } from "@chakra-ui/react";
-import {
-  MdOutlineArrowDownward,
-  MdOutlineArrowUpward,
-  MdSort,
-} from "react-icons/md";
+import { MdOutlineArrowDownward, MdOutlineArrowUpward, MdSort } from "react-icons/md";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { listTableKey } from "./KanbanBoard";
 import { PriorityType } from "@/types";
@@ -131,12 +127,7 @@ export default function SortKanbanTablePopover() {
       <PopoverContent className="!text-blue-900">
         <PopoverArrow />
         <PopoverCloseButton />
-        <PopoverHeader
-          fontWeight={600}
-          display={"flex"}
-          gap={2}
-          alignItems={"center"}
-        >
+        <PopoverHeader fontWeight={600} display={"flex"} gap={2} alignItems={"center"}>
           {sortState.current === "asc" ? (
             <MdOutlineArrowUpward />
           ) : sortState.current === "dec" ? (
