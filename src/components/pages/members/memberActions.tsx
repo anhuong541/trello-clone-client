@@ -135,7 +135,7 @@ function AddMemberModal({ children, projectId }: { children: ReactNode; projectI
 
   return (
     <>
-      <Button onClick={onOpen} size="sm" className="flex gap-2 items-center">
+      <Button onClick={onOpen} size="sm" className="flex gap-2 items-center flex-shrink-0">
         {children}
       </Button>
 
@@ -192,10 +192,10 @@ function ViewMemberInfo({ children, member }: { children: ReactNode; member: Pro
           <ModalCloseButton />
           <ModalBody className="flex flex-col gap-2">
             {member.authority.includes("Owner") ? (
-              <p>He/She is the owner of this project</p>
+              <p>{member.username} is the owner of this project</p>
             ) : (
               <p>
-                He/She can <strong>{member.authority.join(", ")}</strong>{" "}
+                {member.username} can <strong>{member.authority.join(", ")}</strong>{" "}
               </p>
             )}
           </ModalBody>

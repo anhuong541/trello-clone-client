@@ -1,17 +1,40 @@
 "use client";
 
-import { handleProjectInfo, viewProjectMemberAction } from "@/actions/query-actions";
-import { MdOutlineGroupRemove, MdOutlinePersonAdd } from "react-icons/md";
-import { Box, Flex } from "@chakra-ui/react";
+import {
+  handleProjectInfo,
+  handleUserProjectList,
+  viewProjectMemberAction,
+} from "@/actions/query-actions";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverHeader,
+  PopoverBody,
+  PopoverFooter,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverAnchor,
+} from "@chakra-ui/react";
+import {
+  MdOutlineGroupRemove,
+  MdOutlineKeyboardDoubleArrowDown,
+  MdOutlinePersonAdd,
+} from "react-icons/md";
+import { Box, Flex, Select } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useContext } from "react";
+import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { AuthorityType, ProjectUser } from "@/types";
 import { UserDataContext } from "@/context/UserInfoContextProvider";
-import { AddMemberModal, AlertDelete, ViewMemberInfo } from "./memberActionCom";
+import { AddMemberModal, AlertDelete, ViewMemberInfo } from "./memberActions";
+import { ProjectListItem } from "@/components/layouts/Sidebar/Sidebar";
+import { Button } from "@/components/common/Button";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const showMemberRole = (input: AuthorityType[]) => {
   if (input.includes("Owner")) {
@@ -22,6 +45,55 @@ const showMemberRole = (input: AuthorityType[]) => {
     return "View";
   }
 };
+
+function SelectProjectMember({ currentProject }: { currentProject: any }) {
+  const route = useRouter();
+
+  const queryUserProjectList = useQuery({
+    queryKey: [reactQueryKeys.projectList],
+    queryFn: handleUserProjectList,
+  });
+
+  const userProjectList: ProjectListItem[] = useMemo(() => {
+    const data: ProjectListItem[] =
+      (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
+
+    const formatDataUserProjectList = data.sort((a, b) => b?.dueTime - a?.dueTime);
+
+    return formatDataUserProjectList;
+  }, [queryUserProjectList]);
+
+  return (
+    <Popover placement="top-end">
+      <PopoverTrigger>
+        <Button size="sm" variant="outline" className="flex items-center gap-1 font-semibold">
+          <MdOutlineKeyboardDoubleArrowDown className="w-5 h-5" />
+          Change Team
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent width={200} className="border !border-gray-200">
+        <PopoverArrow className="!bg-blue-100" />
+        <PopoverBody>
+          {userProjectList.map((project) => {
+            return (
+              <Box
+                key={project.projectId}
+                className={cn(
+                  "cursor-pointer p-2 hover:bg-gray-100 text-sm whitespace-nowrap text-ellipsis overflow-hidden font-medium",
+                  project?.projectId === currentProject?.projectId &&
+                    "bg-gray-200 hover:bg-gray-200/80"
+                )}
+                onClick={() => route.push(`/project/members/${project.projectId}`)}
+              >
+                {project.projectName}
+              </Box>
+            );
+          })}
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export default function Members({ projectId }: { projectId: string }) {
   const { userDataStore } = useContext(UserDataContext);
@@ -55,9 +127,12 @@ export default function Members({ projectId }: { projectId: string }) {
             {projectInfo?.projectName}
           </h2>
         </div>
-        <AddMemberModal projectId={projectId}>
-          <MdOutlinePersonAdd className="h-5 w-5" /> Add new member
-        </AddMemberModal>
+        <Flex gap={2} alignItems="center">
+          <SelectProjectMember currentProject={projectInfo} />
+          <AddMemberModal projectId={projectId}>
+            <MdOutlinePersonAdd className="h-5 w-5" /> Add new member
+          </AddMemberModal>
+        </Flex>
       </div>
       <hr />
       <Box className="flex flex-col mx-auto py-4 px-6" maxWidth={1024}>

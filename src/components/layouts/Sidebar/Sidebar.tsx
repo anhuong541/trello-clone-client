@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import AddProjectPopover from "./AddProjectPopover";
@@ -13,11 +13,9 @@ import { Skeleton } from "@chakra-ui/react";
 import {
   MdArrowBackIosNew,
   MdArrowForwardIos,
-  MdEditDocument,
   MdOutlineGroup,
   MdOutlinePostAdd,
   MdOutlineTextSnippet,
-  MdPostAdd,
 } from "react-icons/md";
 import useScreenView from "@/hooks/ScreenView";
 import Link from "next/link";
@@ -37,16 +35,20 @@ export interface ProjectSelectProps {
 
 function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
   const route = useRouter();
+  const pathName = usePathname();
   const onSelectProject = async () => {
     route.push(`/project/${item.projectId}`);
   };
+
+  const disableIfOnMemberPage = !pathName.split("/").includes("members");
 
   return (
     <div className="wrappper relative group">
       <div
         className={cn(
           "flex justify-between w-full items-center px-4 py-2 group-hover:bg-blue-100 cursor-pointer",
-          ProjectSelected &&
+          disableIfOnMemberPage &&
+            ProjectSelected &&
             "bg-blue-400 text-white group-hover:bg-blue-300 group-hover:text-blue-800"
         )}
         onClick={onSelectProject}
@@ -59,7 +61,8 @@ function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
       <div
         className={cn(
           "absolute top-[50%] -translate-y-1/2 right-5 group-hover:bg-blue-100 hover:!bg-blue-300 rounded-md",
-          ProjectSelected &&
+          disableIfOnMemberPage &&
+            ProjectSelected &&
             "bg-blue-400 text-white group-hover:bg-blue-300 group-hover:text-blue-800 hover:!bg-blue-400"
         )}
       >
@@ -150,9 +153,7 @@ export default function Sidebar({ projectId }: { projectId: string }) {
           <div className="flex items-center justify-between px-4">
             <div className="flex items-center gap-2">
               <MdOutlinePostAdd className="w-5 h-5" />
-              <h3 className="font-semibold text-sm overflow-hidden whitespace-nowrap">
-                Project List
-              </h3>
+              <h3 className="font-semibold overflow-hidden whitespace-nowrap">Project List</h3>
             </div>
             <AddProjectPopover />
           </div>
