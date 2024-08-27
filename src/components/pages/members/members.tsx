@@ -21,10 +21,10 @@ import {
   MdOutlineKeyboardDoubleArrowDown,
   MdOutlinePersonAdd,
 } from "react-icons/md";
-import { Box, Flex, Select } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import dayjs from "dayjs";
 
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -35,6 +35,7 @@ import { ProjectListItem } from "@/components/layouts/Sidebar/Sidebar";
 import { Button } from "@/components/common/Button";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import useScreenView from "@/hooks/ScreenView";
 
 const showMemberRole = (input: AuthorityType[]) => {
   if (input.includes("Owner")) {
@@ -47,6 +48,7 @@ const showMemberRole = (input: AuthorityType[]) => {
 };
 
 function SelectProjectMember({ currentProject }: { currentProject: any }) {
+  const { screenView } = useScreenView();
   const route = useRouter();
 
   const queryUserProjectList = useQuery({
@@ -64,16 +66,16 @@ function SelectProjectMember({ currentProject }: { currentProject: any }) {
   }, [queryUserProjectList]);
 
   return (
-    <Popover placement="top-end">
+    <Popover placement={screenView ? (Number(screenView) < 360 ? "top-end" : "top") : "top-end"}>
       <PopoverTrigger>
         <Button size="sm" variant="outline" className="flex items-center gap-1 font-semibold">
           <MdOutlineKeyboardDoubleArrowDown className="w-5 h-5" />
           Change Team
         </Button>
       </PopoverTrigger>
-      <PopoverContent width={200} className="border !border-gray-200">
-        <PopoverArrow className="!bg-blue-100" />
-        <PopoverBody>
+      <PopoverContent width={200} className="border !border-gray-200 max-sm:!w-[95vw]">
+        <PopoverArrow />
+        <PopoverBody className="!py-4">
           {userProjectList.map((project) => {
             return (
               <Box
@@ -110,11 +112,10 @@ export default function Members({ projectId }: { projectId: string }) {
 
   const projectInfo = queryUserProjectInfo?.data?.data?.data;
   const projectMember = queryProjectMember?.data?.data?.listUser;
-  // console.log({ projectMember, projectInfo });
 
   return (
     <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
-      <div className="mx-auto max-w-5xl flex justify-between items-center py-4 px-6">
+      <div className="mx-auto max-w-5xl flex sm:justify-between sm:items-center sm:flex-row flex-col sm:gap-0 gap-4 py-4 px-6">
         <div className="flex items-center gap-2">
           <Image
             src="/default-avatar.webp"
@@ -127,7 +128,7 @@ export default function Members({ projectId }: { projectId: string }) {
             {projectInfo?.projectName}
           </h2>
         </div>
-        <Flex gap={2} alignItems="center">
+        <Flex gap={2} className="sm:flex-row flex-col sm:items-center">
           <SelectProjectMember currentProject={projectInfo} />
           <AddMemberModal projectId={projectId}>
             <MdOutlinePersonAdd className="h-5 w-5" /> Add new member
@@ -141,13 +142,17 @@ export default function Members({ projectId }: { projectId: string }) {
           {(projectMember ?? []).map((member: ProjectUser, index: number) => {
             return (
               <Flex
-                justifyContent="space-between"
-                alignItems="center"
                 key={index}
-                className="border-b py-2"
+                className="border-b py-2 sm:flex-row flex-col sm:items-center sm:justify-between gap-4"
               >
                 <ViewMemberInfo member={member}>
-                  <Image src="/default-avatar.webp" alt="" width={36} height={36} />
+                  <Image
+                    src="/default-avatar.webp"
+                    alt=""
+                    width={36}
+                    height={36}
+                    className="sm:w-9 sm:h-9 h-10 w-10 object-contain flex-shrink-0"
+                  />
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <h6 className="font-bold group-hover:underline underline-offset-2">

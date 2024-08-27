@@ -20,13 +20,14 @@ import {
 import { onAddMemberOnProject, onRemoveMemberOutOfProject } from "@/actions/query-actions";
 import { useDisclosure } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { AuthorityType, ProjectUser } from "@/types";
 import { reactQueryKeys } from "@/lib/react-query-keys";
+import useScreenView from "@/hooks/ScreenView";
 
 function AlertDelete({
   children,
@@ -37,6 +38,7 @@ function AlertDelete({
   projectId: string;
   member: ProjectUser;
 }) {
+  const { screenViewType, screenView } = useScreenView();
   const queryClient = useQueryClient();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef: any = useRef();
@@ -54,15 +56,31 @@ function AlertDelete({
     onClose();
   };
 
+  const modalSize = useMemo(() => {
+    return screenViewType === "smallMobile"
+      ? "sm"
+      : screenViewType === "superSmallMobile"
+      ? "xs"
+      : "lg";
+  }, [screenViewType]);
+
+  const isCentered = screenView ? Number(screenView) < 640 : false;
+
   return (
     <>
       <Button onClick={onOpen} size="sm" className="flex items-center gap-1" variant="gray">
         {children}
       </Button>
 
-      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+        size={modalSize}
+        isCentered={isCentered}
+      >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent className="sm:w-auto">
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Remove Member
             </AlertDialogHeader>
@@ -90,6 +108,7 @@ function AlertDelete({
 }
 
 function AddMemberModal({ children, projectId }: { children: ReactNode; projectId: string }) {
+  const { screenViewType, screenView } = useScreenView();
   const queryClient = useQueryClient();
   const [inputEmail, setInputEmail] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -133,13 +152,23 @@ function AddMemberModal({ children, projectId }: { children: ReactNode; projectI
     onClose();
   };
 
+  const modalSize = useMemo(() => {
+    return screenViewType === "smallMobile"
+      ? "sm"
+      : screenViewType === "superSmallMobile"
+      ? "xs"
+      : "lg";
+  }, [screenViewType]);
+
+  const isCentered = screenView ? Number(screenView) < 640 : false;
+
   return (
     <>
       <Button onClick={onOpen} size="sm" className="flex gap-2 items-center flex-shrink-0">
         {children}
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size={modalSize} isCentered={isCentered}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Modal Title</ModalHeader>
@@ -174,7 +203,18 @@ function AddMemberModal({ children, projectId }: { children: ReactNode; projectI
 }
 
 function ViewMemberInfo({ children, member }: { children: ReactNode; member: ProjectUser }) {
+  const { screenViewType, screenView } = useScreenView();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const modalSize = useMemo(() => {
+    return screenViewType === "smallMobile"
+      ? "sm"
+      : screenViewType === "superSmallMobile"
+      ? "xs"
+      : "lg";
+  }, [screenViewType]);
+
+  const isCentered = screenView ? Number(screenView) < 640 : false;
 
   return (
     <>
@@ -182,7 +222,7 @@ function ViewMemberInfo({ children, member }: { children: ReactNode; member: Pro
         {children}
       </div>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size={modalSize} isCentered={isCentered}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader className="flex flex-col">
