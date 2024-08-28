@@ -3,7 +3,7 @@
 import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { onChangeTaskState, onCreateNewTask } from "@/actions/query-actions";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
@@ -235,13 +235,13 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
 
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
-  const [authorized, setAuthorized] = useState<boolean>(false);
+  const [authorized, setAuthorized] = useState<boolean>(true);
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(null);
 
   const updateTaskAction = useMutation({
-    mutationFn: onChangeTaskState,
     mutationKey: [reactQueryKeys.updateTask],
+    mutationFn: onChangeTaskState,
   });
 
   useEffect(() => {
@@ -276,12 +276,13 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     socket.emit(`join_project_room`, projectId);
-    console.log("it trigger!!!");
+    console.log("trigger user join room!!!");
 
     return () => {
       socket.off(`join_project_room`);
     };
-  }, [projectId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     socket.on(`view_project`, (data) => {
@@ -326,7 +327,9 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     };
   }, [setKanbanDataStore]);
 
-  if (kanbanDataStore && !authorized && projectId !== "") {
+  console.log({ kanbanDataStore, authorized, projectId });
+
+  if (!authorized && projectId !== "") {
     return (
       <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
         <div className="min-w-[1100px] h-full bg-blue-100">

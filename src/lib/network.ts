@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export const server = axios.create({
-  baseURL: "http://localhost:3456/",
+  baseURL: process.env.NEXT_PUBLIC_SERVER_DOMAIN,
   withCredentials: true,
 });

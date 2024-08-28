@@ -10,6 +10,7 @@ import Image from "next/image";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserLogout } from "@/actions/query-actions";
 import { removeSession } from "@/actions/auth-action";
+import { socket } from "@/lib/socket";
 
 export default function Header({ userInfo }: { userInfo: UserType }) {
   const { setUserDataStore } = useContext(UserDataContext);
@@ -21,6 +22,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
 
   const handleLogout = async () => {
     await removeSession();
+    socket.emit("user_disconnect");
     await logoutAction.mutateAsync();
   };
 
