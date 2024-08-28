@@ -1,8 +1,13 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, ReactNode } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { MdOutlineClose, MdOutlineMoreHoriz } from "react-icons/md";
-import * as Popover from "@radix-ui/react-popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onDeleteProject, onEditProject } from "@/actions/query-actions";
 import { ProjectListItem } from "./Sidebar";
@@ -11,6 +16,7 @@ import { Button } from "@/components/common/Button";
 
 interface ProjectItemOptionProps {
   itemData: ProjectListItem;
+  children: ReactNode;
 }
 
 interface EditProjectInput {
@@ -18,10 +24,11 @@ interface EditProjectInput {
   projectDescription: string;
 }
 
-export default function ProjectItemOption({ itemData }: ProjectItemOptionProps) {
-  const [openPop, setOpenPop] = useState(false);
+export default function ProjectItemOption({ itemData, children }: ProjectItemOptionProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<EditProjectInput>();
+
   const userEditProjectAction = useMutation({
     mutationFn: onEditProject,
     mutationKey: [reactQueryKeys.editProject],
@@ -40,7 +47,7 @@ export default function ProjectItemOption({ itemData }: ProjectItemOptionProps) 
       label: "Delete",
       action: async (e: MouseEvent) => {
         e.preventDefault();
-        setOpenPop(false);
+        onClose();
         await userDeleteProjectAction.mutateAsync(itemData.projectId);
         queryClient.refetchQueries({
           queryKey: [reactQueryKeys.projectList],
@@ -75,75 +82,62 @@ export default function ProjectItemOption({ itemData }: ProjectItemOptionProps) 
     queryClient.refetchQueries({
       queryKey: [reactQueryKeys.projectList],
     });
-    setOpenPop(false);
     reset();
   };
 
   return (
-    <Popover.Root open={openPop} onOpenChange={(e) => setOpenPop(e)}>
-      <Popover.Trigger className="h-8 w-8 flex justify-center items-center hover:text-white">
-        <MdOutlineMoreHoriz />
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Content
-          side="right"
-          className="translate-x-5 translate-y-24 z-10 flex flex-col border rounded-md py-2 bg-blue-50 text-gray-700"
-          onInteractOutside={() => setOpenPop(false)}
-        >
-          <div className="flex justify-center px-4 relative">
-            <h4 className="py-2 font-bold text-sm text-center">{itemData.projectName}</h4>
-            <Popover.Close
-              className="absolute top-[2px] right-2 hover:bg-blue-100 p-2 rounded-md"
-              onClick={() => setOpenPop(false)}
-            >
-              <MdOutlineClose />
-            </Popover.Close>
+    <Popover placement="right-start" isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+      <PopoverTrigger>{children}</PopoverTrigger>
+      <PopoverContent display="flex" flexDirection="column">
+        <PopoverArrow />
+        {/* <PopoverCloseButton /> */}
+        <div className="flex justify-center px-4 relative">
+          <h4 className="py-2 font-bold text-sm text-center">{itemData.projectName}</h4>
+        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 px-4">
+          <label htmlFor="name-project" className="flex flex-col gap-1">
+            <p className="text-xs font-medium">Project Name</p>
+            <Input
+              {...register("projectName")}
+              type="text"
+              id="name-project"
+              backgroundColor="white"
+              placeholder="Edit name"
+            />
+          </label>
+          <label htmlFor="description-project" className="flex flex-col gap-1">
+            <p className="text-xs font-medium">Project Description</p>
+            <Textarea
+              {...register("projectDescription")}
+              id="description-project"
+              backgroundColor="white"
+              placeholder="Edit description"
+            />
+          </label>
+          <div className="flex justify-between gap-1">
+            {listProjectItenOption.map((item, index) => {
+              if (item.label === "Edit") {
+                return (
+                  <Button key={index} className="w-full">
+                    {item.label}
+                  </Button>
+                );
+              } else {
+                return (
+                  <Button
+                    key={index}
+                    className="w-full"
+                    variant="destruction"
+                    onClick={item.action}
+                  >
+                    {item.label}
+                  </Button>
+                );
+              }
+            })}
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 px-4">
-            <label htmlFor="name-project" className="flex flex-col gap-1">
-              <p className="text-xs font-medium">Project Name</p>
-              <Input
-                {...register("projectName")}
-                type="text"
-                id="name-project"
-                backgroundColor="white"
-                placeholder="Edit name"
-              />
-            </label>
-            <label htmlFor="description-project" className="flex flex-col gap-1">
-              <p className="text-xs font-medium">Project Description</p>
-              <Textarea
-                {...register("projectDescription")}
-                id="description-project"
-                backgroundColor="white"
-                placeholder="Edit description"
-              />
-            </label>
-            <div className="flex justify-between gap-1">
-              {listProjectItenOption.map((item, index) => {
-                if (item.label === "Edit") {
-                  return (
-                    <Button key={index} className="w-full">
-                      {item.label}
-                    </Button>
-                  );
-                } else {
-                  return (
-                    <Button
-                      key={index}
-                      className="w-full"
-                      variant="destruction"
-                      onClick={item.action}
-                    >
-                      {item.label}
-                    </Button>
-                  );
-                }
-              })}
-            </div>
-          </form>
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+        </form>
+      </PopoverContent>
+    </Popover>
   );
 }

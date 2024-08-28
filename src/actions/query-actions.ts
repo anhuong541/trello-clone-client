@@ -81,10 +81,10 @@ export const onDeleteProject = async (projectId: string) => {
 
 export const handleViewProjectTasks = async (projectId: string) => {
   try {
-    if (projectId !== "") {
-      return await server.get(`/task/${projectId}`);
+    if (projectId === "") {
+      return { data: [] };
     }
-    return { data: [] };
+    return await server.get(`/task/${projectId}`);
   } catch (error) {
     console.log("project tasks list error: ", error);
   }

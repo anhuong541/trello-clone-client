@@ -16,8 +16,11 @@ export default function CopyText({ text }: { text: string }) {
   };
 
   return (
-    <div className="flex items-center gap-1 text-sm text-gray-500 px-2 ">
-      <button onClick={copyToClipboard}>{copied ? <MdCheck /> : <MdContentCopy />}</button>
+    <div
+      className="flex items-center gap-1 text-sm text-gray-500 px-2 cursor-pointer overflow-hidden"
+      onClick={copyToClipboard}
+    >
+      <span>{copied ? <MdCheck /> : <MdContentCopy />}</span>
       <p className="overflow-hidden whitespace-nowrap text-ellipsis">{text}</p>
     </div>
   );

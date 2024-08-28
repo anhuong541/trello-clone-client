@@ -185,10 +185,12 @@ export default function Members({ projectId }: { projectId: string }) {
                     </div>
                   </ViewMemberInfo>
                   {userDataStore?.uid !== member.uid && (
-                    <AlertDelete projectId={projectId} member={member}>
-                      <MdOutlineGroupRemove className="h-5 w-5" />
-                      Kick out
-                    </AlertDelete>
+                    <Flex gap={3} alignItems="center" justifyContent="end">
+                      <AlertDelete projectId={projectId} member={member}>
+                        <MdOutlineGroupRemove className="h-5 w-5" />
+                        Kick out
+                      </AlertDelete>
+                    </Flex>
                   )}
                 </Flex>
               );

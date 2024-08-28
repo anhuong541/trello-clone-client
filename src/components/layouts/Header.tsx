@@ -56,7 +56,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
       </div>
       <Popover placement="bottom-end">
         <PopoverTrigger>
-          <button className="flex items-center gap-1 font-semibold h-full">
+          <button className="flex items-center gap-2 font-semibold h-full">
             <p className="font-bold hidden md:block text-black">{userInfo?.username ?? ""}</p>
             <Image
               height={40}

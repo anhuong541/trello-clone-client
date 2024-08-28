@@ -14,6 +14,7 @@ import {
   MdArrowBackIosNew,
   MdArrowForwardIos,
   MdOutlineGroup,
+  MdOutlineMoreHoriz,
   MdOutlinePostAdd,
   MdOutlineTextSnippet,
 } from "react-icons/md";
@@ -34,41 +35,34 @@ export interface ProjectSelectProps {
 }
 
 function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
-  const route = useRouter();
   const pathName = usePathname();
-  const onSelectProject = async () => {
-    route.push(`/project/${item.projectId}`);
-  };
-
   const disableIfOnMemberPage = !pathName.split("/").includes("members");
 
   return (
-    <div className="wrappper relative group">
-      <div
-        className={cn(
-          "flex justify-between w-full items-center px-4 py-2 group-hover:bg-blue-100 cursor-pointer",
-          disableIfOnMemberPage &&
-            ProjectSelected &&
-            "bg-blue-400 text-white group-hover:bg-blue-300 group-hover:text-blue-800"
-        )}
-        onClick={onSelectProject}
-      >
-        <div className="flex items-center gap-2">
-          <MdOutlineTextSnippet className="w-5 h-5" />
-          <p className="font-medium text-sm">{item.projectName}</p>
-        </div>
+    <Link
+      href={`/project/${item.projectId}`}
+      className={cn(
+        "flex justify-between w-full items-center px-4 py-2 hover:bg-blue-100 cursor-pointer",
+        disableIfOnMemberPage &&
+          ProjectSelected &&
+          "bg-blue-400 text-white hover:bg-blue-300 hover:text-blue-800"
+      )}
+    >
+      <div className="flex items-center gap-2">
+        <MdOutlineTextSnippet className="w-5 h-5" />
+        <p className="font-medium text-sm">{item.projectName}</p>
       </div>
-      <div
-        className={cn(
-          "absolute top-[50%] -translate-y-1/2 right-5 group-hover:bg-blue-100 hover:!bg-blue-300 rounded-md",
-          disableIfOnMemberPage &&
-            ProjectSelected &&
-            "bg-blue-400 text-white group-hover:bg-blue-300 group-hover:text-blue-800 hover:!bg-blue-400"
-        )}
-      >
-        <ProjectItemOption itemData={item} />
-      </div>
-    </div>
+      <ProjectItemOption itemData={item}>
+        <button
+          className={cn(
+            "h-8 w-8 flex justify-center items-center rounded-md hover:bg-blue-200",
+            disableIfOnMemberPage && ProjectSelected && "bg-blue-400 text-white hover:text-blue-800"
+          )}
+        >
+          <MdOutlineMoreHoriz className="w-5 h-5" />
+        </button>
+      </ProjectItemOption>
+    </Link>
   );
 }
 
@@ -158,7 +152,9 @@ export default function Sidebar({ projectId }: { projectId: string }) {
           <div className="flex items-center justify-between px-4">
             <div className="flex items-center gap-2">
               <MdOutlinePostAdd className="w-5 h-5" />
-              <h3 className="font-semibold overflow-hidden whitespace-nowrap">Project List</h3>
+              <h3 className="font-semibold text-sm overflow-hidden whitespace-nowrap">
+                Your Projects
+              </h3>
             </div>
             <AddProjectPopover />
           </div>
