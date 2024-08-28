@@ -40,14 +40,6 @@ export default function UpdateTaskStatus({ dataInput }: { dataInput: TaskItem })
       return;
     }
 
-    let dataBoardEditing = kanbanDataStore;
-    dataBoardEditing[dataInput.taskStatus].table = kanbanDataStore[
-      dataInput.taskStatus
-    ].table.filter((item) => item.taskId !== dataInput.taskId);
-    dataBoardEditing[taskStatus].table.push({ ...dataInput, taskStatus });
-
-    socket.emit("realtime_update_project", dataInput.projectId, dataBoardEditing);
-
     await onUserEdit.mutateAsync({
       ...dataInput,
       taskStatus,
@@ -66,8 +58,8 @@ export default function UpdateTaskStatus({ dataInput }: { dataInput: TaskItem })
           {dataInput.taskStatus}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="!bg-blue-100 !w-[220px]">
-        <PopoverArrow className="!bg-blue-100" />
+      <PopoverContent className="!bg-gray-50 !w-[220px]">
+        <PopoverArrow className="!bg-gray-50" />
         <PopoverCloseButton />
         <PopoverHeader paddingLeft={5} color="black" fontWeight={600}>
           Change Table Status

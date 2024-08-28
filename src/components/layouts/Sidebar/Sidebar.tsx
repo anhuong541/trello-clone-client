@@ -91,13 +91,13 @@ export default function Sidebar({ projectId }: { projectId: string }) {
     const data: ProjectListItem[] =
       (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
 
-    const formatDataUserProjectList = data.sort((a, b) => b?.dueTime - a?.dueTime);
-
-    return formatDataUserProjectList;
+    return data?.sort((a, b) => b?.dueTime - a?.dueTime);
   }, [queryUserProjectList]);
 
+  console.log({ queryUserProjectList: queryUserProjectList.data?.data.data });
+
   const projectName = useMemo(() => {
-    return userProjectList.find((item) => item?.projectId === projectId)?.projectName ?? [];
+    return userProjectList?.find((item) => item?.projectId === projectId)?.projectName ?? "";
   }, [projectId, userProjectList]);
 
   return (
@@ -110,13 +110,18 @@ export default function Sidebar({ projectId }: { projectId: string }) {
       {openSidebar && (
         <div className="flex justify-between items-center gap-2 px-4 py-2">
           <div className="flex items-center gap-2">
-            <Image
-              src="/default-avatar.webp"
-              alt="avatar"
-              height={40}
-              width={40}
-              className="w-8 h-8 object-contain rounded-full"
-            />
+            {projectId !== "" ? (
+              <Image
+                src="/default-avatar.webp"
+                alt="avatar"
+                height={40}
+                width={40}
+                className="w-8 h-8 object-contain rounded-full"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full" />
+            )}
+
             <h2 className="font-bold text-lg overflow-hidden whitespace-nowrap">{projectName}</h2>
           </div>
           {Number(screenView) < 1024 && (

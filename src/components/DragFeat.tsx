@@ -23,7 +23,7 @@ function Droppable(props: {
     // data: props.dataItem,
   });
   const style: CSSProperties = {
-    border: isOver ? "1px solid #3399FF" : "1px solid #f9fafb",
+    border: isOver ? "1px solid #3399FF" : "1px solid #eff6ff",
     borderRadius: "8px",
   };
 

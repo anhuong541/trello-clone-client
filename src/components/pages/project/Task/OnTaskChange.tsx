@@ -53,16 +53,6 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
         };
       }
 
-      const dataAfter = {
-        ...kanbanDataStore,
-        [dataInput.taskStatus]: {
-          ...kanbanDataStore[dataInput.taskStatus],
-          table: [...itemTable],
-        },
-      };
-
-      socket.emit("realtime_update_project", dataInput.projectId, dataAfter);
-
       await onUserEdit.mutateAsync({
         ...dataInput,
         title: data.taskTitle,
@@ -131,14 +121,6 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
           description: data.taskDescription,
         };
       }
-
-      let dataChanging = kanbanDataStore;
-      dataChanging[dataInput.taskStatus] = {
-        label: dataInput.taskStatus,
-        table: itemTable,
-      };
-
-      socket.emit("realtime_update_project", dataInput.projectId, dataChanging);
 
       await onUserEdit.mutateAsync({
         ...dataInput,
@@ -228,16 +210,6 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       };
     }
 
-    const dataAfter = {
-      ...kanbanDataStore,
-      [dataInput.taskStatus]: {
-        ...kanbanDataStore[dataInput.taskStatus],
-        table: [...itemTable],
-      },
-    };
-
-    socket.emit("realtime_update_project", dataInput.projectId, dataAfter);
-
     await onUserEdit.mutateAsync({
       ...dataInput,
       storyPoint: point,
@@ -299,16 +271,6 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
         priority,
       };
     }
-
-    const dataAfter = {
-      ...kanbanDataStore,
-      [dataInput.taskStatus]: {
-        ...kanbanDataStore[dataInput.taskStatus],
-        table: [...itemTable],
-      },
-    };
-
-    socket.emit("realtime_update_project", dataInput.projectId, dataAfter);
 
     await onUserEdit.mutateAsync({
       ...dataInput,

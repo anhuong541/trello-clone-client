@@ -1,23 +1,14 @@
 "use client";
 
-import {
-  handleProjectInfo,
-  handleUserProjectList,
-  viewProjectMemberAction,
-} from "@/actions/query-actions";
+import { useRouter } from "next/navigation";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-  PopoverHeader,
   PopoverBody,
-  PopoverFooter,
   PopoverArrow,
-  PopoverCloseButton,
-  PopoverAnchor,
-  Skeleton,
-  SkeletonCircle,
 } from "@chakra-ui/react";
+import { Skeleton, SkeletonCircle } from "@chakra-ui/react";
 import {
   MdOutlineGroupRemove,
   MdOutlineKeyboardDoubleArrowDown,
@@ -29,15 +20,19 @@ import Image from "next/image";
 import { useContext, useMemo } from "react";
 import dayjs from "dayjs";
 
+import {
+  handleProjectInfo,
+  handleUserProjectList,
+  viewProjectMemberAction,
+} from "@/actions/query-actions";
+import { AddMemberModal, AlertDelete, ViewMemberInfo } from "./memberActions";
+import { UserDataContext } from "@/context/UserInfoContextProvider";
+import { ProjectListItem } from "@/components/layouts/Sidebar/Sidebar";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { AuthorityType, ProjectUser } from "@/types";
-import { UserDataContext } from "@/context/UserInfoContextProvider";
-import { AddMemberModal, AlertDelete, ViewMemberInfo } from "./memberActions";
-import { ProjectListItem } from "@/components/layouts/Sidebar/Sidebar";
 import { Button } from "@/components/common/Button";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import useScreenView from "@/hooks/ScreenView";
+import { cn } from "@/lib/utils";
 
 const showMemberRole = (input: AuthorityType[]) => {
   if (input.includes("Owner")) {
@@ -63,7 +58,6 @@ function SelectProjectMember({ currentProject }: { currentProject: any }) {
       (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
 
     const formatDataUserProjectList = data.sort((a, b) => b?.dueTime - a?.dueTime);
-
     return formatDataUserProjectList;
   }, [queryUserProjectList]);
 

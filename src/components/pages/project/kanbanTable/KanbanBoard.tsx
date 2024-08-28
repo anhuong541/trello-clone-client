@@ -58,22 +58,7 @@ const initialKanbanData: KanbanBoardType = {
 
 export const listTableKey: TaskStatusType[] = ["Open", "In-progress", "Resolved", "Closed"];
 
-const addTaskToStatusGroup = (data: KanbanBoardType, newTask: TaskInput) => {
-  let dataReturn = data;
-  const selectTaskTable = dataReturn[newTask.taskStatus].table;
-  dataReturn[newTask.taskStatus].table = [...selectTaskTable, newTask];
-  return dataReturn;
-};
-
-function AddTask({
-  projectId,
-  taskStatus,
-  kanbanData,
-}: {
-  projectId: string;
-  taskStatus: TaskStatusType;
-  kanbanData: KanbanBoardType;
-}) {
+function AddTask({ projectId, taskStatus }: { projectId: string; taskStatus: TaskStatusType }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset, setFocus } = useForm<TaskType>();
@@ -109,8 +94,6 @@ function AddTask({
       storyPoint: data.taskStoryPoint === "" ? 1 : data.taskStoryPoint,
     };
 
-    const dataAfter = addTaskToStatusGroup(kanbanData, dataAddTask);
-    socket.emit("realtime_update_project", projectId, dataAfter);
     queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
     await addTaskAction.mutateAsync(dataAddTask);
     reset();
@@ -271,7 +254,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       dataChangeOnDrag[dragStatus].table = removeDraggingDataFromCurrentTable;
       dataChangeOnDrag[e.over.id as TaskStatusType].table.push(dataInput);
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
-      socket.emit("realtime_update_project", projectId, dataChangeOnDrag);
       await updateTaskAction.mutateAsync(dataInput);
     }
   };
@@ -332,7 +314,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   if (!authorized && projectId !== "") {
     return (
       <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
-        <div className="min-w-[1100px] h-full bg-gray-50">
+        <div className="min-w-[1100px] h-full bg-blue-50">
           <Flex width="100%" height="55px" alignItems="center" className="lg:pl-2 pl-8">
             <p className="text-red-500 font-bold">You are not the member of this project!!!</p>
           </Flex>
@@ -351,7 +333,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   return (
     <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
-      <div className="min-w-[1100px] h-full bg-gray-50">
+      <div className="min-w-[1100px] h-full bg-blue-50">
         <Flex width="100%" height="55px" alignItems="center" className="lg:pl-2 pl-8">
           {!loadingBoard && <SortKanbanTablePopover />}
         </Flex>
@@ -360,7 +342,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
           onDragEnd={handleDragEnd}
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
         >
-          <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
+          <ul className="grid grid-cols-4 gap-2 px-2 pb-2 relative h-[calc(100%-55px)]">
             {loadingBoard ? (
               <SkeletonKanbanBoardTable />
             ) : (
@@ -386,11 +368,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                           <div className="rounded-md bg-gray-200 h-[60px] w-full" />
                         )}
                       </div>
-                      <AddTask
-                        projectId={projectId}
-                        taskStatus={table.label}
-                        kanbanData={kanbanDataStore ?? initialKanbanData}
-                      />
+                      <AddTask projectId={projectId} taskStatus={table.label} />
                     </div>
                   </Droppable>
                 );

@@ -38,7 +38,6 @@ export default function TaskDetail({
 }) {
   const queryClient = useQueryClient();
   const { screenViewType } = useScreenView();
-  const { kanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onDeleteTaskAction = useMutation({
@@ -52,20 +51,11 @@ export default function TaskDetail({
   };
 
   const handleDeleteTask = async () => {
-    if (kanbanDataStore) {
-      let currKanbanDataStore = kanbanDataStore;
-      currKanbanDataStore[data.taskStatus].table = currKanbanDataStore[
-        data.taskStatus
-      ].table.filter((item) => item.taskId !== data.taskId);
-
-      socket.emit("realtime_update_project", data.projectId, currKanbanDataStore);
-
-      await onDeleteTaskAction.mutateAsync({
-        projectId: data.projectId,
-        taskId: data.taskId,
-      });
-      handleClose();
-    }
+    await onDeleteTaskAction.mutateAsync({
+      projectId: data.projectId,
+      taskId: data.taskId,
+    });
+    handleClose();
   };
 
   const modalSize = useMemo(() => {
@@ -82,7 +72,7 @@ export default function TaskDetail({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <Button onClick={onOpen} size="icon" variant="outline" className="px-2 py-2 bg-blue-100">
+      <Button onClick={onOpen} size="icon" variant="gray" className="px-2 py-2">
         {children}
       </Button>
 

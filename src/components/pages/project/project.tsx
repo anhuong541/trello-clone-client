@@ -8,7 +8,7 @@ export default function Project({ projectId }: { projectId: string }) {
       <>
         <div className="lg:grid lg:grid-cols-10 hidden h-full">
           <Sidebar projectId="" />
-          <div className="col-span-8 bg-blue-100" />
+          <div className="col-span-8 bg-blue-50" />
         </div>
 
         <SelectProjectMobileView />
