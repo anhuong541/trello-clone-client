@@ -28,6 +28,7 @@ import { toast } from "react-toastify";
 import { socket } from "@/lib/socket";
 import { Button } from "../../../common/Button";
 import { TaskDetail } from "../Task";
+import SortKanbanTablePopover from "./SortKanbanTablePopove";
 
 interface TaskType {
   taskTitle: string;
@@ -238,6 +239,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   const [authorized, setAuthorized] = useState<boolean>(true);
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(null);
+  const [loadingBoard, setLoadingBoard] = useState(true);
 
   const updateTaskAction = useMutation({
     mutationKey: [reactQueryKeys.updateTask],
@@ -276,8 +278,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     socket.emit(`join_project_room`, projectId);
-    console.log("trigger user join room!!!");
-
+    // console.log("trigger user join room!!!");
     return () => {
       socket.off(`join_project_room`);
     };
@@ -320,6 +321,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       }
 
       createKanbanMap.clear();
+      setLoadingBoard(false);
     });
 
     return () => {
@@ -327,13 +329,11 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     };
   }, [setKanbanDataStore]);
 
-  console.log({ kanbanDataStore, authorized, projectId });
-
   if (!authorized && projectId !== "") {
     return (
       <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
-        <div className="min-w-[1100px] h-full bg-blue-100">
-          <Flex width={"100%"} height="55px" alignItems={"center"} className="lg:pl-2 pl-8">
+        <div className="min-w-[1100px] h-full bg-gray-50">
+          <Flex width="100%" height="55px" alignItems="center" className="lg:pl-2 pl-8">
             <p className="text-red-500 font-bold">You are not the member of this project!!!</p>
           </Flex>
           <DndContext
@@ -351,9 +351,9 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   return (
     <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
-      <div className="min-w-[1100px] h-full bg-blue-100">
-        <Flex width={"100%"} height="55px" alignItems={"center"} className="lg:pl-2 pl-8">
-          {/* {!queryProjectTasksList.isLoading && <SortKanbanTablePopover />} */}
+      <div className="min-w-[1100px] h-full bg-gray-50">
+        <Flex width="100%" height="55px" alignItems="center" className="lg:pl-2 pl-8">
+          {!loadingBoard && <SortKanbanTablePopover />}
         </Flex>
 
         <DndContext
@@ -361,10 +361,9 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
           onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
         >
           <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
-            {
-              // queryProjectTasksList.isLoading ? (
-              //   <SkeletonKanbanBoardTable />
-              // ) : (
+            {loadingBoard ? (
+              <SkeletonKanbanBoardTable />
+            ) : (
               listTableKey.map((key: TaskStatusType) => {
                 const table = (kanbanDataStore ?? initialKanbanData)[key];
 
@@ -396,8 +395,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                   </Droppable>
                 );
               })
-              // )
-            }
+            )}
           </ul>
         </DndContext>
       </div>

@@ -22,18 +22,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
 import { toast } from "react-toastify";
 
-const listStatus: TaskStatusType[] = [
-  "Open",
-  "In-progress",
-  "Resolved",
-  "Closed",
-];
+const listStatus: TaskStatusType[] = ["Open", "In-progress", "Resolved", "Closed"];
 
-export default function UpdateTaskStatus({
-  dataInput,
-}: {
-  dataInput: TaskItem;
-}) {
+export default function UpdateTaskStatus({ dataInput }: { dataInput: TaskItem }) {
   const queryClient = useQueryClient();
   const { kanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -55,11 +46,7 @@ export default function UpdateTaskStatus({
     ].table.filter((item) => item.taskId !== dataInput.taskId);
     dataBoardEditing[taskStatus].table.push({ ...dataInput, taskStatus });
 
-    socket.emit(
-      "realtime_update_project",
-      dataInput.projectId,
-      dataBoardEditing
-    );
+    socket.emit("realtime_update_project", dataInput.projectId, dataBoardEditing);
 
     await onUserEdit.mutateAsync({
       ...dataInput,
@@ -75,14 +62,14 @@ export default function UpdateTaskStatus({
   return (
     <Popover isOpen={isOpen} onClose={onClose}>
       <PopoverTrigger>
-        <Button variant={"link"} fontSize={"md"} onClick={onOpen}>
+        <Button variant="link" fontSize="md" onClick={onOpen}>
           {dataInput.taskStatus}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="!bg-blue-100 !w-[220px]">
         <PopoverArrow className="!bg-blue-100" />
         <PopoverCloseButton />
-        <PopoverHeader paddingLeft={5} color={"black"} fontWeight={600}>
+        <PopoverHeader paddingLeft={5} color="black" fontWeight={600}>
           Change Table Status
         </PopoverHeader>
         <PopoverBody>

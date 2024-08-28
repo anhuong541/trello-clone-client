@@ -107,7 +107,15 @@ function AlertDelete({
   );
 }
 
-function AddMemberModal({ children, projectId }: { children: ReactNode; projectId: string }) {
+function AddMemberModal({
+  children,
+  projectId,
+  isDisable,
+}: {
+  children: ReactNode;
+  projectId: string;
+  isDisable: boolean;
+}) {
   const { screenViewType, screenView } = useScreenView();
   const queryClient = useQueryClient();
   const [inputEmail, setInputEmail] = useState<string | null>(null);
@@ -164,7 +172,12 @@ function AddMemberModal({ children, projectId }: { children: ReactNode; projectI
 
   return (
     <>
-      <Button onClick={onOpen} size="sm" className="flex gap-2 items-center flex-shrink-0">
+      <Button
+        onClick={onOpen}
+        size="sm"
+        className="flex gap-2 items-center flex-shrink-0"
+        disabled={isDisable}
+      >
         {children}
       </Button>
 

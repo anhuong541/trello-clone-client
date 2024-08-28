@@ -94,7 +94,7 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
           defaultValue={dataInput?.title}
           placeholder="Can't miss the task name"
           className="text-sm font-bold"
-          size={"md"}
+          size="md"
           {...register("taskTitle")}
         />
       </form>
@@ -151,7 +151,7 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
   };
 
   return (
-    <Flex flexDirection={"column"} gap={2}>
+    <Flex flexDirection="column" gap={2}>
       <Flex gap={4} justifyContent="space-between" alignItems="center">
         <Flex gap={2}>
           <MdOutlineDescription className="w-6 h-6" />
@@ -167,7 +167,7 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
       {!openEdit && !descriptionIsEmpty && <Text className="pl-8">{dataInput?.description}</Text>}
       {(openEdit || descriptionIsEmpty) && (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex flexDirection={"column"} gap={2}>
+          <Flex flexDirection="column" gap={2}>
             <Textarea defaultValue={dataInput?.description} {...register("taskDescription")} />
             <Flex gap={2}>
               <Button size="sm" type="submit">
@@ -253,7 +253,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
         </Text>
       </Flex>
 
-      <Flex flexDirection={"column"} gap={2}>
+      <Flex flexDirection="column" gap={2}>
         <Select
           placeholder={currentPoint}
           onChange={async (e) => {

@@ -88,11 +88,11 @@ export default function TaskDetail({
 
       <Modal isOpen={isOpen} onClose={handleClose} size={modalSize}>
         <ModalOverlay>
-          <ModalContent borderRadius={"12px"}>
+          <ModalContent borderRadius="12px">
             <ModalCloseButton />
             <ModalHeader display="flex" flexDirection="column" gap={2}>
               <TaskTitle dataInput={data} />
-              <Flex flexDirection={"column"}>
+              <Flex flexDirection="column">
                 <div className="text-sm text-[#808080]">
                   This task is from <UpdateTaskStatus dataInput={data} /> list
                 </div>
@@ -103,7 +103,7 @@ export default function TaskDetail({
             </ModalHeader>
             <ModalBody
               display="flex"
-              flexDirection={"column"}
+              flexDirection="column"
               gap={8}
               paddingTop={4}
               paddingBottom={4}
@@ -115,7 +115,7 @@ export default function TaskDetail({
 
             <ModalFooter className="flex items-center justify-end gap-2">
               <Button
-                color={"white"}
+                color="white"
                 onClick={() => {
                   handleClose();
                   queryClient.refetchQueries({
