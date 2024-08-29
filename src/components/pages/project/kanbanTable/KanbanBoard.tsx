@@ -2,14 +2,14 @@
 
 import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MouseEventHandler, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { onChangeTaskState, onCreateNewTask } from "@/actions/query-actions";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
-import { generateNewUid } from "@/lib/utils";
+import { cn, generateNewUid } from "@/lib/utils";
 
 import { Draggable, Droppable } from "../../../DragFeat";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
@@ -59,10 +59,26 @@ const initialKanbanData: KanbanBoardType = {
 
 export const listTableKey: TaskStatusType[] = ["Open", "In-progress", "Resolved", "Closed"];
 
-function AddTask({ projectId, taskStatus }: { projectId: string; taskStatus: TaskStatusType }) {
+const addTaskToStatusGroup = (data: KanbanBoardType, newTask: TaskInput) => {
+  let dataReturn = data;
+  const selectTaskTable = dataReturn[newTask.taskStatus].table;
+  dataReturn[newTask.taskStatus].table = [...selectTaskTable, newTask];
+  return dataReturn;
+};
+
+function AddTask({
+  projectId,
+  taskStatus,
+  setIsUserAction,
+}: {
+  projectId: string;
+  taskStatus: TaskStatusType;
+  setIsUserAction: Dispatch<SetStateAction<boolean>>;
+}) {
+  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, watch, reset, setFocus } = useForm<TaskType>();
+  const { register, handleSubmit, watch, reset } = useForm<TaskType>();
 
   const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
 
@@ -95,16 +111,13 @@ function AddTask({ projectId, taskStatus }: { projectId: string; taskStatus: Tas
       storyPoint: data.taskStoryPoint === "" ? 1 : data.taskStoryPoint,
     };
 
+    const dataAfter = addTaskToStatusGroup(kanbanDataStore ?? initialKanbanData, dataAddTask);
+    setKanbanDataStore(dataAfter);
+    setIsUserAction(true);
     queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
     await addTaskAction.mutateAsync(dataAddTask);
     reset();
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      setFocus("taskTitle");
-    }
-  }, [isOpen, setFocus]);
 
   const modalOnClose = () => {
     onClose();
@@ -201,10 +214,21 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
       <Text fontSize="sm" fontWeight={600}>
         {itemInput.title}
       </Text>
-      <div className="flex items-center gap-2" id="icon-state">
+      <div className="flex items-center gap-2 font-semibold" id="icon-state">
         {itemInput?.description?.length > 0 && <MdOutlineSubject />}
-        <div className="text-xs">{itemInput.priority}</div>
-        <div className="text-xs">{itemInput.storyPoint}</div>
+        <div className="text-xs">{itemInput?.storyPoint}</div>
+        <div
+          className={cn(
+            itemInput.priority === "High"
+              ? "text-red-400"
+              : itemInput.priority === "Medium"
+              ? "text-blue-400"
+              : "text-gray-400",
+            "text-xs"
+          )}
+        >
+          {itemInput?.priority}
+        </div>
       </div>
 
       {hoverItem && (
@@ -282,59 +306,56 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   }, []);
 
   useEffect(() => {
-    if (!socketClient) {
-      console.log("socket is null");
-      return;
-    }
+    if (socketClient) {
+      socketClient.on(`view_project`, (data) => {
+        if (data?.error) {
+          setAuthorized(false);
+          return console.error(data.error);
+        }
+        setAuthorized(true);
+        if (isUserAction) {
+          console.log("it stop here");
+          setIsUserAction(false);
+          return;
+        }
 
-    socketClient.on(`view_project`, (data) => {
-      if (data?.error) {
-        setAuthorized(false);
-        return console.error(data.error);
-      }
-      setAuthorized(true);
-      if (isUserAction) {
-        console.log("it stop here");
-        setIsUserAction(false);
-        return;
-      }
+        console.log("it trigger view_project!!!");
 
-      console.log("view_project run");
+        const createKanbanMap = new Map();
+        data.forEach((item: TaskItem) => {
+          const value = createKanbanMap.get(item.taskStatus) ?? [];
+          createKanbanMap.set(item.taskStatus, [...value, item]);
+        });
 
-      const createKanbanMap = new Map();
-      data.forEach((item: TaskItem) => {
-        const value = createKanbanMap.get(item.taskStatus) ?? [];
-        createKanbanMap.set(item.taskStatus, [...value, item]);
+        if (data.length > 0) {
+          setKanbanDataStore({
+            Open: {
+              label: "Open",
+              table: createKanbanMap.get("Open") ?? [],
+            },
+            "In-progress": {
+              label: "In-progress",
+              table: createKanbanMap.get("In-progress") ?? [],
+            },
+            Resolved: {
+              label: "Resolved",
+              table: createKanbanMap.get("Resolved") ?? [],
+            },
+            Closed: {
+              label: "Closed",
+              table: createKanbanMap.get("Closed") ?? [],
+            },
+          });
+        }
+
+        createKanbanMap.clear();
+        setLoadingBoard(false);
       });
 
-      if (data.length > 0) {
-        setKanbanDataStore({
-          Open: {
-            label: "Open",
-            table: createKanbanMap.get("Open") ?? [],
-          },
-          "In-progress": {
-            label: "In-progress",
-            table: createKanbanMap.get("In-progress") ?? [],
-          },
-          Resolved: {
-            label: "Resolved",
-            table: createKanbanMap.get("Resolved") ?? [],
-          },
-          Closed: {
-            label: "Closed",
-            table: createKanbanMap.get("Closed") ?? [],
-          },
-        });
-      }
-
-      createKanbanMap.clear();
-      setLoadingBoard(false);
-    });
-
-    return () => {
-      socketClient.off(`view_project`);
-    };
+      return () => {
+        socketClient.off(`view_project`);
+      };
+    }
   }, [isUserAction, setKanbanDataStore, socketClient]);
 
   if (!authorized && projectId !== "") {
@@ -394,7 +415,11 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                           <div className="rounded-md bg-gray-200 h-[60px] w-full" />
                         )}
                       </div>
-                      <AddTask projectId={projectId} taskStatus={table.label} />
+                      <AddTask
+                        projectId={projectId}
+                        taskStatus={table.label}
+                        setIsUserAction={setIsUserAction}
+                      />
                     </div>
                   </Droppable>
                 );
