@@ -25,10 +25,11 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { toast } from "react-toastify";
-import { socket } from "@/lib/socket";
 import { Button } from "../../../common/Button";
 import { TaskDetail } from "../Task";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
+import { io } from "socket.io-client";
+import { SocketClient } from "@/context/SocketProvider";
 
 interface TaskType {
   taskTitle: string;
@@ -226,6 +227,7 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { socketClient, setSocketClient } = useContext(SocketClient);
   const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(null);
   const [authorized, setAuthorized] = useState<boolean>(true);
   const [loadingBoard, setLoadingBoard] = useState(true);
@@ -268,16 +270,24 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   };
 
   useEffect(() => {
-    socket.emit(`join_project_room`, projectId);
+    const new_socket = io("http://localhost:8080", { withCredentials: true, reconnection: true });
+    setSocketClient(new_socket);
+    new_socket.emit(`join_project_room`, projectId);
     // console.log("trigger user join room!!!");
     return () => {
-      socket.off(`join_project_room`);
+      new_socket.off(`join_project_room`);
+      new_socket.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    socket.on(`view_project`, (data) => {
+    if (!socketClient) {
+      console.log("socket is null");
+      return;
+    }
+
+    socketClient.on(`view_project`, (data) => {
       if (data?.error) {
         setAuthorized(false);
         return console.error(data.error);
@@ -323,9 +333,9 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     });
 
     return () => {
-      socket.off(`view_project`);
+      socketClient.off(`view_project`);
     };
-  }, [isUserAction, setKanbanDataStore]);
+  }, [isUserAction, setKanbanDataStore, socketClient]);
 
   if (!authorized && projectId !== "") {
     return (

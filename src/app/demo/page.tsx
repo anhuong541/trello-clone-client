@@ -1,28 +1,32 @@
 "use client";
 
-import { socket } from "@/lib/socket";
-import { useEffect, useState } from "react";
+import { SocketClient } from "@/context/SocketProvider";
+import { useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 const projectId = "cd12b604-7b96-44fc-8830-16a2ca2e1baf";
 
 export default function DemoPage() {
+  const { socketClient } = useContext(SocketClient);
   const { register, handleSubmit, watch, reset } = useForm<any>();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    socket.on(`project_room_${projectId}`, (data) => {
+    if (!socketClient) {
+      return;
+    }
+    socketClient.on(`project_room_${projectId}`, (data) => {
       console.log("sf");
       console.log("it trigger!!!", data);
     });
 
     return () => {
-      socket.off(`project_room_${projectId}`);
+      socketClient.off(`project_room_${projectId}`);
     };
   }, []);
 
   const onSubmit: SubmitHandler<any> = async (data) => {
-    socket.emit("project_room", projectId);
+    socketClient && socketClient.emit("project_room", projectId);
     // reset();
   };
 

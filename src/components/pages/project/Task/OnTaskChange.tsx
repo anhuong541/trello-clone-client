@@ -13,7 +13,6 @@ import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { PriorityType, StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
-import { socket } from "@/lib/socket";
 import { Button } from "@/components/common/Button";
 
 // TODO: Update task dueDate everytime update

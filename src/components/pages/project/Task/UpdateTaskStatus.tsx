@@ -1,7 +1,6 @@
 import { onChangeTaskState } from "@/actions/query-actions";
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import { socket } from "@/lib/socket";
 import { PriorityType, TaskItem, TaskStatusType } from "@/types";
 import {
   Popover,

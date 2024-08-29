@@ -10,17 +10,15 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/react";
-import { MouseEventHandler, ReactNode, useContext, useMemo } from "react";
+import { MouseEventHandler, ReactNode, useMemo } from "react";
 import dayjs from "dayjs";
 import { TaskItem } from "@/types";
 import { TaskDescription, TaskPriority, TaskStoryPoint, TaskTitle } from "./OnTaskChange";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { onDeleteTaskFunction } from "@/actions/query-actions";
 import { reactQueryKeys } from "@/lib/react-query-keys";
-import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import useScreenView from "@/hooks/ScreenView";
 import UpdateTaskStatus from "./UpdateTaskStatus";
-import { socket } from "@/lib/socket";
 import { Button } from "@/components/common/Button";
 
 export default function TaskDetail({

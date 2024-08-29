@@ -61,7 +61,7 @@ export default function AddProjectPopover() {
   return (
     <Popover placement="right-start" isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
       <PopoverTrigger>
-        <button className="h-8 w-8 rounded-md bg-blue-400 flex justify-center items-center text-white font-medium">
+        <button className="h-9 w-9 rounded-md bg-blue-400 flex justify-center items-center text-white font-medium">
           <MdAdd className="w-5 h-5" />
         </button>
       </PopoverTrigger>

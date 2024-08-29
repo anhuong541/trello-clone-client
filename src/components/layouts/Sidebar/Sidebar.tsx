@@ -4,11 +4,10 @@ import {
   MdArrowBackIosNew,
   MdArrowForwardIos,
   MdOutlineGroup,
-  MdOutlineMoreHoriz,
   MdOutlinePostAdd,
   MdOutlineTextSnippet,
 } from "react-icons/md";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@chakra-ui/react";
@@ -56,16 +55,11 @@ function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
         </div>
       </Link>
       <div className="relative z-10 flex">
-        <ProjectItemOption itemData={item}>
-          <button
-            className={cn(
-              "h-9 w-9 flex justify-center items-center m-auto hover:text-white hover:bg-blue-400/60",
-              disableIfOnMemberPage && ProjectSelected && "hover:bg-blue-400"
-            )}
-          >
-            <MdOutlineMoreHoriz className="w-5 h-5" />
-          </button>
-        </ProjectItemOption>
+        <ProjectItemOption
+          itemData={item}
+          disableIfOnMemberPage={disableIfOnMemberPage}
+          ProjectSelected={ProjectSelected}
+        />
       </div>
     </div>
   );

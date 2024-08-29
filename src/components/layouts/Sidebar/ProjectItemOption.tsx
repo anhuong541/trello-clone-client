@@ -1,4 +1,4 @@
-import { MouseEvent, ReactNode } from "react";
+import { MouseEvent } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -13,10 +13,13 @@ import { onDeleteProject, onEditProject } from "@/actions/query-actions";
 import { ProjectListItem } from "./Sidebar";
 import { Input, Textarea } from "@chakra-ui/react";
 import { Button } from "@/components/common/Button";
+import { MdOutlineMoreHoriz } from "react-icons/md";
+import { cn } from "@/lib/utils";
 
 interface ProjectItemOptionProps {
   itemData: ProjectListItem;
-  children: ReactNode;
+  disableIfOnMemberPage: boolean;
+  ProjectSelected: boolean;
 }
 
 interface EditProjectInput {
@@ -24,7 +27,11 @@ interface EditProjectInput {
   projectDescription: string;
 }
 
-export default function ProjectItemOption({ itemData, children }: ProjectItemOptionProps) {
+export default function ProjectItemOption({
+  itemData,
+  disableIfOnMemberPage,
+  ProjectSelected,
+}: ProjectItemOptionProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<EditProjectInput>();
@@ -87,9 +94,19 @@ export default function ProjectItemOption({ itemData, children }: ProjectItemOpt
 
   return (
     <Popover placement="right-start" isOpen={isOpen} onOpen={onOpen} onClose={onClose} autoFocus>
-      <PopoverTrigger>{children}</PopoverTrigger>
+      <PopoverTrigger>
+        <button
+          className={cn(
+            "h-9 w-9 flex justify-center items-center m-auto hover:text-white hover:bg-blue-400/60",
+            disableIfOnMemberPage && ProjectSelected && "hover:bg-blue-400"
+          )}
+        >
+          <MdOutlineMoreHoriz className="w-5 h-5" />
+        </button>
+      </PopoverTrigger>
       <PopoverContent display="flex" flexDirection="column" className="py-4">
         <PopoverArrow />
+        {/* <PopoverCloseButton /> */}
         <div className="flex justify-center px-4 relative">
           <h4 className="py-2 font-bold text-sm text-center">{itemData.projectName}</h4>
         </div>
