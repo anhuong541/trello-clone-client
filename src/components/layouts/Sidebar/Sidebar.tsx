@@ -1,15 +1,5 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
-import AddProjectPopover from "./AddProjectPopover";
-import { handleUserProjectList } from "@/actions/query-actions";
-import { reactQueryKeys } from "@/lib/react-query-keys";
-import ProjectItemOption from "./ProjectItemOption";
-import { useEffect, useMemo, useState } from "react";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@chakra-ui/react";
 import {
   MdArrowBackIosNew,
   MdArrowForwardIos,
@@ -18,8 +8,19 @@ import {
   MdOutlinePostAdd,
   MdOutlineTextSnippet,
 } from "react-icons/md";
-import useScreenView from "@/hooks/ScreenView";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@chakra-ui/react";
+import Image from "next/image";
 import Link from "next/link";
+
+import { handleUserProjectList } from "@/actions/query-actions";
+import { reactQueryKeys } from "@/lib/react-query-keys";
+import AddProjectPopover from "./AddProjectPopover";
+import ProjectItemOption from "./ProjectItemOption";
+import useScreenView from "@/hooks/ScreenView";
+import { cn } from "@/lib/utils";
 
 export interface ProjectListItem {
   description: string;
@@ -39,30 +40,34 @@ function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
   const disableIfOnMemberPage = !pathName.split("/").includes("members");
 
   return (
-    <Link
-      href={`/project/${item.projectId}`}
+    <div
       className={cn(
-        "flex justify-between w-full items-center px-4 py-2 hover:bg-blue-100 cursor-pointer",
-        disableIfOnMemberPage &&
-          ProjectSelected &&
-          "bg-blue-400 text-white hover:bg-blue-300 hover:text-blue-800"
+        "flex relative group pr-4 hover:bg-blue-300",
+        disableIfOnMemberPage && ProjectSelected && "bg-blue-400 hover:bg-blue-400/70"
       )}
     >
-      <div className="flex items-center gap-2">
-        <MdOutlineTextSnippet className="w-5 h-5" />
-        <p className="font-medium text-sm">{item.projectName}</p>
+      <Link
+        href={`/project/${item.projectId}`}
+        className="flex justify-between w-full items-center px-4 py-2 group-hover:text-blue-800 cursor-pointer before:absolute before:top-0 before:left-0 before:bottom-0 before:right-0 group-hover:before:contents-['']"
+      >
+        <div className="flex items-center gap-2">
+          <MdOutlineTextSnippet className="w-5 h-5" />
+          <p className="font-medium text-sm">{item.projectName}</p>
+        </div>
+      </Link>
+      <div className="relative z-10 flex">
+        <ProjectItemOption itemData={item}>
+          <button
+            className={cn(
+              "h-9 w-9 flex justify-center items-center m-auto hover:text-white hover:bg-blue-400/60",
+              disableIfOnMemberPage && ProjectSelected && "hover:bg-blue-400"
+            )}
+          >
+            <MdOutlineMoreHoriz className="w-5 h-5" />
+          </button>
+        </ProjectItemOption>
       </div>
-      <ProjectItemOption itemData={item}>
-        <button
-          className={cn(
-            "h-8 w-8 flex justify-center items-center rounded-md hover:bg-blue-200",
-            disableIfOnMemberPage && ProjectSelected && "bg-blue-400 text-white hover:text-blue-800"
-          )}
-        >
-          <MdOutlineMoreHoriz className="w-5 h-5" />
-        </button>
-      </ProjectItemOption>
-    </Link>
+    </div>
   );
 }
 
@@ -87,8 +92,6 @@ export default function Sidebar({ projectId }: { projectId: string }) {
 
     return data?.sort((a, b) => b?.dueTime - a?.dueTime);
   }, [queryUserProjectList]);
-
-  console.log({ queryUserProjectList: queryUserProjectList.data?.data.data });
 
   const projectName = useMemo(() => {
     return userProjectList?.find((item) => item?.projectId === projectId)?.projectName ?? "";
@@ -158,7 +161,7 @@ export default function Sidebar({ projectId }: { projectId: string }) {
             </div>
             <AddProjectPopover />
           </div>
-          <div className="flex flex-col overflow-hidden whitespace-nowrap">
+          <div className="flex flex-col whitespace-nowrap">
             {queryUserProjectList.isLoading ? (
               <Skeleton height="60px" />
             ) : (

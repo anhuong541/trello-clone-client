@@ -41,8 +41,8 @@ export default function TaskDetail({
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onDeleteTaskAction = useMutation({
-    mutationFn: onDeleteTaskFunction,
     mutationKey: [reactQueryKeys.deleteTask],
+    mutationFn: onDeleteTaskFunction,
   });
 
   const handleClose = () => {

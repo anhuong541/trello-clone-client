@@ -3,7 +3,7 @@
 import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { MouseEventHandler, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { onChangeTaskState, onCreateNewTask } from "@/actions/query-actions";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
@@ -167,7 +167,13 @@ function AddTask({ projectId, taskStatus }: { projectId: string; taskStatus: Tas
 
             <ModalFooter display="flex" alignItems="center" justifyContent="end" gap={2}>
               <Button type="submit">Add</Button>
-              <Button variant="ghost" onClick={modalOnClose}>
+              <Button
+                variant="ghost"
+                onClick={(e) => {
+                  e.preventDefault();
+                  modalOnClose();
+                }}
+              >
                 Cancel
               </Button>
             </ModalFooter>
@@ -195,7 +201,7 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
         {itemInput.title}
       </Text>
       <div className="flex items-center gap-2" id="icon-state">
-        {itemInput?.description.length > 0 && <MdOutlineSubject />}
+        {itemInput?.description?.length > 0 && <MdOutlineSubject />}
         <div className="text-xs">{itemInput.priority}</div>
         <div className="text-xs">{itemInput.storyPoint}</div>
       </div>
@@ -219,10 +225,11 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
 
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
-  const [authorized, setAuthorized] = useState<boolean>(true);
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(null);
+  const [authorized, setAuthorized] = useState<boolean>(true);
   const [loadingBoard, setLoadingBoard] = useState(true);
+  const [isUserAction, setIsUserAction] = useState(false);
 
   const updateTaskAction = useMutation({
     mutationKey: [reactQueryKeys.updateTask],
@@ -253,8 +260,10 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       );
       dataChangeOnDrag[dragStatus].table = removeDraggingDataFromCurrentTable;
       dataChangeOnDrag[e.over.id as TaskStatusType].table.push(dataInput);
-      queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
+      setKanbanDataStore(dataChangeOnDrag);
+      setIsUserAction(true);
       await updateTaskAction.mutateAsync(dataInput);
+      queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
     }
   };
 
@@ -274,6 +283,13 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
         return console.error(data.error);
       }
       setAuthorized(true);
+      if (isUserAction) {
+        console.log("it stop here");
+        setIsUserAction(false);
+        return;
+      }
+
+      console.log("view_project run");
 
       const createKanbanMap = new Map();
       data.forEach((item: TaskItem) => {
@@ -309,7 +325,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     return () => {
       socket.off(`view_project`);
     };
-  }, [setKanbanDataStore]);
+  }, [isUserAction, setKanbanDataStore]);
 
   if (!authorized && projectId !== "") {
     return (

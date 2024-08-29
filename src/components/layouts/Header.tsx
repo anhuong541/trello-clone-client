@@ -39,8 +39,6 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
     setUserDataStore(userInfo);
   }, [setUserDataStore, userInfo]);
 
-  console.log({ userInfo });
-
   return (
     <header className="h-[70px] bg-blue-200 w-full flex justify-between items-center gap-2 px-4">
       <div className="flex items-center gap-2">

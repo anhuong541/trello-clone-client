@@ -126,15 +126,14 @@ export default function SortKanbanTablePopover() {
       </PopoverTrigger>
       <PopoverContent className="!text-blue-900">
         <PopoverArrow />
-        <PopoverCloseButton />
-        <PopoverHeader fontWeight={600} display="flex" gap={2} alignItems="center">
+        <PopoverHeader fontWeight={600} display="flex" gap={1} alignItems="center">
           {sortState.current === "asc" ? (
-            <MdOutlineArrowUpward />
+            <MdOutlineArrowUpward className="h-5 w-5" />
           ) : sortState.current === "dec" ? (
-            <MdOutlineArrowDownward />
+            <MdOutlineArrowDownward className="h-5 w-5" />
           ) : (
             ""
-          )}{" "}
+          )}
           Sort By {sortName ?? "..."}
         </PopoverHeader>
         <PopoverBody>

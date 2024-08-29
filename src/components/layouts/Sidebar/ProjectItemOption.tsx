@@ -86,11 +86,10 @@ export default function ProjectItemOption({ itemData, children }: ProjectItemOpt
   };
 
   return (
-    <Popover placement="right-start" isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+    <Popover placement="right-start" isOpen={isOpen} onOpen={onOpen} onClose={onClose} autoFocus>
       <PopoverTrigger>{children}</PopoverTrigger>
-      <PopoverContent display="flex" flexDirection="column">
+      <PopoverContent display="flex" flexDirection="column" className="py-4">
         <PopoverArrow />
-        {/* <PopoverCloseButton /> */}
         <div className="flex justify-center px-4 relative">
           <h4 className="py-2 font-bold text-sm text-center">{itemData.projectName}</h4>
         </div>
