@@ -1,22 +1,15 @@
-import { FormEventHandler } from "react";
 import { Input } from "./Input";
 import { Button } from "./Button";
 import Link from "next/link";
 import { AuthFormInput } from "@/types";
 import { FaCircleNotch } from "react-icons/fa6";
 
-export default function AuthForm({
-  data,
-  onSubmit,
-}: {
-  data: AuthFormInput;
-  onSubmit: FormEventHandler<HTMLFormElement>;
-}) {
+export default function AuthForm({ data }: { data: AuthFormInput }) {
   return (
     <div className="m-auto shadow-md shadow-dark-600 py-10 px-6 sm:w-[440px] w-full">
       <div className="flex flex-col gap-4">
         <h1 className="font-bold text-blue-500 text-4xl">{data.title}</h1>
-        <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+        <form className="flex flex-col gap-4" onSubmit={data.onSubmit}>
           {data.form.map((item, index) => {
             return (
               <label className="flex flex-col gap-1" htmlFor={item.id} key={index}>

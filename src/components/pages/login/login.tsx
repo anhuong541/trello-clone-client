@@ -59,7 +59,9 @@ export default function Login() {
     if (res?.status === 200) {
       router.push("/project");
       setEmailErr(false);
+      setIsLoadingSubmit(false);
       reset();
+      return;
     }
     setIsLoadingSubmit(false);
   };
@@ -92,7 +94,8 @@ export default function Login() {
       href: "/register",
       text: "You didn't have an account yet?",
     },
+    onSubmit: handleSubmit(onSubmit),
   };
 
-  return <AuthForm data={data} onSubmit={handleSubmit(onSubmit)} />;
+  return <AuthForm data={data} />;
 }
