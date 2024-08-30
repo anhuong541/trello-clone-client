@@ -10,6 +10,8 @@ import { onUserRegister } from "@/actions/query-actions";
 import { useState } from "react";
 import { AuthFormInput } from "@/types";
 import AuthForm from "@/components/common/auth-form";
+import { isProduction } from "@/lib/network";
+import { createSession } from "@/actions/auth-action";
 
 type RegisterInput = {
   emailRegister: string;
@@ -58,6 +60,7 @@ export default function Register() {
       });
 
     if (res?.status === 200) {
+      isProduction && createSession(res?.data.token);
       router.push("/active");
       reset();
     }

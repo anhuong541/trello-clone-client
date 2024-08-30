@@ -15,14 +15,6 @@ export default function DemoPage() {
     if (!socketClient) {
       return;
     }
-    socketClient.on(`project_room_${projectId}`, (data) => {
-      console.log("sf");
-      console.log("it trigger!!!", data);
-    });
-
-    return () => {
-      socketClient.off(`project_room_${projectId}`);
-    };
   }, []);
 
   const onSubmit: SubmitHandler<any> = async (data) => {

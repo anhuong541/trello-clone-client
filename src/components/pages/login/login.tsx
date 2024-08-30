@@ -11,6 +11,8 @@ import { onUserLogin } from "@/actions/query-actions";
 import AuthForm from "@/components/common/auth-form";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { AuthFormInput } from "@/types";
+import { isProduction } from "@/lib/network";
+import { createSession } from "@/actions/auth-action";
 
 type LoginInput = {
   emailLogin: string;
@@ -57,9 +59,10 @@ export default function Login() {
       });
 
     if (res?.status === 200) {
+      isProduction && createSession(res?.data.token);
       router.push("/project");
-      setEmailErr(false);
       setIsLoadingSubmit(false);
+      setEmailErr(false);
       reset();
       return;
     }
