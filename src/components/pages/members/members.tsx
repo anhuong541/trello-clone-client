@@ -114,6 +114,10 @@ export default function Members({ projectId }: { projectId: string }) {
   const projectInfo = queryUserProjectInfo?.data?.data?.data;
   const projectMember = queryProjectMember?.data?.data?.listUser;
 
+  const isOwner = queryProjectMember?.data?.data?.listUser
+    .find((item: any) => item.uid === userDataStore?.uid)
+    .authority.includes("Owner");
+
   return (
     <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
       <div className="mx-auto max-w-5xl flex sm:justify-between sm:items-center sm:flex-row flex-col sm:gap-0 gap-4 py-4 px-6">
@@ -140,9 +144,11 @@ export default function Members({ projectId }: { projectId: string }) {
         </div>
         <Flex gap={2} className="sm:flex-row flex-col sm:items-center">
           <SelectProjectMember currentProject={projectInfo} />
-          <AddMemberModal projectId={projectId} isDisable={queryProjectMember.isLoading}>
-            <MdOutlinePersonAdd className="h-5 w-5" /> Add new member
-          </AddMemberModal>
+          {isOwner && (
+            <AddMemberModal projectId={projectId} isDisable={queryProjectMember.isLoading}>
+              <MdOutlinePersonAdd className="h-5 w-5" /> Add new member
+            </AddMemberModal>
+          )}
         </Flex>
       </div>
       <hr />
@@ -184,7 +190,7 @@ export default function Members({ projectId }: { projectId: string }) {
                       </p>
                     </div>
                   </ViewMemberInfo>
-                  {userDataStore?.uid !== member.uid && (
+                  {userDataStore?.uid !== member.uid && isOwner && (
                     <Flex gap={3} alignItems="center" justifyContent="end">
                       <AlertDelete projectId={projectId} member={member}>
                         <MdOutlineGroupRemove className="h-5 w-5" />
