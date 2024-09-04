@@ -1,5 +1,5 @@
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { server } from "@/lib/network";
+import { isProduction, server, serverCl } from "@/lib/network";
 import {
   CreateProjectInputType,
   EditProjectInputType,
@@ -29,7 +29,7 @@ export const handleUserInfo = async (cookie: ReadonlyRequestCookies) => {
   const token = cookie.get("user_session")?.value;
 
   try {
-    return await server
+    return await serverCl
       .get("/user", {
         headers: { Authorization: `Bearer ${token}` },
       })

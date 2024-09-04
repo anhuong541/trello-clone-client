@@ -30,6 +30,7 @@ import { TaskDetail } from "../Task";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 import { io } from "socket.io-client";
 import { SocketClient } from "@/context/SocketProvider";
+import { isProduction } from "@/lib/network";
 
 interface TaskType {
   taskTitle: string;
@@ -294,7 +295,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   };
 
   useEffect(() => {
-    const new_socket = io("https://trello-clone-socket.vercel.app", {
+    const new_socket = io("http://localhost:8080", {
       withCredentials: true,
       reconnection: true,
     });

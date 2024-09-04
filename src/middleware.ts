@@ -1,7 +1,7 @@
 import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "./constants";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { server } from "./lib/network";
+import { server, serverCl } from "./lib/network";
 import { removeSession } from "./actions/auth-action";
 
 const protectedRoutes = [HOME_ROUTE];
@@ -9,7 +9,7 @@ const routesBanWhenUserSignin = ["/login", "/register", ROOT_ROUTE];
 
 export const checkJwtExpire = async (token: string) => {
   try {
-    return await server.get("/user/token-verify", {
+    return await serverCl.get("/user/token-verify", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
