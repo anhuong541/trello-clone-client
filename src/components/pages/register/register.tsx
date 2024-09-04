@@ -64,8 +64,9 @@ export default function Register() {
       isProduction && localStorage.setItem("token", res?.data.token);
       router.push("/active");
       reset();
+    } else {
+      setIsLoadingSubmit(false);
     }
-    setIsLoadingSubmit(false);
   };
 
   const data: AuthFormInput = {

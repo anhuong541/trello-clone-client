@@ -61,13 +61,13 @@ export default function Login() {
     if (res?.status === 200) {
       isProduction && createSession(res?.data.token);
       isProduction && localStorage.setItem("token", res?.data.token);
-      router.push("/project");
-      setIsLoadingSubmit(false);
+      // router.push("/project");
       setEmailErr(false);
       reset();
       return;
+    } else {
+      setIsLoadingSubmit(false);
     }
-    setIsLoadingSubmit(false);
   };
 
   const data: AuthFormInput = {

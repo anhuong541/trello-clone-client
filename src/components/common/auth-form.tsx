@@ -19,6 +19,7 @@ export default function AuthForm({ data }: { data: AuthFormInput }) {
                   required={true}
                   type={item.type}
                   placeholder={item.placeholder}
+                  disabled={data.submit.isLoadingSubmit}
                 />
                 {item.err && <p className="text-xs text-red-500">{item.errorMsg}</p>}
               </label>
