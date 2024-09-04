@@ -17,10 +17,8 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserLogout } from "@/actions/query-actions";
 import { removeSession } from "@/actions/auth-action";
 import CopyText from "../copyText";
-import { SocketClient } from "@/context/SocketProvider";
 
 export default function Header({ userInfo }: { userInfo: UserType }) {
-  const { socketClient } = useContext(SocketClient);
   const { setUserDataStore } = useContext(UserDataContext);
 
   const logoutAction = useMutation({
@@ -30,7 +28,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
 
   const handleLogout = async () => {
     await removeSession();
-    socketClient && socketClient.emit("user_disconnect");
+    // socketClient && socketClient.emit("user_disconnect");
     await logoutAction.mutateAsync();
   };
 

@@ -10,9 +10,6 @@ import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
 import { cn, generateNewUid } from "@/lib/utils";
-
-import { Draggable, Droppable } from "../../../DragFeat";
-import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { Box, Flex, Input, Select } from "@chakra-ui/react";
 import { Skeleton, Text, Textarea, useDisclosure } from "@chakra-ui/react";
 import {
@@ -25,12 +22,14 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { toast } from "react-toastify";
+
+import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
+import { Draggable, Droppable } from "../../../DragFeat";
 import { Button } from "../../../common/Button";
 import { TaskDetail } from "../Task";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
-import { io } from "socket.io-client";
-import { SocketClient } from "@/context/SocketProvider";
-import { isProduction } from "@/lib/network";
+import { ablyClient } from "@/providers";
+import { server } from "@/lib/network";
 
 interface TaskType {
   taskTitle: string;
@@ -252,7 +251,6 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
-  const { socketClient, setSocketClient } = useContext(SocketClient);
   const [dragOverId, setDragOverId] = useState<TaskStatusType | null | string>(null);
   const [authorized, setAuthorized] = useState<boolean>(true);
   const [loadingBoard, setLoadingBoard] = useState(true);
@@ -295,72 +293,73 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   };
 
   useEffect(() => {
-    const new_socket = io("http://localhost:8080", {
-      withCredentials: true,
-      reconnection: true,
-    });
-    setSocketClient(new_socket);
-    new_socket.emit(`join_project_room`, projectId);
-    // console.log("trigger user join room!!!");
+    (async () => {
+      await server.get(`/joinProjectRoom/${projectId}`);
+      // await ablyClient.channels
+      //   .get(`join_project_room_${projectId}`)
+      //   .publish({ data: { projectId } });
+    })();
+
     return () => {
-      new_socket.off(`join_project_room`);
-      new_socket.disconnect();
+      // ablyClient.channels.get(`join_project_room_${projectId}`).unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (socketClient) {
-      socketClient.on(`view_project`, (data) => {
-        if (data?.error) {
-          setAuthorized(false);
-          return console.error(data.error);
-        }
-        setAuthorized(true);
-        if (isUserAction) {
-          console.log("it stop here");
-          setIsUserAction(false);
-          return;
-        }
+    if (ablyClient) {
+      (async () => {
+        ablyClient.channels.get(`view_project_${projectId}`).subscribe(({ data }) => {
+          if (data?.error) {
+            setAuthorized(false);
+            return console.error(data.error);
+          }
+          setAuthorized(true);
+          if (isUserAction) {
+            console.log("it stop here");
+            setIsUserAction(false);
+            return;
+          }
 
-        console.log("it trigger view_project!!!");
+          console.log("it trigger view_project!!!");
 
-        const createKanbanMap = new Map();
-        data.forEach((item: TaskItem) => {
-          const value = createKanbanMap.get(item.taskStatus) ?? [];
-          createKanbanMap.set(item.taskStatus, [...value, item]);
-        });
-
-        if (data.length > 0) {
-          setKanbanDataStore({
-            Open: {
-              label: "Open",
-              table: createKanbanMap.get("Open") ?? [],
-            },
-            "In-progress": {
-              label: "In-progress",
-              table: createKanbanMap.get("In-progress") ?? [],
-            },
-            Resolved: {
-              label: "Resolved",
-              table: createKanbanMap.get("Resolved") ?? [],
-            },
-            Closed: {
-              label: "Closed",
-              table: createKanbanMap.get("Closed") ?? [],
-            },
+          const createKanbanMap = new Map();
+          data.forEach((item: TaskItem) => {
+            const value = createKanbanMap.get(item.taskStatus) ?? [];
+            createKanbanMap.set(item.taskStatus, [...value, item]);
           });
-        }
 
-        createKanbanMap.clear();
-        setLoadingBoard(false);
-      });
+          if (data.length > 0) {
+            setKanbanDataStore({
+              Open: {
+                label: "Open",
+                table: createKanbanMap.get("Open") ?? [],
+              },
+              "In-progress": {
+                label: "In-progress",
+                table: createKanbanMap.get("In-progress") ?? [],
+              },
+              Resolved: {
+                label: "Resolved",
+                table: createKanbanMap.get("Resolved") ?? [],
+              },
+              Closed: {
+                label: "Closed",
+                table: createKanbanMap.get("Closed") ?? [],
+              },
+            });
+          }
+
+          createKanbanMap.clear();
+          setLoadingBoard(false);
+        });
+      })();
 
       return () => {
-        socketClient.off(`view_project`);
+        ablyClient.channels.get(`view_project_${projectId}`).unsubscribe();
       };
     }
-  }, [isUserAction, setKanbanDataStore, socketClient]);
+  }, [isUserAction, setKanbanDataStore, projectId]);
 
   if (!authorized && projectId !== "") {
     return (

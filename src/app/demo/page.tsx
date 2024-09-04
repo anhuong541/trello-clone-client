@@ -1,48 +1,30 @@
 "use client";
 
-import { SocketClient } from "@/context/SocketProvider";
-import { useContext, useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useState } from "react";
+import { useChannel } from "ably/react";
 
-const projectId = "cd12b604-7b96-44fc-8830-16a2ca2e1baf";
+const Component = () => {
+  const [messages, updateMessages] = useState<any[]>([]);
+  const { channel } = useChannel("message", (message: any) => {
+    console.log({ message });
+    updateMessages([...messages, message.data.text]);
+  });
 
-export default function DemoPage() {
-  const { socketClient } = useContext(SocketClient);
-  const { register, handleSubmit, watch, reset } = useForm<any>();
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!socketClient) {
-      return;
-    }
-  }, []);
-
-  const onSubmit: SubmitHandler<any> = async (data) => {
-    socketClient && socketClient.emit("project_room", projectId);
-    // reset();
+  const sendMessage = () => {
+    channel.publish({ name: "myEventName", data: { text: "Some random stuff here." } });
   };
 
-  console.log("count => ", count);
-
   return (
-    <div>
-      <div className="p-5 flex flex-col gap-2 w-[500px]">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input
-            {...register("message")}
-            type="text"
-            placeholder="chat message"
-            className="border px-2 py-1"
-          />
-          <button className="border px-2 py-1 active:bg-gray-50 hover:bg-gray-100" type="submit">
-            send
-          </button>
-        </form>
-
-        <p>{count}</p>
-
-        <button onClick={() => setCount(count + 1)}>count</button>
-      </div>
-    </div>
+    <main>
+      <button onClick={(e) => sendMessage(e)}>Click here to send a message</button>
+      <h2>Messages will go here:</h2>
+      <ul>
+        {messages.map((text: string, index) => (
+          <li key={"item" + index}>{text}</li>
+        ))}
+      </ul>
+    </main>
   );
-}
+};
+
+export default Component;
