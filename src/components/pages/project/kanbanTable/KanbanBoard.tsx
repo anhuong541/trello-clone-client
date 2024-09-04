@@ -294,7 +294,10 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   };
 
   useEffect(() => {
-    const new_socket = io("http://localhost:8080", { withCredentials: true, reconnection: true });
+    const new_socket = io("https://trello-clone-socket.vercel.app", {
+      withCredentials: true,
+      reconnection: true,
+    });
     setSocketClient(new_socket);
     new_socket.emit(`join_project_room`, projectId);
     // console.log("trigger user join room!!!");
