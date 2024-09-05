@@ -75,7 +75,7 @@ function SelectProjectMember({ currentProject }: { currentProject: any }) {
         </Button>
       </PopoverTrigger>
       <PopoverContent width={200} className="border !border-gray-200 max-sm:!w-[95vw]">
-        <PopoverArrow />
+        <PopoverArrow className="dark:hidden" />
         <PopoverBody className="!py-4">
           {userProjectList.map((project) => {
             return (

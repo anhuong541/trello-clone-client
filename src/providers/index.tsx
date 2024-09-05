@@ -15,9 +15,9 @@ export const ablyClient = new Ably.Realtime(process.env.NEXT_PUBLIC_ABLY_KEY!);
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
-    <ChakraProvider>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class">
+        <ChakraProvider>
           <ContextProvider>
             {children}
             <ToastContainer
@@ -33,8 +33,8 @@ export default function Providers({ children }: { children: ReactNode }) {
               theme="light"
             />
           </ContextProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </ChakraProvider>
+        </ChakraProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
