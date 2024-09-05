@@ -295,14 +295,8 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   useEffect(() => {
     (async () => {
       await server.get(`/joinProjectRoom/${projectId}`);
-      // await ablyClient.channels
-      //   .get(`join_project_room_${projectId}`)
-      //   .publish({ data: { projectId } });
     })();
 
-    return () => {
-      // ablyClient.channels.get(`join_project_room_${projectId}`).unsubscribe();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

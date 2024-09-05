@@ -1,4 +1,4 @@
-import { PriorityType, TaskStatusType } from ".";
+import { AuthorityType, PriorityType, TaskStatusType } from ".";
 
 export interface RegisterInputType {
   email: string;
@@ -36,3 +36,8 @@ export interface TaskInput {
   dueDate: number;
   priority: PriorityType;
 }
+
+export type MemberAuthorityType = {
+  email: string;
+  memberAuthority: AuthorityType[];
+};

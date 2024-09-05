@@ -1,13 +1,13 @@
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { isProduction, server, serverCl } from "@/lib/network";
+import { server, serverCl } from "@/lib/network";
 import {
   CreateProjectInputType,
+  MemberAuthorityType,
   EditProjectInputType,
   LoginInputType,
   RegisterInputType,
   TaskInput,
 } from "@/types/query-types";
-import { AuthorityType } from "@/types";
 
 export const onUserRegister = async (dataInput: RegisterInputType) => {
   return await server.post("/user/register", dataInput);
@@ -129,11 +129,6 @@ export const onRemoveMemberOutOfProject = async (props: { projectId: string; ema
   } catch (error) {
     console.log("remove member error: ", error);
   }
-};
-
-type MemberAuthorityType = {
-  email: string;
-  memberAuthority: AuthorityType[];
 };
 
 export const onAddMemberOnProject = async (props: {

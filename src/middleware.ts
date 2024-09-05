@@ -1,7 +1,7 @@
 import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "./constants";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { server, serverCl } from "./lib/network";
+import { serverCl } from "./lib/network";
 import { removeSession } from "./actions/auth-action";
 
 const protectedRoutes = [HOME_ROUTE];
