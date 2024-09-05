@@ -92,7 +92,11 @@ function Draggable(props: {
       onMouseEnter={props.onMouseEnter}
       onMouseLeave={props.onMouseLeave}
     >
-      <div ref={ref} className={cn("space-y-2", props.className)}>
+      <div
+        ref={ref}
+        className={cn("space-y-2", props.className)}
+        style={{ cursor: attributes["aria-pressed"] ? "grabbing" : "grab" }}
+      >
         {props.children}
       </div>
     </div>
