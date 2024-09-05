@@ -38,22 +38,36 @@ const listSortSelect: {
 export default function SortKanbanTablePopover() {
   const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
   const [sortName, setSortName] = useState<string | null>(null);
-  const sortState = useRef<sortState>("def");
+  const [sortState, setSortState] = useState<sortState>("def");
 
-  const sortActionFuncBySortState = (state: sortState, type: sortType) => {
+  const handleSortState = () => {
+    switch (sortState) {
+      case "def":
+        setSortState((prev) => (prev = "asc"));
+        break;
+      case "asc":
+        setSortState((prev) => (prev = "dec"));
+        break;
+      case "dec":
+        setSortState((prev) => (prev = "asc"));
+        break;
+    }
+  };
+
+  const sortActionFuncBySortState = (type: sortType) => {
     if (!kanbanDataStore) {
       console.log("kanbanData Error sort");
       return;
     }
 
     if (type !== "priority") {
-      if (state === "asc") {
+      if (sortState === "asc") {
         let dataSort = kanbanDataStore;
         listTableKey.forEach((key) => {
           dataSort[key].table.sort((a: any, b: any) => b[type] - a[type]);
         });
         setKanbanDataStore({ ...dataSort });
-      } else if (state === "dec") {
+      } else if (sortState === "dec") {
         let dataSort = kanbanDataStore;
         listTableKey.forEach((key) => {
           dataSort[key].table.sort((a: any, b: any) => a[type] - b[type]);
@@ -61,9 +75,10 @@ export default function SortKanbanTablePopover() {
         setKanbanDataStore({ ...dataSort });
       }
     } else {
-      if (state === "def") {
-        return;
-      }
+      // if (sortState === "def") {
+      //   return;
+      // }
+      // only open when state default is active at handleSortState()
 
       let priorityOrder: { [key in PriorityType]: number } = {
         High: 3,
@@ -71,7 +86,7 @@ export default function SortKanbanTablePopover() {
         Low: 1,
       };
 
-      if (state === "dec") {
+      if (sortState === "dec") {
         priorityOrder = {
           High: 1,
           Medium: 2,
@@ -89,34 +104,6 @@ export default function SortKanbanTablePopover() {
     }
   };
 
-  const sortByDataSelect = (state: sortType) => {
-    switch (state) {
-      case "storyPoint":
-        sortActionFuncBySortState(sortState.current, state);
-        break;
-      case "dueDate":
-        sortActionFuncBySortState(sortState.current, state);
-        break;
-      case "priority":
-        sortActionFuncBySortState(sortState.current, state);
-        break;
-    }
-  };
-
-  const handleSortState = () => {
-    switch (sortState.current) {
-      case "def":
-        sortState.current = "asc";
-        break;
-      case "asc":
-        sortState.current = "dec";
-        break;
-      case "dec":
-        sortState.current = "asc";
-        break;
-    }
-  };
-
   return (
     <Popover placement="bottom-start">
       <PopoverTrigger>
@@ -127,9 +114,9 @@ export default function SortKanbanTablePopover() {
       <PopoverContent className="!text-blue-900">
         <PopoverArrow />
         <PopoverHeader fontWeight={600} display="flex" gap={1} alignItems="center">
-          {sortState.current === "asc" ? (
+          {sortState === "asc" ? (
             <MdOutlineArrowUpward className="h-5 w-5" />
-          ) : sortState.current === "dec" ? (
+          ) : sortState === "dec" ? (
             <MdOutlineArrowDownward className="h-5 w-5" />
           ) : (
             ""
@@ -146,7 +133,7 @@ export default function SortKanbanTablePopover() {
                   onClick={() => {
                     setSortName(item.label);
                     handleSortState();
-                    sortByDataSelect(item.state);
+                    sortActionFuncBySortState(item.state);
                   }}
                 >
                   {item.label}
