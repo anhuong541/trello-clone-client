@@ -3,14 +3,14 @@
 import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { onChangeTaskState, onCreateNewTask } from "@/actions/query-actions";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
 import { cn, generateNewUid } from "@/lib/utils";
-import { Box, Flex, Input, Select } from "@chakra-ui/react";
+import { Box, Flex, Input, Select, Tooltip } from "@chakra-ui/react";
 import { Skeleton, Text, Textarea, useDisclosure } from "@chakra-ui/react";
 import {
   Modal,
@@ -198,6 +198,37 @@ function AddTask({
   );
 }
 
+function TooltipDes({ children, label }: { children: ReactNode; label: string }) {
+  const [mouseOver, setMouseOver] = useState(false);
+  const [position, setPosition] = useState<any>({ top: null, left: null });
+  return (
+    <div
+      className="relative"
+      onMouseEnter={(e) => {
+        setPosition({
+          top: e.clientY + 15,
+          left: e.clientX,
+        });
+        setMouseOver(true);
+      }}
+      onMouseLeave={() => setMouseOver(false)}
+    >
+      {mouseOver && (
+        <div
+          className={cn(
+            position?.left && "fixed",
+            "font-medium px-2 py-1 text-sm whitespace-nowrap -translate-x-1/2 bg-slate-400 text-white shadow-sm rounded-md cursor-default"
+          )}
+          style={{ top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 999 }}
+        >
+          {label}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}
+
 function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
   const [hoverItem, setHoverItem] = useState(false);
   const [disableDrag, setDisableDrag] = useState(false);
@@ -215,7 +246,11 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
         {itemInput.title}
       </Text>
       <div className="flex items-center gap-2 font-semibold" id="icon-state">
-        {itemInput?.description?.length > 0 && <MdOutlineSubject />}
+        {itemInput?.description?.length > 0 && (
+          <TooltipDes label="Card have a description">
+            <MdOutlineSubject />
+          </TooltipDes>
+        )}
         <div className="text-xs">{itemInput?.storyPoint}</div>
         <div
           className={cn(
