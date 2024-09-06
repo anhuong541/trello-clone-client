@@ -38,7 +38,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
     mutationFn: onUserLogout,
   });
 
-  console.log({ theme });
+  // console.log({ theme });
 
   const handleLogout = async () => {
     await removeSession();

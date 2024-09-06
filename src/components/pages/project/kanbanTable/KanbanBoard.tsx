@@ -371,7 +371,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
             return;
           }
 
-          console.log("it trigger view_project!!!");
+          // console.log("it trigger view_project!!!");
 
           const createKanbanMap = new Map();
           data.forEach((item: TaskItem) => {
