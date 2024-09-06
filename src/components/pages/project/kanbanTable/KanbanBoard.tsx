@@ -115,7 +115,10 @@ function AddTask({
     setKanbanDataStore(dataAfter);
     setIsUserAction(true);
     queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
-    await addTaskAction.mutateAsync(dataAddTask);
+    const rees = await addTaskAction.mutateAsync(dataAddTask);
+    if (!rees) {
+      toast.error("Project have been removed");
+    }
     reset();
   };
 
@@ -346,7 +349,8 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   useEffect(() => {
     (async () => {
-      await server.get(`/joinProjectRoom/${projectId}`);
+      // await server.get(`/joinProjectRoom/${projectId}`);
+      await server.get(`/join-project-room/${projectId}`);
     })();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -52,10 +52,14 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
         };
       }
 
-      await onUserEdit.mutateAsync({
+      const rees = await onUserEdit.mutateAsync({
         ...dataInput,
         title: data.taskTitle,
       });
+
+      if (!rees) {
+        toast.error("Project have been removed");
+      }
       setEditTitle(false);
     }
     reset();
@@ -121,10 +125,13 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
         };
       }
 
-      await onUserEdit.mutateAsync({
+      const rees = await onUserEdit.mutateAsync({
         ...dataInput,
         description: data.taskDescription,
       });
+      if (!rees) {
+        toast.error("Project have been removed");
+      }
 
       setOpenEdit(false);
     }
@@ -213,10 +220,14 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       };
     }
 
-    await onUserEdit.mutateAsync({
+    const rees = await onUserEdit.mutateAsync({
       ...dataInput,
       storyPoint: point,
     });
+
+    if (!rees) {
+      toast.error("Project have been removed");
+    }
   };
 
   return (
@@ -276,10 +287,14 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
       };
     }
 
-    await onUserEdit.mutateAsync({
+    const rees = await onUserEdit.mutateAsync({
       ...dataInput,
       priority,
     });
+
+    if (!rees) {
+      toast.error("Project have been removed");
+    }
   };
 
   return (
