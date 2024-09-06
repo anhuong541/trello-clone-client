@@ -97,8 +97,7 @@ export default function ProjectItemOption({
       <PopoverTrigger>
         <button
           className={cn(
-            "h-9 w-9 flex justify-center items-center m-auto hover:text-white hover:bg-blue-400/60",
-            disableIfOnMemberPage && ProjectSelected && "hover:bg-blue-400"
+            "h-9 w-9 flex justify-center items-center m-auto hover:text-white hover:bg-blue-400/60 dark:hover:bg-gray-600/60"
           )}
         >
           <MdOutlineMoreHoriz className="w-5 h-5" />
@@ -119,6 +118,7 @@ export default function ProjectItemOption({
               id="name-project"
               backgroundColor="white"
               placeholder="Edit name"
+              className="dark:bg-gray-600"
             />
           </label>
           <label htmlFor="description-project" className="flex flex-col gap-1">
@@ -128,6 +128,7 @@ export default function ProjectItemOption({
               id="description-project"
               backgroundColor="white"
               placeholder="Edit description"
+              className="dark:bg-gray-600"
             />
           </label>
           <div className="flex justify-between gap-1">

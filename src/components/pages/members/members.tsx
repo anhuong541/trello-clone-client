@@ -82,9 +82,9 @@ function SelectProjectMember({ currentProject }: { currentProject: any }) {
               <Box
                 key={project.projectId}
                 className={cn(
-                  "cursor-pointer p-2 hover:bg-gray-100 text-sm whitespace-nowrap text-ellipsis overflow-hidden font-medium",
+                  "cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-gray-600/80 text-sm whitespace-nowrap text-ellipsis overflow-hidden font-medium",
                   project?.projectId === currentProject?.projectId &&
-                    "bg-gray-200 hover:bg-gray-200/80"
+                    "bg-gray-200 dark:bg-gray-600 hover:bg-gray-200/80"
                 )}
                 onClick={() => route.push(`/project/members/${project.projectId}`)}
               >
@@ -143,12 +143,12 @@ export default function Members({ projectId }: { projectId: string }) {
           )}
         </div>
         <Flex gap={2} className="sm:flex-row flex-col sm:items-center">
-          <SelectProjectMember currentProject={projectInfo} />
           {isOwner && (
             <AddMemberModal projectId={projectId} isDisable={queryProjectMember.isLoading}>
               <MdOutlinePersonAdd className="h-5 w-5" /> Add new member
             </AddMemberModal>
           )}
+          <SelectProjectMember currentProject={projectInfo} />
         </Flex>
       </div>
       <hr />
@@ -174,7 +174,7 @@ export default function Members({ projectId }: { projectId: string }) {
                       alt=""
                       width={36}
                       height={36}
-                      className="sm:w-9 sm:h-9 h-10 w-10 object-contain flex-shrink-0"
+                      className="sm:w-9 sm:h-9 h-10 w-10 object-contain flex-shrink-0 rounded-full"
                     />
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export default function Members({ projectId }: { projectId: string }) {
                     </div>
                   </ViewMemberInfo>
                   {userDataStore?.uid !== member.uid && isOwner && (
-                    <Flex gap={3} alignItems="center" justifyContent="end">
+                    <Flex gap={3} alignItems="center" justifyContent="end" className="text-black">
                       <AlertDelete projectId={projectId} member={member}>
                         <MdOutlineGroupRemove className="h-5 w-5" />
                         Kick out

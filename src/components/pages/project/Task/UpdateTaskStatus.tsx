@@ -57,10 +57,10 @@ export default function UpdateTaskStatus({ dataInput }: { dataInput: TaskItem })
           {dataInput.taskStatus}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="!bg-gray-50 !w-[220px]">
-        <PopoverArrow className="!bg-gray-50" />
+      <PopoverContent className="!bg-gray-50 dark:!bg-gray-600 dark:text-white !w-[220px]">
+        <PopoverArrow className="!bg-gray-50 dark:hidden" />
         <PopoverCloseButton />
-        <PopoverHeader paddingLeft={5} color="black" fontWeight={600}>
+        <PopoverHeader paddingLeft={5} fontWeight={600} className="text-black dark:text-white">
           Change Table Status
         </PopoverHeader>
         <PopoverBody>

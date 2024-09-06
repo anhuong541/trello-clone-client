@@ -127,7 +127,7 @@ function AddTask({
   return (
     <>
       <button
-        className="py-1 px-2 mt-3 w-full flex items-center gap-1 text-sm hover:bg-blue-300/60 hover:text-blue-800 rounded-md font-bold"
+        className="py-1 px-2 mt-3 w-full flex items-center gap-1 text-sm hover:bg-blue-300/60 dark:hover:bg-gray-600 dark:hover:text-gray-300 hover:text-blue-800 rounded-md font-bold"
         onClick={onOpen}
       >
         <MdAdd className="h-6 w-6 font-medium" /> Add Task
@@ -145,19 +145,32 @@ function AddTask({
                 <Text fontSize="sm" fontWeight={600}>
                   Title
                 </Text>
-                <Input placeholder="Task title" type="text" {...register("taskTitle")} />
+                <Input
+                  placeholder="Task title"
+                  type="text"
+                  {...register("taskTitle")}
+                  className="dark:bg-gray-600"
+                />
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskDescription">
                 <Text fontSize="sm" fontWeight={600}>
                   Description
                 </Text>
-                <Textarea placeholder="Task description" {...register("taskDescription")} />
+                <Textarea
+                  placeholder="Task description"
+                  {...register("taskDescription")}
+                  className="dark:bg-gray-600"
+                />
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskPriority">
                 <Text fontSize="sm" fontWeight={600}>
                   Priority
                 </Text>
-                <Select placeholder="Task priority" {...register("taskPriority")}>
+                <Select
+                  placeholder="Task priority"
+                  {...register("taskPriority")}
+                  className="dark:bg-gray-600"
+                >
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
@@ -167,7 +180,11 @@ function AddTask({
                 <Text fontSize="sm" fontWeight={600}>
                   Story Point
                 </Text>
-                <Select placeholder="Task story point" {...register("taskStoryPoint")}>
+                <Select
+                  placeholder="Task story point"
+                  {...register("taskStoryPoint")}
+                  className="dark:bg-gray-600"
+                >
                   {listStoryPointAccepted.map((point) => {
                     return (
                       <option value={point} key={point}>
@@ -180,7 +197,6 @@ function AddTask({
             </ModalBody>
 
             <ModalFooter display="flex" alignItems="center" justifyContent="end" gap={2}>
-              <Button type="submit">Add</Button>
               <Button
                 variant="ghost"
                 onClick={(e) => {
@@ -190,6 +206,7 @@ function AddTask({
               >
                 Cancel
               </Button>
+              <Button type="submit">Add</Button>
             </ModalFooter>
           </form>
         </ModalContent>
@@ -236,7 +253,7 @@ function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
   return (
     <Draggable
       id={itemInput.taskId}
-      className="relative p-2 bg-gray-100 rounded-md border border-gray-100 hover:border-blue-500 active:border-gray-100 cursor-pointer"
+      className="relative p-2 text-black bg-gray-100 rounded-md border border-gray-100 hover:border-blue-500 active:border-gray-100 cursor-pointer"
       dataItem={itemInput}
       disableDrag={disableDrag}
       onMouseEnter={() => setHoverItem(true)}
@@ -393,7 +410,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   if (!authorized && projectId !== "") {
     return (
       <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
-        <div className="min-w-[1100px] h-full bg-blue-50">
+        <div className="min-w-[1100px] h-full bg-blue-50 dark:bg-gray-400">
           <Flex width="100%" height="55px" alignItems="center" className="lg:pl-2 pl-8">
             <p className="text-red-500 font-bold">You are not the member of this project!!!</p>
           </Flex>
@@ -412,7 +429,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   return (
     <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
-      <div className="min-w-[1100px] h-full bg-blue-50">
+      <div className="min-w-[1100px] h-full bg-blue-50 dark:bg-gray-400">
         <Flex width="100%" height="55px" alignItems="center" className="lg:pl-2 pl-8">
           {!loadingBoard && <SortKanbanTablePopover />}
         </Flex>
@@ -437,14 +454,14 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
                 return (
                   <Droppable className="flex flex-col h-full" key={table.label} id={table.label}>
-                    <div className="flex-col px-2 py-2 bg-blue-200 rounded-lg">
+                    <div className="flex-col px-2 py-2 bg-blue-200 dark:bg-gray-700 rounded-lg">
                       <h4 className="p-2 font-bold">{table.label}</h4>
                       <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
                         {(table.table ?? []).map((item: TaskItem) => {
                           return <TaskDrableItem itemInput={item} key={item.taskId} />;
                         })}
                         {dragOverId === table.label && (
-                          <div className="rounded-md bg-gray-200 h-[60px] w-full" />
+                          <div className="rounded-md bg-gray-200 dark:bg-gray-800 h-[60px] w-full" />
                         )}
                       </div>
                       <AddTask

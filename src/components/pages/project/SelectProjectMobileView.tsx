@@ -24,7 +24,7 @@ export default function SelectProjectMobileView() {
   }, [queryUserProjectList]);
 
   return (
-    <div className="col-span-8 bg-blue-100 pt-4 h-full lg:hidden">
+    <div className="col-span-8 bg-blue-100 dark:bg-gray-500 pt-4 h-full lg:hidden">
       <div className="flex flex-col">
         <Text className="px-4" fontWeight={700}>
           Your projects
@@ -35,7 +35,7 @@ export default function SelectProjectMobileView() {
               <Link
                 href={`/project/${item.projectId}`}
                 key={item.projectId}
-                className="bg-white flex flex-col gap-2 p-4 rounded-md active:bg-blue-50"
+                className="bg-white dark:bg-gray-700 flex flex-col gap-2 p-4 rounded-md"
               >
                 <Text fontSize="lg" fontWeight={700}>
                   {item.projectName}

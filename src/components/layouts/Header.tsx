@@ -12,6 +12,7 @@ import {
   PopoverHeader,
   PopoverFooter,
   ColorModeScript,
+  useColorMode,
 } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
 
@@ -23,6 +24,7 @@ import { Button } from "../common/Button";
 
 export default function Header({ userInfo }: { userInfo: UserType }) {
   const { setUserDataStore } = useContext(UserDataContext);
+  const { colorMode, toggleColorMode } = useColorMode();
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
   };
 
   const changeThemeMode = () => {
+    toggleColorMode();
     if (theme === "dark") {
       setTheme("light");
     } else {
@@ -56,7 +59,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
   }, [setUserDataStore, userInfo]);
 
   return (
-    <header className="h-[70px] bg-blue-200 dark:bg-neutral-900 dark:text-white w-full flex justify-between items-center gap-2 px-4">
+    <header className="h-[70px] bg-blue-200 dark:bg-gray-800 w-full flex justify-between items-center gap-2 px-4">
       <div className="flex items-center gap-2">
         <Image
           height={40}
@@ -83,9 +86,6 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
         <Popover placement="bottom-end">
           <PopoverTrigger>
             <button className="flex items-center gap-2 font-semibold h-full">
-              <p className="font-bold hidden md:block text-black dark:text-white">
-                {userInfo?.username ?? ""}
-              </p>
               <Image
                 height={40}
                 width={40}
@@ -96,16 +96,16 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
               />
             </button>
           </PopoverTrigger>
-          <PopoverContent width={300} className="dark:bg-gray-700 dark:border-0">
+          <PopoverContent width={300} className="dark:bg-gray-900">
             <PopoverHeader className="overflow-hidden dark:border-0">
               <h4 className="font-semibold px-2">{userInfo?.username}</h4>
               <CopyText text={`@` + userInfo?.email} />
             </PopoverHeader>
             {/* <PopoverBody></PopoverBody> */}
-            <PopoverFooter className="bg-white dark:bg-gray-700 flex flex-col !px-1 border-0 rounded-ee-md rounded-es-md">
+            <PopoverFooter className=" flex flex-col !px-1 border-0 rounded-ee-md rounded-es-md">
               <button
                 onClick={handleLogout}
-                className="flex gap-1 items-center px-4 py-2 hover:bg-gray-100 hover:dark:bg-gray-800"
+                className="flex gap-1 items-center px-4 py-2 text-sm hover:bg-gray-100 hover:dark:bg-gray-700"
               >
                 <MdLogout className="h-5 w-5" />
                 Logout

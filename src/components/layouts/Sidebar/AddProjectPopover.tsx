@@ -61,7 +61,7 @@ export default function AddProjectPopover() {
   return (
     <Popover placement="right-start" isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
       <PopoverTrigger>
-        <button className="h-9 w-9 rounded-md bg-blue-400 flex justify-center items-center text-white font-medium">
+        <button className="h-9 w-9 rounded-md bg-blue-400 dark:bg-gray-700 flex justify-center items-center text-white font-medium">
           <MdAdd className="w-5 h-5" />
         </button>
       </PopoverTrigger>
@@ -77,6 +77,7 @@ export default function AddProjectPopover() {
                 id="name-project"
                 backgroundColor="white"
                 placeholder="Project name"
+                className="dark:bg-gray-600"
               />
             </label>
             <label htmlFor="description-project" className="flex flex-col gap-1">
@@ -86,6 +87,7 @@ export default function AddProjectPopover() {
                 id="description-project"
                 backgroundColor="white"
                 placeholder="Project description"
+                className="dark:bg-gray-600"
               />
             </label>
           </div>
