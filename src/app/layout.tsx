@@ -17,7 +17,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(openSans.className)}>
+      <body className={cn(openSans.className, "dark:text-white")}>
         <Providers>{children}</Providers>
       </body>
     </html>

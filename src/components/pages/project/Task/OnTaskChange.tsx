@@ -52,10 +52,14 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
         };
       }
 
-      await onUserEdit.mutateAsync({
+      const rees = await onUserEdit.mutateAsync({
         ...dataInput,
         title: data.taskTitle,
       });
+
+      if (!rees) {
+        toast.error("Project have been removed");
+      }
       setEditTitle(false);
     }
     reset();
@@ -82,7 +86,7 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
           type="text"
           defaultValue={dataInput?.title}
           placeholder="Can't miss the task name"
-          className="text-sm font-bold"
+          className="text-sm font-bold dark:bg-gray-600"
           size="md"
           {...register("taskTitle")}
         />
@@ -121,10 +125,13 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
         };
       }
 
-      await onUserEdit.mutateAsync({
+      const rees = await onUserEdit.mutateAsync({
         ...dataInput,
         description: data.taskDescription,
       });
+      if (!rees) {
+        toast.error("Project have been removed");
+      }
 
       setOpenEdit(false);
     }
@@ -149,11 +156,12 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
       {(openEdit || descriptionIsEmpty) && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex flexDirection="column" gap={2}>
-            <Textarea defaultValue={dataInput?.description} {...register("taskDescription")} />
+            <Textarea
+              defaultValue={dataInput?.description}
+              className="dark:bg-gray-600"
+              {...register("taskDescription")}
+            />
             <Flex gap={2}>
-              <Button size="sm" type="submit">
-                Save
-              </Button>
               {!descriptionIsEmpty && (
                 <Button
                   variant="ghost"
@@ -166,6 +174,9 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
                   Cancel
                 </Button>
               )}
+              <Button size="sm" type="submit">
+                Save
+              </Button>
             </Flex>
           </Flex>
         </form>
@@ -209,10 +220,14 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       };
     }
 
-    await onUserEdit.mutateAsync({
+    const rees = await onUserEdit.mutateAsync({
       ...dataInput,
       storyPoint: point,
     });
+
+    if (!rees) {
+      toast.error("Project have been removed");
+    }
   };
 
   return (
@@ -227,6 +242,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
       <Flex flexDirection="column" gap={2}>
         <Select
           placeholder={currentPoint}
+          className="dark:bg-gray-600"
           onChange={async (e) => {
             await onSelectStoryPoint(Number(e.target?.value) as StoryPointType);
             setCurrentPoint(String(e.target?.value));
@@ -271,10 +287,14 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
       };
     }
 
-    await onUserEdit.mutateAsync({
+    const rees = await onUserEdit.mutateAsync({
       ...dataInput,
       priority,
     });
+
+    if (!rees) {
+      toast.error("Project have been removed");
+    }
   };
 
   return (
@@ -287,6 +307,7 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
       </Flex>
       <Select
         onChange={(e) => onSelectPriority(e.target?.value as PriorityType)}
+        className="dark:bg-gray-600"
         defaultValue={dataInput.priority}
       >
         <option value="Low">Low</option>

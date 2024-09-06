@@ -28,7 +28,7 @@ function Droppable(props: {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className={cn("", props.className)}>
+    <div ref={setNodeRef} style={style} className={cn("dark:!border-gray-400", props.className)}>
       {props.children}
     </div>
   );
@@ -57,8 +57,8 @@ function Draggable(props: {
     disabled: props.disableDrag || (screenView ? Number(screenView) < 1024 : false),
   });
 
-  useMemo(() => {
-    if (attributes["aria-pressed"]) {
+  useEffect(() => {
+    if (!attributes["aria-pressed"]) {
       const rect = ref.current?.getBoundingClientRect();
       refOffsetWidth.current = ref.current?.offsetWidth;
       refPosition.current = { top: rect?.top, left: rect?.left };

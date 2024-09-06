@@ -107,11 +107,11 @@ export default function SortKanbanTablePopover() {
   return (
     <Popover placement="bottom-start">
       <PopoverTrigger>
-        <Button display="flex" gap={1} className="!bg-blue-400" color="white">
+        <Button display="flex" gap={1} className="!bg-blue-400 dark:!bg-gray-600" color="white">
           <MdSort className="w-6 h-6" /> Sort
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="!text-blue-900">
+      <PopoverContent className="!text-blue-900 dark:!text-white">
         <PopoverArrow />
         <PopoverHeader fontWeight={600} display="flex" gap={1} alignItems="center">
           {sortState === "asc" ? (
@@ -129,7 +129,7 @@ export default function SortKanbanTablePopover() {
               return (
                 <ListItem
                   key={index}
-                  className="hover:bg-blue-100 py-2 px-2 cursor-pointer rounded-md"
+                  className="hover:bg-blue-100 dark:hover:bg-gray-600 py-2 px-2 cursor-pointer rounded-md"
                   onClick={() => {
                     setSortName(item.label);
                     handleSortState();

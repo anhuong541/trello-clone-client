@@ -184,7 +184,7 @@ function AddMemberModal({
       <Modal isOpen={isOpen} onClose={onClose} size={modalSize} isCentered={isCentered}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Add Member</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <label className="flex flex-col gap-1" htmlFor="taskTitle">
@@ -194,6 +194,7 @@ function AddMemberModal({
               <Input
                 type="email"
                 placeholder="email@gmail.com"
+                className="dark:bg-gray-600"
                 onChange={(e) => {
                   e.preventDefault();
                   setInputEmail(e?.target?.value);
@@ -207,7 +208,7 @@ function AddMemberModal({
             <Button variant="ghost" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={handleActionAddMember}>Add member</Button>
+            <Button onClick={handleActionAddMember}>Add</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
