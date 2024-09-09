@@ -186,7 +186,7 @@ export default function Members({ projectId }: { projectId: string }) {
                         </p>
                       </div>
                       <p className="text-sm text-gray-500">
-                        @{member.email} - Time created: {dayjs(member.createAt).format("MMM YYYY")}
+                        {member.email} - Time created: {dayjs(member.createAt).format("MMM YYYY")}
                       </p>
                     </div>
                   </ViewMemberInfo>

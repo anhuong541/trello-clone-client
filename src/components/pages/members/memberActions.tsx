@@ -254,7 +254,16 @@ function ViewMemberInfo({ children, member }: { children: ReactNode; member: Pro
             )}
           </ModalBody>
 
-          <ModalFooter gap={3}>
+          <ModalFooter
+            display="flex"
+            flexDirection="column"
+            justifyContent="end"
+            alignItems="end"
+            gap={1}
+          >
+            {/* <p className="text-sm">
+              Account created at {dayjs(member.createAt).format("MMM YYYY")}
+            </p> */}
             <p className="text-sm">
               Account created at {dayjs(member.createAt).format("MMM YYYY")}
             </p>
