@@ -348,7 +348,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       setKanbanDataStore(dataChangeOnDrag);
       setIsUserAction(true);
       const res: any = await updateTaskAction.mutateAsync(dataInput);
-      if (res.response.status === 401) {
+      if (res?.response?.status === 401) {
         setAuthorized(false);
       }
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
@@ -379,7 +379,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
           }
           setAuthorized(true);
           if (isUserAction) {
-            console.log("it stop here");
+            console.log("user action");
             setIsUserAction(false);
             return;
           }
