@@ -117,7 +117,7 @@ export default function Sidebar({ projectId }: { projectId: string }) {
 
             <h2 className="font-bold text-lg overflow-hidden whitespace-nowrap">{projectName}</h2>
           </div>
-          {Number(screenView) < 1024 && (
+          {screenView && Number(screenView) < 1024 && (
             <button
               className="flex justify-center items-center bg-blue-200 hover:bg-blue-100 text-blue-900 dark:bg-gray-700 dark:text-white p-3 rounded-md"
               onClick={() => setOpenSidebar(false)}

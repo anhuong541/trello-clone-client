@@ -1,14 +1,14 @@
 "use client";
 
-import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
 import {
   handleViewProjectTasks,
   onChangeTaskState,
   onCreateNewTask,
 } from "@/actions/query-actions";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -16,6 +16,7 @@ import { TaskInput } from "@/types/query-types";
 import { cn, generateNewUid } from "@/lib/utils";
 import { Box, Flex, Input, Select, Tooltip } from "@chakra-ui/react";
 import { Skeleton, Text, Textarea, useDisclosure } from "@chakra-ui/react";
+import { toast } from "react-toastify";
 import {
   Modal,
   ModalOverlay,
@@ -25,7 +26,6 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { toast } from "react-toastify";
 
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
 import { Draggable, Droppable } from "../../../DragFeat";
@@ -259,13 +259,13 @@ function TooltipDes({ children, label }: { children: ReactNode; label: string })
   );
 }
 
-function TaskDrableItem({ itemInput }: { itemInput: TaskItem }) {
+function TaskDrableItem({ itemInput, id }: { itemInput: TaskItem; id?: string }) {
   const [hoverItem, setHoverItem] = useState(false);
   const [disableDrag, setDisableDrag] = useState(false);
 
   return (
     <Draggable
-      id={itemInput.taskId}
+      id={id ? id : itemInput.taskId}
       className="relative p-2 text-black bg-gray-100 rounded-md border border-gray-100 hover:border-blue-500 active:border-gray-100 cursor-pointer"
       dataItem={itemInput}
       disableDrag={disableDrag}
@@ -374,8 +374,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log({ kanbanDataStore });
-
   useEffect(() => {
     if (!ablyClient) {
       toast.error("socket error");
@@ -396,7 +394,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
             return;
           }
         }
-        console.log("it trigger!!");
 
         const createKanbanMap = new Map();
         data.forEach((item: TaskItem) => {
@@ -461,10 +458,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
           <Flex width="100%" height="55px" alignItems="center" className="lg:pl-2 pl-8">
             <p className="text-red-500 font-bold">You are not the member of this project!!!</p>
           </Flex>
-          <DndContext
-            onDragEnd={handleDragEnd}
-            onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
-          >
+          <DndContext>
             <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
               <SkeletonKanbanBoardTable />
             </ul>
@@ -554,3 +548,5 @@ function SkeletonKanbanBoardTable() {
     );
   });
 }
+
+export { TaskDrableItem, AddTask };
