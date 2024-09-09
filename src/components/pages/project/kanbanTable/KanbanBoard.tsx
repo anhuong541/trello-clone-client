@@ -33,8 +33,6 @@ import { Button } from "../../../common/Button";
 import { TaskDetail } from "../Task";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 import { ablyClient } from "@/providers";
-import { server } from "@/lib/network";
-import { Axios, AxiosError } from "axios";
 
 interface TaskType {
   taskTitle: string;
@@ -92,6 +90,8 @@ function AddTask({
     mutationFn: onCreateNewTask,
   });
 
+  // console.log({ kanbanDataStore });
+
   const onSubmit: SubmitHandler<TaskType> = async (data) => {
     onClose();
     if (data.taskTitle === "") {
@@ -103,10 +103,15 @@ function AddTask({
       return;
     }
 
+    const positionId = kanbanDataStore
+      ? taskStatus + "_" + (kanbanDataStore[taskStatus].table.length + 1)
+      : taskStatus + "_1";
+
     const newTaskId = generateNewUid();
     const dataAddTask: TaskInput = {
       taskId: newTaskId,
       projectId,
+      positionId,
       title: data.taskTitle,
       priority: data.taskPriority,
       description: data.taskDescription,
@@ -369,59 +374,84 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log({ kanbanDataStore });
+
   useEffect(() => {
-    if (ablyClient) {
-      (async () => {
-        ablyClient.channels.get(`view_project_${projectId}`).subscribe(({ data }) => {
-          if (data?.error) {
-            setAuthorized(false);
-            return console.error(data.error);
-          }
-          setAuthorized(true);
-          if (isUserAction) {
-            console.log("user action");
-            setIsUserAction(false);
+    if (!ablyClient) {
+      toast.error("socket error");
+      return;
+    }
+
+    (async () => {
+      ablyClient.channels.get(`view_project_${projectId}`).subscribe(({ data }) => {
+        if (data?.error) {
+          setAuthorized(false);
+          return console.error(data.error);
+        }
+        setAuthorized(true);
+        if (isUserAction) {
+          console.log("user action");
+          setIsUserAction(false);
+          if (data.length > 0) {
             return;
           }
+        }
+        console.log("it trigger!!");
 
-          // console.log("it trigger view_project!!!");
-
-          const createKanbanMap = new Map();
-          data.forEach((item: TaskItem) => {
-            const value = createKanbanMap.get(item.taskStatus) ?? [];
-            createKanbanMap.set(item.taskStatus, [...value, item]);
-          });
-
-          if (data.length > 0) {
-            setKanbanDataStore({
-              Open: {
-                label: "Open",
-                table: createKanbanMap.get("Open") ?? [],
-              },
-              "In-progress": {
-                label: "In-progress",
-                table: createKanbanMap.get("In-progress") ?? [],
-              },
-              Resolved: {
-                label: "Resolved",
-                table: createKanbanMap.get("Resolved") ?? [],
-              },
-              Closed: {
-                label: "Closed",
-                table: createKanbanMap.get("Closed") ?? [],
-              },
-            });
-          }
-
-          createKanbanMap.clear();
-          setLoadingBoard(false);
+        const createKanbanMap = new Map();
+        data.forEach((item: TaskItem) => {
+          const value = createKanbanMap.get(item.taskStatus) ?? [];
+          createKanbanMap.set(item.taskStatus, [...value, item]);
         });
-      })();
 
-      return () => {
-        ablyClient.channels.get(`view_project_${projectId}`).unsubscribe();
-      };
-    }
+        if (data.length > 0) {
+          setKanbanDataStore({
+            Open: {
+              label: "Open",
+              table: createKanbanMap.get("Open") ?? [],
+            },
+            "In-progress": {
+              label: "In-progress",
+              table: createKanbanMap.get("In-progress") ?? [],
+            },
+            Resolved: {
+              label: "Resolved",
+              table: createKanbanMap.get("Resolved") ?? [],
+            },
+            Closed: {
+              label: "Closed",
+              table: createKanbanMap.get("Closed") ?? [],
+            },
+          });
+        } else {
+          setKanbanDataStore({
+            Open: {
+              label: "Open",
+              table: [],
+            },
+            "In-progress": {
+              label: "In-progress",
+              table: [],
+            },
+            Resolved: {
+              label: "Resolved",
+              table: [],
+            },
+            Closed: {
+              label: "Closed",
+              table: [],
+            },
+          });
+        }
+
+        createKanbanMap.clear();
+        setLoadingBoard(false);
+      });
+    })();
+
+    return () => {
+      ablyClient.channels.get(`view_project_${projectId}`).unsubscribe();
+    };
   }, [isUserAction, setKanbanDataStore, projectId]);
 
   if (!authorized && projectId !== "") {
