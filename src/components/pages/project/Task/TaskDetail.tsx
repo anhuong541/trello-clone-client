@@ -20,6 +20,7 @@ import { reactQueryKeys } from "@/lib/react-query-keys";
 import useScreenView from "@/hooks/ScreenView";
 import UpdateTaskStatus from "./UpdateTaskStatus";
 import { Button } from "@/components/common/Button";
+import { toast } from "react-toastify";
 
 export default function TaskDetail({
   children,
@@ -49,11 +50,15 @@ export default function TaskDetail({
   };
 
   const handleDeleteTask = async () => {
-    await onDeleteTaskAction.mutateAsync({
+    const res: any = await onDeleteTaskAction.mutateAsync({
       projectId: data.projectId,
       taskId: data.taskId,
     });
     handleClose();
+
+    if (res?.response?.status === 401) {
+      toast.error("Oops! It looks like you're not authorized to delete this task");
+    }
   };
 
   const modalSize = useMemo(() => {

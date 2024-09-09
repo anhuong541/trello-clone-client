@@ -4,7 +4,11 @@ import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md"
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
-import { onChangeTaskState, onCreateNewTask } from "@/actions/query-actions";
+import {
+  handleViewProjectTasks,
+  onChangeTaskState,
+  onCreateNewTask,
+} from "@/actions/query-actions";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -30,6 +34,7 @@ import { TaskDetail } from "../Task";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 import { ablyClient } from "@/providers";
 import { server } from "@/lib/network";
+import { Axios, AxiosError } from "axios";
 
 interface TaskType {
   taskTitle: string;
@@ -115,8 +120,8 @@ function AddTask({
     setKanbanDataStore(dataAfter);
     setIsUserAction(true);
     queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
-    const rees = await addTaskAction.mutateAsync(dataAddTask);
-    if (!rees) {
+    const res = await addTaskAction.mutateAsync(dataAddTask);
+    if (!res) {
       toast.error("Project have been removed");
     }
     reset();
@@ -223,7 +228,7 @@ function TooltipDes({ children, label }: { children: ReactNode; label: string })
   const [position, setPosition] = useState<any>({ top: null, left: null });
   return (
     <div
-      className="relative"
+      className="relative cursor-default"
       onMouseEnter={(e) => {
         setPosition({
           top: e.clientY + 15,
@@ -237,7 +242,7 @@ function TooltipDes({ children, label }: { children: ReactNode; label: string })
         <div
           className={cn(
             position?.left && "fixed",
-            "font-medium px-2 py-1 text-sm whitespace-nowrap -translate-x-1/2 bg-slate-400 text-white shadow-sm rounded-md cursor-default"
+            "font-medium px-2 py-1 text-sm whitespace-nowrap -translate-x-1/2 bg-slate-400 text-white shadow-sm rounded-md"
           )}
           style={{ top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 999 }}
         >
@@ -342,7 +347,10 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       dataChangeOnDrag[e.over.id as TaskStatusType].table.push(dataInput);
       setKanbanDataStore(dataChangeOnDrag);
       setIsUserAction(true);
-      await updateTaskAction.mutateAsync(dataInput);
+      const res: any = await updateTaskAction.mutateAsync(dataInput);
+      if (res.response.status === 401) {
+        setAuthorized(false);
+      }
       queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
     }
   };
@@ -350,7 +358,12 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   useEffect(() => {
     (async () => {
       // await server.get(`/joinProjectRoom/${projectId}`);
-      await server.get(`/join-project-room/${projectId}`);
+      try {
+        await handleViewProjectTasks(projectId);
+      } catch (error) {
+        console.log("project tasks list error: ", error);
+        setAuthorized(false);
+      }
     })();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

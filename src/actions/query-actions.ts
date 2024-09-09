@@ -80,14 +80,10 @@ export const onDeleteProject = async (projectId: string) => {
 };
 
 export const handleViewProjectTasks = async (projectId: string) => {
-  try {
-    if (projectId === "") {
-      return { data: [] };
-    }
-    return await server.get(`/task/${projectId}`);
-  } catch (error) {
-    console.log("project tasks list error: ", error);
+  if (projectId === "") {
+    return { data: [] };
   }
+  return await server.get(`/task/${projectId}`);
 };
 
 export const onCreateNewTask = async (dataInput: TaskInput) => {
@@ -103,6 +99,7 @@ export const onChangeTaskState = async (dataInput: TaskInput) => {
     return await server.put(`/task`, dataInput);
   } catch (error) {
     console.log("change task error: ", error);
+    return error;
   }
 };
 
@@ -111,6 +108,7 @@ export const onDeleteTaskFunction = async (props: { projectId: string; taskId: s
     return await server.delete(`/task/${props.projectId}/${props.taskId}`);
   } catch (error) {
     console.log("delete task error: ", error);
+    return error;
   }
 };
 

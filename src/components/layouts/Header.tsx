@@ -99,7 +99,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
           <PopoverContent width={300} className="dark:bg-gray-900">
             <PopoverHeader className="overflow-hidden dark:border-0">
               <h4 className="font-semibold px-2">{userInfo?.username}</h4>
-              <CopyText text={`@` + userInfo?.email} />
+              <CopyText text={userInfo?.email} />
             </PopoverHeader>
             {/* <PopoverBody></PopoverBody> */}
             <PopoverFooter className=" flex flex-col !px-1 border-0 rounded-ee-md rounded-es-md">
