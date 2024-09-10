@@ -390,58 +390,12 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
         if (isUserAction) {
           console.log("user action");
           setIsUserAction(false);
-          if (data.length > 0) {
+          if (data.dataLength > 0) {
             return;
           }
         }
 
-        const createKanbanMap = new Map();
-        data.forEach((item: TaskItem) => {
-          const value = createKanbanMap.get(item.taskStatus) ?? [];
-          createKanbanMap.set(item.taskStatus, [...value, item]);
-        });
-
-        if (data.length > 0) {
-          setKanbanDataStore({
-            Open: {
-              label: "Open",
-              table: createKanbanMap.get("Open") ?? [],
-            },
-            "In-progress": {
-              label: "In-progress",
-              table: createKanbanMap.get("In-progress") ?? [],
-            },
-            Resolved: {
-              label: "Resolved",
-              table: createKanbanMap.get("Resolved") ?? [],
-            },
-            Closed: {
-              label: "Closed",
-              table: createKanbanMap.get("Closed") ?? [],
-            },
-          });
-        } else {
-          setKanbanDataStore({
-            Open: {
-              label: "Open",
-              table: [],
-            },
-            "In-progress": {
-              label: "In-progress",
-              table: [],
-            },
-            Resolved: {
-              label: "Resolved",
-              table: [],
-            },
-            Closed: {
-              label: "Closed",
-              table: [],
-            },
-          });
-        }
-
-        createKanbanMap.clear();
+        setKanbanDataStore(data.dataBoard);
         setLoadingBoard(false);
       });
     })();
