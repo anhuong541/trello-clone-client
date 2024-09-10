@@ -103,9 +103,7 @@ function AddTask({
       return;
     }
 
-    const positionId = kanbanDataStore
-      ? taskStatus + "_" + (kanbanDataStore[taskStatus].table.length + 1)
-      : taskStatus + "_1";
+    const positionId = kanbanDataStore ? kanbanDataStore[taskStatus].table.length : 0;
 
     const newTaskId = generateNewUid();
     const dataAddTask: TaskInput = {
@@ -275,25 +273,25 @@ function TaskDrableItem({ itemInput, id }: { itemInput: TaskItem; id?: string })
       <Text fontSize="sm" fontWeight={600}>
         {itemInput.title}
       </Text>
-      <div className="flex items-center gap-2 font-semibold" id="icon-state">
+      <div className="flex items-center gap-2 font-semibold text-xs" id="icon-state">
         {itemInput?.description?.length > 0 && (
           <TooltipDes label="Card have a description">
             <MdOutlineSubject />
           </TooltipDes>
         )}
-        <div className="text-xs">{itemInput?.storyPoint}</div>
-        <div
+        <p>{itemInput?.storyPoint}</p>
+        <p>{`${itemInput?.positionId.status}_${itemInput?.positionId.index}`}</p>
+        <p
           className={cn(
             itemInput.priority === "High"
               ? "text-red-400"
               : itemInput.priority === "Medium"
               ? "text-blue-400"
-              : "text-gray-400",
-            "text-xs"
+              : "text-gray-400"
           )}
         >
           {itemInput?.priority}
-        </div>
+        </p>
       </div>
 
       {hoverItem && (
@@ -339,6 +337,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     if (kanbanDataStore && e?.over?.id && e.over.id !== dragStatus) {
       const dataInput: any = {
         ...e.active.data.current,
+        positionIndex: 0,
         taskStatus: e.over?.id,
         dueDate: Date.now(),
       };
@@ -350,7 +349,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       );
       dataChangeOnDrag[dragStatus].table = removeDraggingDataFromCurrentTable;
       dataChangeOnDrag[e.over.id as TaskStatusType].table.push(dataInput);
-      setKanbanDataStore(dataChangeOnDrag);
+      setKanbanDataStore({ ...dataChangeOnDrag });
       setIsUserAction(true);
       const res: any = await updateTaskAction.mutateAsync(dataInput);
       if (res?.response?.status === 401) {

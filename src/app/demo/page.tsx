@@ -1,39 +1,39 @@
 "use client";
 
 import React, { useState } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { DragDropContext } from "@hello-pangea/dnd";
+import DragBoard from "./DragFeat/Board";
 
 const tasks = [
-  { id: "1", content: "First task" },
-  { id: "2", content: "Second task" },
-  { id: "3", content: "Third task" },
-  { id: "4", content: "Fourth task" },
-  { id: "5", content: "Fifth task" },
+  { id: "1", positionId: "Open_2", content: "First task" },
+  { id: "2", positionId: "In-progress_4", content: "Second task" },
+  { id: "3", positionId: "Open_1", content: "Third task" },
+  { id: "4", positionId: "Open_3", content: "Fourth task" },
+  { id: "5", positionId: "Resolved_5", content: "Fifth task" },
 ];
 
 const taskStatus = {
-  requested: {
-    name: "Requested",
+  Open: {
+    label: "Open",
     items: tasks,
   },
-  toDo: {
-    name: "To do",
+  "In-progress": {
+    label: "In-progress",
     items: [],
   },
-  inProgress: {
-    name: "In Progress",
+  Resolved: {
+    label: "Resolved",
     items: [],
   },
-  done: {
-    name: "Done",
+  Closed: {
+    label: "Closed",
     items: [],
   },
 };
 
-const onDragEnd = (result, columns, setColumns) => {
-  if (!result.destination) return;
-  const { source, destination } = result;
+const listTaskStatus = ["Open", "In-progress", "Resolved", "Closed"];
 
+const handleChangeDataBoardAfterDragEnd = (source, destination, columns) => {
   if (source.droppableId !== destination.droppableId) {
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
@@ -41,7 +41,8 @@ const onDragEnd = (result, columns, setColumns) => {
     const destItems = [...destColumn.items];
     const [removed] = sourceItems.splice(source.index, 1);
     destItems.splice(destination.index, 0, removed);
-    setColumns({
+    console.log("logic 1: ");
+    return {
       ...columns,
       [source.droppableId]: {
         ...sourceColumn,
@@ -51,24 +52,76 @@ const onDragEnd = (result, columns, setColumns) => {
         ...destColumn,
         items: destItems,
       },
-    });
+    };
   } else {
     const column = columns[source.droppableId];
     const copiedItems = [...column.items];
     const [removed] = copiedItems.splice(source.index, 1);
     copiedItems.splice(destination.index, 0, removed);
-    setColumns({
+    console.log("logic 2: ");
+    return {
       ...columns,
       [source.droppableId]: {
         ...column,
         items: copiedItems,
       },
-    });
+    };
   }
 };
 
+const setupStartColumn = (data) => {
+  const mapData = new Map();
+  listTaskStatus.forEach((status) => {
+    const listItem = data[status]?.items.sort((a, b) => {
+      return a.positionId.split("_")[1] - b.positionId.split("_")[1];
+    });
+
+    listItem.forEach((item) => {
+      const itemStatus = item.positionId.split("_")[0];
+      const store = mapData?.get(itemStatus);
+      if (store) {
+        mapData.set(itemStatus, [...store, item]);
+      } else {
+        mapData.set(itemStatus, [item]);
+      }
+    });
+  });
+
+  const dataKanbanBoard = {
+    Open: {
+      label: "Open",
+      items: mapData.get("Open") ?? [],
+    },
+    "In-progress": {
+      label: "In-progress",
+      items: mapData.get("In-progress") ?? [],
+    },
+    Resolved: {
+      label: "Resolved",
+      items: mapData.get("Resolved") ?? [],
+    },
+    Closed: {
+      label: "Closed",
+      items: mapData.get("Closed") ?? [],
+    },
+  };
+
+  console.log({ dataKanbanBoard });
+
+  return dataKanbanBoard;
+};
+
+const onDragEnd = (result, columns, setColumns) => {
+  if (!result.destination) return;
+  const { source, destination } = result;
+  console.log({ columns });
+
+  const returnListData = handleChangeDataBoardAfterDragEnd(source, destination, columns);
+  setColumns({ ...returnListData });
+};
+
 function DemoPage() {
-  const [columns, setColumns] = useState(taskStatus);
+  const [columns, setColumns] = useState(setupStartColumn(taskStatus));
   return (
     <div>
       <h1 style={{ textAlign: "center" }}>Jira Board</h1>
@@ -84,55 +137,8 @@ function DemoPage() {
                 }}
                 key={columnId}
               >
-                <h2>{column.name}</h2>
-                <div style={{ margin: 8 }}>
-                  <Droppable droppableId={columnId} key={columnId}>
-                    {(provided, snapshot) => {
-                      return (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          style={{
-                            background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
-                            padding: 4,
-                            width: 250,
-                            minHeight: 500,
-                          }}
-                        >
-                          {column.items.map((item, index) => {
-                            return (
-                              <Draggable key={item.id} draggableId={item.id} index={index}>
-                                {(provided, snapshot) => {
-                                  return (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      style={{
-                                        userSelect: "none",
-                                        padding: 16,
-                                        margin: "0 0 8px 0",
-                                        minHeight: "50px",
-                                        backgroundColor: snapshot.isDragging
-                                          ? "#263B4A"
-                                          : "#456C86",
-                                        color: "white",
-                                        ...provided.draggableProps.style,
-                                      }}
-                                    >
-                                      {item.content}
-                                    </div>
-                                  );
-                                }}
-                              </Draggable>
-                            );
-                          })}
-                          {provided.placeholder}
-                        </div>
-                      );
-                    }}
-                  </Droppable>
-                </div>
+                <h2>{column.label}</h2>
+                <DragBoard columnId={columnId} column={column} />
               </div>
             );
           })}

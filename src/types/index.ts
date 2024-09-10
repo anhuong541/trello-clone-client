@@ -7,6 +7,7 @@ export type StoryPointType = 1 | 2 | 3 | 5 | 8 | 13 | 21;
 
 export interface TaskItem {
   projectId: string;
+  positionId: number;
   taskId: string;
   title: string;
   description: string;
