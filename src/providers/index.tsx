@@ -16,7 +16,7 @@ export const ablyClient = new Ably.Realtime(process.env.NEXT_PUBLIC_ABLY_KEY!);
 export default function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class">
+      <ThemeProvider enableSystem={true} attribute="class">
         <ChakraProvider>
           <ContextProvider>
             {children}
