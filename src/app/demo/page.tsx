@@ -1,87 +1,145 @@
 "use client";
 
-import { useEffect } from "react";
-import "./style.css";
-import { createSwapy } from "./instance";
+import React, { useState } from "react";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
-const DEFAULT = {
-  "1": "a",
-  "3": "c",
-  "4": "d",
-  "2": null,
+const tasks = [
+  { id: "1", content: "First task" },
+  { id: "2", content: "Second task" },
+  { id: "3", content: "Third task" },
+  { id: "4", content: "Fourth task" },
+  { id: "5", content: "Fifth task" },
+];
+
+const taskStatus = {
+  requested: {
+    name: "Requested",
+    items: tasks,
+  },
+  toDo: {
+    name: "To do",
+    items: [],
+  },
+  inProgress: {
+    name: "In Progress",
+    items: [],
+  },
+  done: {
+    name: "Done",
+    items: [],
+  },
 };
 
-function A() {
-  return (
-    <div className="item a" data-swapy-item="a">
-      <div className="handle" data-swapy-handle></div>
-      <div>A</div>
-    </div>
-  );
-}
+const onDragEnd = (result, columns, setColumns) => {
+  if (!result.destination) return;
+  const { source, destination } = result;
 
-function C() {
-  return (
-    <div className="item c" data-swapy-item="c">
-      <div>C</div>
-    </div>
-  );
-}
-
-function D() {
-  return (
-    <div className="item d" data-swapy-item="d">
-      <div>D</div>
-    </div>
-  );
-}
-
-function getItemById(itemId: "a" | "c" | "d" | null) {
-  switch (itemId) {
-    case "a":
-      return <A />;
-    case "c":
-      return <C />;
-    case "d":
-      return <D />;
-  }
-}
-
-function App() {
-  const slotItems: Record<string, "a" | "c" | "d" | null> = localStorage.getItem("slotItem")
-    ? JSON.parse(localStorage.getItem("slotItem")!)
-    : DEFAULT;
-
-  useEffect(() => {
-    const container = document.querySelector(".container")!;
-    const swapy = createSwapy(container);
-    swapy.onSwap(({ data }) => {
-      localStorage.setItem("slotItem", JSON.stringify(data.object));
+  if (source.droppableId !== destination.droppableId) {
+    const sourceColumn = columns[source.droppableId];
+    const destColumn = columns[destination.droppableId];
+    const sourceItems = [...sourceColumn.items];
+    const destItems = [...destColumn.items];
+    const [removed] = sourceItems.splice(source.index, 1);
+    destItems.splice(destination.index, 0, removed);
+    setColumns({
+      ...columns,
+      [source.droppableId]: {
+        ...sourceColumn,
+        items: sourceItems,
+      },
+      [destination.droppableId]: {
+        ...destColumn,
+        items: destItems,
+      },
     });
+  } else {
+    const column = columns[source.droppableId];
+    const copiedItems = [...column.items];
+    const [removed] = copiedItems.splice(source.index, 1);
+    copiedItems.splice(destination.index, 0, removed);
+    setColumns({
+      ...columns,
+      [source.droppableId]: {
+        ...column,
+        items: copiedItems,
+      },
+    });
+  }
+};
 
-    return () => {
-      swapy.destroy();
-    };
-  }, []);
-
+function DemoPage() {
+  const [columns, setColumns] = useState(taskStatus);
   return (
-    <div className="container">
-      <div className="slot a" data-swapy-slot="1">
-        {getItemById(slotItems["1"])}
-      </div>
-      <div className="second-row">
-        <div className="slot b" data-swapy-slot="2">
-          {getItemById(slotItems["2"])}
-        </div>
-        <div className="slot c" data-swapy-slot="3">
-          {getItemById(slotItems["3"])}
-        </div>
-      </div>
-      <div className="slot d" data-swapy-slot="4">
-        {getItemById(slotItems["4"])}
+    <div>
+      <h1 style={{ textAlign: "center" }}>Jira Board</h1>
+      <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
+        <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
+          {Object.entries(columns).map(([columnId, column], index) => {
+            return (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+                key={columnId}
+              >
+                <h2>{column.name}</h2>
+                <div style={{ margin: 8 }}>
+                  <Droppable droppableId={columnId} key={columnId}>
+                    {(provided, snapshot) => {
+                      return (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          style={{
+                            background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
+                            padding: 4,
+                            width: 250,
+                            minHeight: 500,
+                          }}
+                        >
+                          {column.items.map((item, index) => {
+                            return (
+                              <Draggable key={item.id} draggableId={item.id} index={index}>
+                                {(provided, snapshot) => {
+                                  return (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      style={{
+                                        userSelect: "none",
+                                        padding: 16,
+                                        margin: "0 0 8px 0",
+                                        minHeight: "50px",
+                                        backgroundColor: snapshot.isDragging
+                                          ? "#263B4A"
+                                          : "#456C86",
+                                        color: "white",
+                                        ...provided.draggableProps.style,
+                                      }}
+                                    >
+                                      {item.content}
+                                    </div>
+                                  );
+                                }}
+                              </Draggable>
+                            );
+                          })}
+                          {provided.placeholder}
+                        </div>
+                      );
+                    }}
+                  </Droppable>
+                </div>
+              </div>
+            );
+          })}
+        </DragDropContext>
       </div>
     </div>
   );
 }
 
-export default App;
+export default DemoPage;
