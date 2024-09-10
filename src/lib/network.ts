@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getCookieValue } from "./utils";
+import { AUTH_TOKEN } from "@/constants";
 
 export const isProduction = process.env.NEXT_PUBLIC_NODE_ENV! === "production";
 
@@ -9,7 +11,7 @@ export const server = axios.create({
 
 server.interceptors.request.use(
   (config) => {
-    const authToken = localStorage && (localStorage.getItem("token") ?? null);
+    const authToken = getCookieValue(AUTH_TOKEN, document.cookie);
     if (authToken) {
       config.headers["Authorization"] = `Bearer ${authToken}`;
     }
