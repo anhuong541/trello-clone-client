@@ -60,7 +60,6 @@ export default function Login() {
 
     if (res?.status === 200) {
       isProduction && createSession(res?.data.token);
-      isProduction && localStorage.setItem("token", res?.data.token);
       // router.push("/project");
       setEmailErr(false);
       reset();

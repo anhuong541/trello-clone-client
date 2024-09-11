@@ -15,28 +15,26 @@ export const ablyClient = new Ably.Realtime(process.env.NEXT_PUBLIC_ABLY_KEY!);
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (
-    <Suspense>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class">
-          <ChakraProvider>
-            <ContextProvider>
-              {children}
-              <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={true}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="light"
-              />
-            </ContextProvider>
-          </ChakraProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </Suspense>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider enableSystem={true} attribute="class">
+        <ChakraProvider>
+          <ContextProvider>
+            {children}
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={true}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+            />
+          </ContextProvider>
+        </ChakraProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
