@@ -14,3 +14,6 @@ export const capitalizeFirstLetter = (input: string) => {
   if (!input) return input;
   return input.charAt(0).toUpperCase() + input.slice(1);
 };
+
+export const getCookieValue = (name: string, cookies: string) =>
+  cookies.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
