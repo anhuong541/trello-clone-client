@@ -2,6 +2,7 @@
 
 import {
   Dispatch,
+  MutableRefObject,
   ReactNode,
   SetStateAction,
   useContext,
@@ -316,7 +317,7 @@ function TaskDrableItem({
   itemInput: TaskItem;
   id?: string;
   index: number;
-  selectedDragItem: any;
+  selectedDragItem: MutableRefObject<TaskItem | null>;
 }) {
   const [hoverItem, setHoverItem] = useState(false);
   const [disableDrag, setDisableDrag] = useState(false);
@@ -333,6 +334,7 @@ function TaskDrableItem({
             {...provided.dragHandleProps}
             style={{
               position: snapshot.isDragging ? "fixed" : "relative",
+              userSelect: "none",
               ...provided.draggableProps.style,
             }}
             className="space-y-2 relative p-2 mt-3 text-black bg-gray-100 rounded-md border border-gray-100 hover:border-blue-500 active:border-gray-100 cursor-pointer"
@@ -502,13 +504,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
           {!loadingBoard && <SortKanbanTablePopover />}
         </Flex>
 
-        <DragDropContext
-          // onDragEnd={(e) => {
-          //   console.log({ e, data: dataSelectedDragItem.current });
-          // }}
-          onDragEnd={handleDragEnd}
-          // onDragOver={(e) => setDragOverId((e.over?.id ?? null) as any)}
-        >
+        <DragDropContext onDragEnd={handleDragEnd}>
           <ul className="grid grid-cols-4 gap-2 px-2 pb-2 relative h-[calc(100%-55px)] overflow-hidden">
             {loadingBoard ? (
               <SkeletonKanbanBoardTable />
@@ -525,64 +521,45 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
                 return (
                   <Droppable key={table.label} droppableId={table.label}>
-                    {(provided, snapshot) => (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className="flex flex-col h-full"
-                      >
-                        <div className="flex-col py-2 bg-blue-200 dark:bg-gray-700 rounded-lg">
-                          <h4 className="py-2 px-4 font-bold">{table.label}</h4>
-                          <div className="flex flex-col max-h-[calc(100vh-230px)] px-2 custom-scrollbar overflow-y-auto">
-                            {(table.table ?? []).map((item: TaskItem, index: number) => {
-                              return (
-                                <TaskDrableItem
-                                  itemInput={item}
-                                  key={item.taskId}
-                                  index={index}
-                                  selectedDragItem={dataSelectedDragItem}
-                                />
-                              );
-                            })}
+                    {(provided, snapshot) => {
+                      console.log({ provided });
 
-                            {snapshot.isDraggingOver && (
-                              <div className="rounded-md mt-3 h-[65px] w-full" />
-                            )}
+                      return (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          className="flex flex-col h-full"
+                        >
+                          <div className="flex-col py-2 bg-blue-200 dark:bg-gray-700 rounded-lg">
+                            <h4 className="py-2 px-4 font-bold">{table.label}</h4>
+                            <div className="flex flex-col max-h-[calc(100vh-230px)] px-2 custom-scrollbar overflow-y-auto border border-green-500">
+                              {(table.table ?? []).map((item: TaskItem, index: number) => {
+                                return (
+                                  <TaskDrableItem
+                                    itemInput={item}
+                                    key={item.taskId}
+                                    index={index}
+                                    selectedDragItem={dataSelectedDragItem}
+                                  />
+                                );
+                              })}
+
+                              {snapshot.isDraggingOver && (
+                                <div className="rounded-md mt-3 h-[65px] w-full border border-red-500" />
+                              )}
+                            </div>
+                            <AddTask
+                              projectId={projectId}
+                              taskStatus={table.label}
+                              setIsUserAction={setIsUserAction}
+                            />
                           </div>
-                          <AddTask
-                            projectId={projectId}
-                            taskStatus={table.label}
-                            setIsUserAction={setIsUserAction}
-                          />
+                          {/* {provided.placeholder} */}
                         </div>
-                        {/* {provided.placeholder} */}
-                      </div>
-                    )}
+                      );
+                    }}
                   </Droppable>
                 );
-
-                // return (
-                //   <Droppable className="flex flex-col h-full" key={table.label} id={table.label}>
-                //     <div className="flex-col px-2 py-2 bg-blue-200 dark:bg-gray-700 rounded-lg">
-                //       <h4 className="p-2 font-bold">{table.label}</h4>
-                //       <div className="flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-235px)]">
-                //         {(table.table ?? []).map((item: TaskItem, index) => {
-                //           return (
-                //             <TaskDrableItem itemInput={item} key={item.taskId} index={index} />
-                //           );
-                //         })}
-                //         {dragOverId === table.label && (
-                //           <div className="rounded-md bg-gray-200 dark:bg-gray-800 h-[60px] w-full" />
-                //         )}
-                //       </div>
-                //       {/* <AddTask
-                //         projectId={projectId}
-                //         taskStatus={table.label}
-                //         setIsUserAction={setIsUserAction}
-                //       /> */}
-                //     </div>
-                //   </Droppable>
-                // );
               })
             )}
           </ul>
