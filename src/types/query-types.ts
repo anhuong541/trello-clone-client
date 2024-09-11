@@ -28,7 +28,7 @@ export interface EditProjectInputType {
 export interface TaskInput {
   taskId: string;
   projectId: string;
-  positionId: number;
+  // positionId: number;
   title: string;
   description: string;
   taskStatus: TaskStatusType;

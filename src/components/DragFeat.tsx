@@ -92,7 +92,7 @@ function Draggable(props: {
   const style: CSSProperties | undefined = useMemo(() => {
     return transform
       ? {
-          transform: CSS.Translate.toString(transform),
+          transform: `${CSS.Translate.toString(transform)} rotate(5deg)`,
           // `translate3d(${transform.x}px, ${transform.y}px, 0) rotate(5deg)`,
           position: "fixed",
           width: refOffsetWidth.current,

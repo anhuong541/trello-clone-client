@@ -72,9 +72,10 @@ const handleChangeDataBoardAfterDragEnd = (source: any, destination: any, column
 const setupStartColumn = (data: any) => {
   const mapData = new Map();
   listTaskStatus.forEach((status) => {
-    const listItem = data[status]?.items.sort((a: any, b: any) => {
-      return a.positionId.split("_")[1] - b.positionId.split("_")[1];
-    });
+    const listItem = data[status]?.items;
+    // .sort((a: any, b: any) => {
+    //   return a.positionId.split("_")[1] - b.positionId.split("_")[1];
+    // });
 
     listItem.forEach((item: any) => {
       const itemStatus = item.positionId.split("_")[0];

@@ -103,13 +103,13 @@ function AddTask({
       return;
     }
 
-    const positionId = kanbanDataStore ? kanbanDataStore[taskStatus].table.length : 0;
+    // const positionId = kanbanDataStore ? kanbanDataStore[taskStatus].table.length : 0;
 
     const newTaskId = generateNewUid();
     const dataAddTask: TaskInput = {
       taskId: newTaskId,
       projectId,
-      positionId,
+      // positionId,
       title: data.taskTitle,
       priority: data.taskPriority,
       description: data.taskDescription,
@@ -280,7 +280,7 @@ function TaskDrableItem({ itemInput, id }: { itemInput: TaskItem; id?: string })
           </TooltipDes>
         )}
         <p>{itemInput?.storyPoint}</p>
-        <p>{`${itemInput?.taskStatus}_${itemInput?.positionId}`}</p>
+        {/* <p>{`${itemInput?.taskStatus}_${itemInput?.positionId}`}</p> */}
         <p
           className={cn(
             itemInput.priority === "High"
@@ -333,6 +333,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
   const handleDragEnd = async (e: DragEndEvent) => {
     const dragStatus = e.active.data.current?.taskStatus as TaskStatusType;
+
     setDragOverId(null);
     if (kanbanDataStore && e?.over?.id && e.over.id !== dragStatus) {
       const dataInput: any = {
@@ -343,7 +344,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       };
 
       let dataChangeOnDrag: KanbanBoardType = kanbanDataStore;
-
       const removeDraggingDataFromCurrentTable = kanbanDataStore[dragStatus].table.filter(
         (item) => item.taskId !== dataInput.taskId
       );
