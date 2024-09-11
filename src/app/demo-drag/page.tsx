@@ -49,6 +49,8 @@ const initialData: Board = {
 const KanbanBoard: React.FC = () => {
   const [columns, setColumns] = React.useState(initialData);
 
+  console.log({ columns });
+
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 

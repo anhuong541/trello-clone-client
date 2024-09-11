@@ -35,28 +35,6 @@ function Droppable(props: {
   );
 }
 
-function DroppableItem(props: {
-  id: string;
-  children: ReactNode;
-  className?: string;
-  // dataItem: TaskItem;
-}) {
-  const { isOver, setNodeRef } = useDroppable({
-    id: props.id,
-    // data: props.dataItem,
-  });
-  const style: CSSProperties = {
-    // border: isOver ? "1px solid #3399FF" : "1px solid #eff6ff",
-    borderRadius: "8px",
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} className={cn("dark:!border-gray-400", props.className)}>
-      {props.children}
-    </div>
-  );
-}
-
 function Draggable(props: {
   id: string;
   children: ReactNode;
