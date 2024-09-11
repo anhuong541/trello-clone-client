@@ -11,6 +11,7 @@ import { LoginButton, FacebookProvider } from "react-facebook";
 const facebookLoginUrl = `https://www.facebook.com/v12.0/dialog/oauth?client_id=${FB_APP_ID}&redirect_uri=${encodeURIComponent(
   REDIRECT_URI
 )}&scope=email,public_profile`;
+
 export default function DemoPage() {
   const pathname = useSearchParams();
   const [accessToken, setAccessToken] = useState<string | null>(null);

@@ -2,7 +2,7 @@
 
 // KanbanBoard.tsx
 import React from "react";
-import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 
 interface Task {
   id: string;

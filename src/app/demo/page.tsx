@@ -33,7 +33,7 @@ const taskStatus = {
 
 const listTaskStatus = ["Open", "In-progress", "Resolved", "Closed"];
 
-const handleChangeDataBoardAfterDragEnd = (source, destination, columns) => {
+const handleChangeDataBoardAfterDragEnd = (source: any, destination: any, columns: any) => {
   if (source.droppableId !== destination.droppableId) {
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
@@ -69,14 +69,14 @@ const handleChangeDataBoardAfterDragEnd = (source, destination, columns) => {
   }
 };
 
-const setupStartColumn = (data) => {
+const setupStartColumn = (data: any) => {
   const mapData = new Map();
   listTaskStatus.forEach((status) => {
-    const listItem = data[status]?.items.sort((a, b) => {
+    const listItem = data[status]?.items.sort((a: any, b: any) => {
       return a.positionId.split("_")[1] - b.positionId.split("_")[1];
     });
 
-    listItem.forEach((item) => {
+    listItem.forEach((item: any) => {
       const itemStatus = item.positionId.split("_")[0];
       const store = mapData?.get(itemStatus);
       if (store) {
@@ -111,7 +111,7 @@ const setupStartColumn = (data) => {
   return dataKanbanBoard;
 };
 
-const onDragEnd = (result, columns, setColumns) => {
+const onDragEnd = (result: any, columns: any, setColumns: any) => {
   if (!result.destination) return;
   const { source, destination } = result;
   console.log({ columns });

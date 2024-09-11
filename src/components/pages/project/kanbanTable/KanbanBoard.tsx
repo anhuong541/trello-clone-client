@@ -280,7 +280,7 @@ function TaskDrableItem({ itemInput, id }: { itemInput: TaskItem; id?: string })
           </TooltipDes>
         )}
         <p>{itemInput?.storyPoint}</p>
-        <p>{`${itemInput?.positionId.status}_${itemInput?.positionId.index}`}</p>
+        <p>{`${itemInput?.taskStatus}_${itemInput?.positionId}`}</p>
         <p
           className={cn(
             itemInput.priority === "High"

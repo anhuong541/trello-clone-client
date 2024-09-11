@@ -21,7 +21,6 @@
     "@sindresorhus/is": "^7.0.1",
     "@szmarczak/http-timer": "^5.0.1",
     "@tanstack/react-query": "^5.51.21",
-    "@types/react-beautiful-dnd": "^13.1.8",
     "ably": "^2.3.1",
     "axios": "^1.7.2",
     "cacheable-lookup": "^7.0.0",
