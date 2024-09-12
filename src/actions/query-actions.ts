@@ -79,7 +79,7 @@ export const onDeleteProject = async (projectId: string) => {
   }
 };
 
-export const handleViewProjectTasks = async (projectId: string) => {
+export const callViewProjectTasks = async (projectId: string) => {
   if (projectId === "") {
     return { data: [] };
   }

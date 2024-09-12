@@ -1,5 +1,5 @@
 import { Sidebar } from "@/components/layouts/Sidebar";
-import Members from "@/components/pages/members/members";
+import Members from "@/components/pages/members";
 
 export default async function MembersPage({ params }: { params: { projectId: string } }) {
   return (

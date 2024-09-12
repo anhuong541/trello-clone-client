@@ -12,11 +12,7 @@ import {
 } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
-import {
-  handleViewProjectTasks,
-  onChangeTaskState,
-  onCreateNewTask,
-} from "@/actions/query-actions";
+import { callViewProjectTasks, onChangeTaskState, onCreateNewTask } from "@/actions/query-actions";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { reactQueryKeys } from "@/lib/react-query-keys";
@@ -40,6 +36,8 @@ import { TaskDetail } from "../Task";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 import { ablyClient } from "@/providers";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
+import { UseDebounce } from "@/hooks/Debounce";
+import UseThrottle from "@/hooks/Throttle";
 
 interface TaskType {
   taskTitle: string;
@@ -332,9 +330,10 @@ function TaskDrableItem({
             style={{
               position: snapshot.isDragging ? "fixed" : "relative",
               userSelect: "none",
+              marginTop: index === 0 ? 0 : 12,
               ...provided.draggableProps.style,
             }}
-            className="space-y-2 relative p-2 mt-3 text-black bg-gray-100 rounded-md border border-gray-100 hover:border-blue-500 active:border-gray-100 cursor-pointer"
+            className="space-y-2 relative p-2 text-black bg-gray-100 rounded-md border border-gray-100 hover:border-blue-500 active:border-gray-100 cursor-pointer"
             onMouseEnter={() => setHoverItem(true)}
             onMouseLeave={() => setHoverItem(false)}
           >
@@ -402,6 +401,13 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
+  const debouncedUpdateBoard = UseThrottle(async (dataInput: TaskItem) => {
+    const res: any = await updateTaskAction.mutateAsync(dataInput);
+    if (res?.response?.status === 401) {
+      setAuthorized(false);
+    }
+  }, 1000);
+
   const handleDragEnd = async (e: DropResult) => {
     if (!dataSelectedDragItem.current || !kanbanDataStore) {
       return;
@@ -427,19 +433,15 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
     if (e.destination?.droppableId !== e.source?.droppableId) {
       setIsUserAction(true);
-      const res: any = await updateTaskAction.mutateAsync(dataInput);
-      if (res?.response?.status === 401) {
-        setAuthorized(false);
-      }
+      debouncedUpdateBoard(dataInput);
     }
     queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
   };
 
   useEffect(() => {
     (async () => {
-      // await server.get(`/joinProjectRoom/${projectId}`);
       try {
-        await handleViewProjectTasks(projectId);
+        await callViewProjectTasks(projectId);
       } catch (error) {
         console.log("project tasks list error: ", error);
         setAuthorized(false);
@@ -519,7 +521,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
 
                 return (
                   <Droppable key={table.label} droppableId={table.label}>
-                    {(provided, snapshot) => {
+                    {(provided) => {
                       return (
                         <div
                           {...provided.droppableProps}
@@ -539,10 +541,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                                   />
                                 );
                               })}
-
-                              {snapshot.isDraggingOver && (
-                                <div className="rounded-md mt-3 h-[65px] w-full" />
-                              )}
+                              {provided.placeholder}
                             </div>
                             <AddTask
                               projectId={projectId}
@@ -550,7 +549,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                               setIsUserAction={setIsUserAction}
                             />
                           </div>
-                          {/* {provided.placeholder} */}
                         </div>
                       );
                     }}
