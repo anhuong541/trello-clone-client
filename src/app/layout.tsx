@@ -6,7 +6,6 @@ import "./globals.css";
 
 const openSans = Open_Sans({ subsets: ["latin"] });
 export const metadata: Metadata = {
-  manifest: "/manifest.json",
   title: "Trello Clone",
   description: "Trello Clone",
 };
