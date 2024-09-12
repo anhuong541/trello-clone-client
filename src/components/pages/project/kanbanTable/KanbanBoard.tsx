@@ -19,7 +19,6 @@ import {
 } from "@/actions/query-actions";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { TaskInput } from "@/types/query-types";
 import { cn, generateNewUid } from "@/lib/utils";
@@ -35,9 +34,7 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-
 import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
-// import { Droppable } from "../../../DragFeat";
 import { Button } from "../../../common/Button";
 import { TaskDetail } from "../Task";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
@@ -84,35 +81,35 @@ const handleChangeDataBoardAfterDragEnd = (
   destination: any,
   columns: KanbanBoardType
 ) => {
-  if (source.droppableId !== destination.droppableId) {
-    const sourceColumn = columns[source.droppableId as TaskStatusType];
-    const destColumn = columns[destination.droppableId as TaskStatusType];
+  if (source?.droppableId !== destination?.droppableId) {
+    const sourceColumn = columns[source?.droppableId as TaskStatusType];
+    const destColumn = columns[destination?.droppableId as TaskStatusType];
     const sourceTable = [...sourceColumn.table];
     const destTable = [...destColumn.table];
-    const [removed] = sourceTable.splice(source.index, 1);
-    destTable.splice(destination.index, 0, removed);
+    const [removed] = sourceTable.splice(source?.index, 1);
+    destTable.splice(destination?.index, 0, removed);
 
     // console.log("logic 1");
     return {
       ...columns,
-      [source.droppableId]: {
+      [source?.droppableId]: {
         ...sourceColumn,
         table: sourceTable,
       },
-      [destination.droppableId]: {
+      [destination?.droppableId]: {
         ...destColumn,
         table: destTable,
       },
     };
   } else {
-    const column = columns[source.droppableId as TaskStatusType];
+    const column = columns[source?.droppableId as TaskStatusType];
     const copiedTable = [...column.table];
-    const [removed] = copiedTable.splice(source.index, 1);
-    copiedTable.splice(destination.index, 0, removed);
+    const [removed] = copiedTable.splice(source?.index, 1);
+    copiedTable.splice(destination?.index, 0, removed);
     // console.log("logic 2");
     return {
       ...columns,
-      [source.droppableId]: {
+      [source?.droppableId]: {
         ...column,
         table: copiedTable,
       },
@@ -410,6 +407,10 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       return;
     }
 
+    if (!e.source?.droppableId || !e.destination?.droppableId) {
+      return;
+    }
+
     const dataInput: TaskItem = {
       ...dataSelectedDragItem.current,
       // positionIndex: 0,
@@ -424,13 +425,12 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     );
     setKanbanDataStore({ ...dataChangeOnDrag });
 
-    if (e.destination?.droppableId === e.source.droppableId) {
-      return;
-    }
-    setIsUserAction(true);
-    const res: any = await updateTaskAction.mutateAsync(dataInput);
-    if (res?.response?.status === 401) {
-      setAuthorized(false);
+    if (e.destination?.droppableId !== e.source?.droppableId) {
+      setIsUserAction(true);
+      const res: any = await updateTaskAction.mutateAsync(dataInput);
+      if (res?.response?.status === 401) {
+        setAuthorized(false);
+      }
     }
     queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
   };
@@ -487,11 +487,9 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
           <Flex width="100%" height="55px" alignItems="center" className="lg:pl-2 pl-8">
             <p className="text-red-500 font-bold">You are not the member of this project!!!</p>
           </Flex>
-          <DndContext>
-            <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
-              <SkeletonKanbanBoardTable />
-            </ul>
-          </DndContext>
+          <ul className="grid grid-cols-4 gap-2 px-2 relative h-[calc(100%-55px)]">
+            <SkeletonKanbanBoardTable />
+          </ul>
         </div>
       </Box>
     );
@@ -522,8 +520,6 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                 return (
                   <Droppable key={table.label} droppableId={table.label}>
                     {(provided, snapshot) => {
-                      console.log({ provided });
-
                       return (
                         <div
                           {...provided.droppableProps}
@@ -532,7 +528,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                         >
                           <div className="flex-col py-2 bg-blue-200 dark:bg-gray-700 rounded-lg">
                             <h4 className="py-2 px-4 font-bold">{table.label}</h4>
-                            <div className="flex flex-col max-h-[calc(100vh-230px)] px-2 custom-scrollbar overflow-y-auto border border-green-500">
+                            <div className="flex flex-col max-h-[calc(100vh-230px)] px-2 custom-scrollbar overflow-y-auto">
                               {(table.table ?? []).map((item: TaskItem, index: number) => {
                                 return (
                                   <TaskDrableItem
@@ -545,7 +541,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                               })}
 
                               {snapshot.isDraggingOver && (
-                                <div className="rounded-md mt-3 h-[65px] w-full border border-red-500" />
+                                <div className="rounded-md mt-3 h-[65px] w-full" />
                               )}
                             </div>
                             <AddTask
