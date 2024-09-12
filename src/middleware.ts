@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
     const checkToken = (await checkJwtExpire(tokenSession)) as any;
     // const checkToken: any = null;
     if (!checkToken) {
-      return;
+      return NextResponse.next();
     }
 
     if (checkToken?.response?.status === 403 && protectedRoutes.includes(firstParam)) {
@@ -53,6 +53,8 @@ export async function middleware(request: NextRequest) {
     const absoluteURL = new URL("/login", request.nextUrl.origin);
     return NextResponse.redirect(absoluteURL.toString());
   }
+
+  return NextResponse.next();
 }
 
 // See "Matching Paths" below to learn more
