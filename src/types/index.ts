@@ -1,5 +1,4 @@
 import { FormEventHandler, HTMLInputTypeAttribute } from "react";
-import { SubmitHandler } from "react-hook-form";
 
 export type TaskStatusType = "Open" | "In-progress" | "Resolved" | "Closed";
 export type PriorityType = "Low" | "Medium" | "High";
@@ -8,6 +7,7 @@ export type StoryPointType = 1 | 2 | 3 | 5 | 8 | 13 | 21;
 
 export interface TaskItem {
   projectId: string;
+  // positionId: number;
   taskId: string;
   title: string;
   description: string;
