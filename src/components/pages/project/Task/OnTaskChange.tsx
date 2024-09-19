@@ -304,6 +304,7 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
         <Text fontWeight={600} marginRight={6}>
           Current priority is <strong className="font-bold">{dataInput.priority}</strong>{" "}
         </Text>
+        <Text className="text-red-500">Required</Text>
       </Flex>
       <Select
         onChange={(e) => onSelectPriority(e.target?.value as PriorityType)}
