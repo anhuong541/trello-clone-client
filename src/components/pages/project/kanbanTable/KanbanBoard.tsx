@@ -232,6 +232,9 @@ function AddTask({
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
                 </Select>
+                <Text color="red" fontSize={12}>
+                  Priority is required!
+                </Text>
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskStoryPoint">
                 <Text fontSize="sm" fontWeight={600}>
