@@ -36,11 +36,9 @@ function getScreenView(): any {
   } else if (width > 480 && width <= 768) {
     return ["mediumMobile", window.innerWidth]; // Medium Mobile
   } else if (width > 768 && width <= 1024) {
-    return ["largeMobile", window.innerWidth]; // Large Mobile
-  } else if (width > 1024 && width <= 1200) {
-    return ["smallTablet", window.innerWidth]; // Small Tablet
-  } else if (width > 1200 && width <= 1440) {
-    return ["largeTablet", window.innerWidth]; // Large Tablet
+    return ["largeMobile", window.innerWidth]; // Tablet
+  } else if (width > 1024 && width <= 1440) {
+    return ["largeTablet", window.innerWidth]; // Laptop
   } else {
     return ["desktop", window.innerWidth]; // Desktop
   }

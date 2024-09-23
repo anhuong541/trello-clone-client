@@ -1,4 +1,4 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react";
 
 export type UserType = {
   isActive: boolean;
@@ -24,3 +24,7 @@ export default function UserInfoContextProvider({ children }: { children: ReactN
     </UserDataContext.Provider>
   );
 }
+
+export const UserInfoContextHook = () => {
+  return useContext(UserDataContext);
+};

@@ -1,8 +1,8 @@
 "use client";
 
-import { UserDataContext, UserType } from "@/context/UserInfoContextProvider";
+import { UserInfoContextHook, UserType } from "@/context/UserInfoContextProvider";
 import { useMutation } from "@tanstack/react-query";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { MdLightMode, MdLogout, MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
 import Image from "next/image";
 import {
@@ -19,26 +19,18 @@ import { useTheme } from "next-themes";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { onUserLogout } from "@/actions/query-actions";
 import { removeSession } from "@/actions/auth-action";
-import CopyText from "../copyText";
 import { Button } from "../common/Button";
+import CopyText from "../copyText";
 
 export default function Header({ userInfo }: { userInfo: UserType }) {
-  const { setUserDataStore } = useContext(UserDataContext);
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { setUserDataStore } = UserInfoContextHook();
+  const { toggleColorMode } = useColorMode();
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    if (theme === "system") {
-      setTheme("light");
-    }
-  }, [setTheme, theme]);
 
   const logoutAction = useMutation({
     mutationKey: [reactQueryKeys.logout],
     mutationFn: onUserLogout,
   });
-
-  // console.log({ theme });
 
   const handleLogout = async () => {
     await removeSession();
@@ -47,6 +39,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
 
   const changeThemeMode = () => {
     toggleColorMode();
+
     if (theme === "dark") {
       setTheme("light");
     } else {

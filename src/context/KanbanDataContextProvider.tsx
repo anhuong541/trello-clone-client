@@ -1,4 +1,4 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react";
 import { KanbanBoardType } from "@/types";
 
 export const KanbanDataContext = createContext<{
@@ -15,3 +15,7 @@ export default function KanbanDataContextProvider({ children }: { children: Reac
     </KanbanDataContext.Provider>
   );
 }
+
+export const KanbanDataContextHook = () => {
+  return useContext(KanbanDataContext);
+};

@@ -5,7 +5,6 @@ import {
   MutableRefObject,
   ReactNode,
   SetStateAction,
-  useContext,
   useEffect,
   useRef,
   useState,
@@ -30,13 +29,12 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
+import { KanbanDataContextHook } from "@/context/KanbanDataContextProvider";
 import { Button } from "../../../common/Button";
 import { TaskDetail } from "../Task";
 import SortKanbanTablePopover from "./SortKanbanTablePopove";
 import { ablyClient } from "@/providers";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
-import { UseDebounce } from "@/hooks/Debounce";
 import UseThrottle from "@/hooks/Throttle";
 
 interface TaskType {
@@ -124,7 +122,7 @@ function AddTask({
   taskStatus: TaskStatusType;
   setIsUserAction: Dispatch<SetStateAction<boolean>>;
 }) {
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore, setKanbanDataStore } = KanbanDataContextHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<TaskType>();
@@ -386,7 +384,7 @@ function TaskDrableItem({
 
 export default function KanbanBoard({ projectId }: { projectId: string }) {
   const queryClient = useQueryClient();
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore, setKanbanDataStore } = KanbanDataContextHook();
   const [authorized, setAuthorized] = useState<boolean>(true);
   const [loadingBoard, setLoadingBoard] = useState(true);
   const [isUserAction, setIsUserAction] = useState(false);

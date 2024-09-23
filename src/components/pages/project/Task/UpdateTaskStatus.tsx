@@ -1,5 +1,5 @@
 import { onChangeTaskState } from "@/actions/query-actions";
-import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
+import { KanbanDataContextHook } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { PriorityType, TaskItem, TaskStatusType } from "@/types";
 import {
@@ -18,14 +18,13 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useContext } from "react";
 import { toast } from "react-toastify";
 
 const listStatus: TaskStatusType[] = ["Open", "In-progress", "Resolved", "Closed"];
 
 export default function UpdateTaskStatus({ dataInput }: { dataInput: TaskItem }) {
   const queryClient = useQueryClient();
-  const { kanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = KanbanDataContextHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onUserEdit = useMutation({

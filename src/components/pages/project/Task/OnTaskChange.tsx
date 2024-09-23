@@ -7,9 +7,9 @@ import {
   MdPriorityHigh,
 } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { onChangeTaskState } from "@/actions/query-actions";
-import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
+import { KanbanDataContextHook } from "@/context/KanbanDataContextProvider";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { PriorityType, StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
@@ -19,7 +19,7 @@ import { Button } from "@/components/common/Button";
 // TODO: Update last time edit text render
 
 function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
-  const { kanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = KanbanDataContextHook();
   const [editTitle, setEditTitle] = useState(false);
   const { register, handleSubmit, watch, reset } = useForm<{
     taskTitle: string;
@@ -96,7 +96,7 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
 }
 
 function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
-  const { kanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = KanbanDataContextHook();
   const { register, handleSubmit, watch, reset } = useForm<{
     taskDescription: string;
   }>();
@@ -188,7 +188,7 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
 const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
 
 function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
-  const { kanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = KanbanDataContextHook();
   const [currentPoint, setCurrentPoint] = useState(String(dataInput.storyPoint));
 
   const onUserEdit = useMutation({
@@ -262,7 +262,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
 }
 
 function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
-  const { kanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore } = KanbanDataContextHook();
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
     mutationKey: [reactQueryKeys.updateTask],

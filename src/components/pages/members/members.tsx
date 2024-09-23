@@ -26,7 +26,7 @@ import {
   viewProjectMemberAction,
 } from "@/actions/query-actions";
 import { AddMemberModal, AlertDelete, ViewMemberInfo } from "./memberActions";
-import { UserDataContext } from "@/context/UserInfoContextProvider";
+import { UserDataContext, UserInfoContextHook } from "@/context/UserInfoContextProvider";
 import { ProjectListItem } from "@/components/layouts/Sidebar/Sidebar";
 import { reactQueryKeys } from "@/lib/react-query-keys";
 import { AuthorityType, ProjectUser } from "@/types";
@@ -99,7 +99,7 @@ function SelectProjectMember({ currentProject }: { currentProject: any }) {
 }
 
 export default function Members({ projectId }: { projectId: string }) {
-  const { userDataStore } = useContext(UserDataContext);
+  const { userDataStore } = UserInfoContextHook();
 
   const queryUserProjectInfo = useQuery({
     queryKey: [reactQueryKeys.projectInfo],

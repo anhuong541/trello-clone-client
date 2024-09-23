@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useState } from "react";
 import {
   Popover,
   PopoverTrigger,
@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Button, List, ListItem } from "@chakra-ui/react";
 import { MdOutlineArrowDownward, MdOutlineArrowUpward, MdSort } from "react-icons/md";
-import { KanbanDataContext } from "@/context/KanbanDataContextProvider";
+import { KanbanDataContextHook } from "@/context/KanbanDataContextProvider";
 import { listTableKey } from "./KanbanBoard";
 import { PriorityType } from "@/types";
 
@@ -36,7 +36,7 @@ const listSortSelect: {
 ];
 
 export default function SortKanbanTablePopover() {
-  const { kanbanDataStore, setKanbanDataStore } = useContext(KanbanDataContext);
+  const { kanbanDataStore, setKanbanDataStore } = KanbanDataContextHook();
   const [sortName, setSortName] = useState<string | null>(null);
   const [sortState, setSortState] = useState<sortState>("def");
 
