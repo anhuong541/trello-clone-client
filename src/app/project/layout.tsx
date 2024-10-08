@@ -1,4 +1,4 @@
-import { handleUserInfo } from "@/actions/query-actions";
+import { handleUserInfo } from "@/lib/react-query/query-actions";
 import Header from "@/components/layouts/Header";
 import { cookies } from "next/headers";
 import { ReactNode } from "react";

@@ -1,20 +1,12 @@
 "use client";
 
-import {
-  Dispatch,
-  MutableRefObject,
-  ReactNode,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
-import { callViewProjectTasks, onChangeTaskState, onCreateNewTask } from "@/actions/query-actions";
+import { OnCreateNewTask, OnEditTask } from "@/lib/react-query/query-actions";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { queryKeys } from "@/lib/react-query/query-keys";
 import { TaskInput } from "@/types/query-types";
 import { cn, generateNewUid } from "@/lib/utils";
 import { Box, Flex, Input, Select, Tooltip } from "@chakra-ui/react";
@@ -36,6 +28,7 @@ import SortKanbanTablePopover from "./SortKanbanTablePopove";
 import { ablyClient } from "@/providers";
 import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
 import UseThrottle from "@/hooks/Throttle";
+import { server } from "@/lib/network";
 
 interface TaskType {
   taskTitle: string;
@@ -72,11 +65,7 @@ const addTaskToStatusGroup = (data: KanbanBoardType, newTask: TaskInput) => {
   return dataReturn;
 };
 
-const handleChangeDataBoardAfterDragEnd = (
-  source: any,
-  destination: any,
-  columns: KanbanBoardType
-) => {
+const handleChangeDataBoardAfterDragEnd = (source: any, destination: any, columns: KanbanBoardType) => {
   if (source?.droppableId !== destination?.droppableId) {
     const sourceColumn = columns[source?.droppableId as TaskStatusType];
     const destColumn = columns[destination?.droppableId as TaskStatusType];
@@ -128,11 +117,7 @@ function AddTask({
   const { register, handleSubmit, watch, reset } = useForm<TaskType>();
 
   const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
-
-  const addTaskAction = useMutation({
-    mutationKey: [reactQueryKeys.addTask],
-    mutationFn: onCreateNewTask,
-  });
+  const addTaskAction = OnCreateNewTask();
 
   // console.log({ kanbanDataStore });
 
@@ -166,7 +151,7 @@ function AddTask({
     const dataAfter = addTaskToStatusGroup(kanbanDataStore ?? initialKanbanData, dataAddTask);
     setKanbanDataStore(dataAfter);
     setIsUserAction(true);
-    queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
+    queryClient.refetchQueries({ queryKey: [queryKeys.projectList] });
     const res = await addTaskAction.mutateAsync(dataAddTask);
     if (!res) {
       toast.error("Project have been removed");
@@ -200,12 +185,7 @@ function AddTask({
                 <Text fontSize="sm" fontWeight={600}>
                   Title
                 </Text>
-                <Input
-                  placeholder="Task title"
-                  type="text"
-                  {...register("taskTitle")}
-                  className="dark:bg-gray-600"
-                />
+                <Input placeholder="Task title" type="text" {...register("taskTitle")} className="dark:bg-gray-600" />
               </label>
               <label className="flex flex-col gap-1" htmlFor="taskDescription">
                 <Text fontSize="sm" fontWeight={600}>
@@ -221,11 +201,7 @@ function AddTask({
                 <Text fontSize="sm" fontWeight={600}>
                   Priority
                 </Text>
-                <Select
-                  placeholder="Task priority"
-                  {...register("taskPriority")}
-                  className="dark:bg-gray-600"
-                >
+                <Select placeholder="Task priority" {...register("taskPriority")} className="dark:bg-gray-600">
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
@@ -238,11 +214,7 @@ function AddTask({
                 <Text fontSize="sm" fontWeight={600}>
                   Story Point
                 </Text>
-                <Select
-                  placeholder="Task story point"
-                  {...register("taskStoryPoint")}
-                  className="dark:bg-gray-600"
-                >
+                <Select placeholder="Task story point" {...register("taskStoryPoint")} className="dark:bg-gray-600">
                   {listStoryPointAccepted.map((point) => {
                     return (
                       <option value={point} key={point}>
@@ -390,10 +362,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
   const [isUserAction, setIsUserAction] = useState(false);
   const dataSelectedDragItem = useRef<TaskItem | null>(null);
 
-  const updateTaskAction = useMutation({
-    mutationKey: [reactQueryKeys.updateTask],
-    mutationFn: onChangeTaskState,
-  });
+  const updateTaskAction = OnEditTask();
 
   useEffect(() => {
     if (kanbanDataStore && projectId) {
@@ -425,32 +394,26 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
       dueDate: Date.now(),
     };
 
-    let dataChangeOnDrag: KanbanBoardType = handleChangeDataBoardAfterDragEnd(
-      e.source,
-      e.destination,
-      kanbanDataStore
-    );
+    let dataChangeOnDrag: KanbanBoardType = handleChangeDataBoardAfterDragEnd(e.source, e.destination, kanbanDataStore);
     setKanbanDataStore({ ...dataChangeOnDrag });
 
     if (e.destination?.droppableId !== e.source?.droppableId) {
       setIsUserAction(true);
       debouncedUpdateBoard(dataInput);
     }
-    queryClient.refetchQueries({ queryKey: [reactQueryKeys.projectList] });
+    queryClient.refetchQueries({ queryKey: [queryKeys.projectList] });
   };
 
   useEffect(() => {
-    (async () => {
-      try {
-        await callViewProjectTasks(projectId);
-      } catch (error) {
-        console.log("project tasks list error: ", error);
-        setAuthorized(false);
+    const callViewProjectTasks = async (projectId: string) => {
+      if (projectId === "") {
+        return { data: [] };
       }
-    })();
+      return await server.get(`/task/${projectId}`);
+    };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    callViewProjectTasks(projectId);
+  });
 
   useEffect(() => {
     if (!ablyClient) {
@@ -524,11 +487,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                   <Droppable key={table.label} droppableId={table.label}>
                     {(provided) => {
                       return (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          className="flex flex-col h-full"
-                        >
+                        <div {...provided.droppableProps} ref={provided.innerRef} className="flex flex-col h-full">
                           <div className="flex-col py-2 bg-blue-200 dark:bg-gray-700 rounded-lg">
                             <h4 className="py-2 px-4 font-bold">{table.label}</h4>
                             <div className="flex flex-col max-h-[calc(100vh-230px)] px-2 custom-scrollbar overflow-y-auto">
@@ -544,11 +503,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
                               })}
                               {provided.placeholder}
                             </div>
-                            <AddTask
-                              projectId={projectId}
-                              taskStatus={table.label}
-                              setIsUserAction={setIsUserAction}
-                            />
+                            <AddTask projectId={projectId} taskStatus={table.label} setIsUserAction={setIsUserAction} />
                           </div>
                         </div>
                       );

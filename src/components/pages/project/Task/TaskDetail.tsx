@@ -15,8 +15,8 @@ import dayjs from "dayjs";
 import { TaskItem } from "@/types";
 import { TaskDescription, TaskPriority, TaskStoryPoint, TaskTitle } from "./OnTaskChange";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { onDeleteTaskFunction } from "@/actions/query-actions";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { OnDeleteTask } from "@/lib/react-query/query-actions";
+import { queryKeys } from "@/lib/react-query/query-keys";
 import useScreenView from "@/hooks/ScreenView";
 import UpdateTaskStatus from "./UpdateTaskStatus";
 import { Button } from "@/components/common/Button";
@@ -39,10 +39,7 @@ export default function TaskDetail({
   const { screenViewType } = useScreenView();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const onDeleteTaskAction = useMutation({
-    mutationKey: [reactQueryKeys.deleteTask],
-    mutationFn: onDeleteTaskFunction,
-  });
+  const onDeleteTaskAction = OnDeleteTask();
 
   const handleClose = () => {
     onClose();
@@ -62,11 +59,7 @@ export default function TaskDetail({
   };
 
   const modalSize = useMemo(() => {
-    return screenViewType === "smallMobile"
-      ? "sm"
-      : screenViewType === "superSmallMobile"
-      ? "xs"
-      : "lg";
+    return screenViewType === "smallMobile" ? "sm" : screenViewType === "superSmallMobile" ? "xs" : "lg";
   }, [screenViewType]);
 
   return (
@@ -94,13 +87,7 @@ export default function TaskDetail({
                 </Text>
               </Flex>
             </ModalHeader>
-            <ModalBody
-              display="flex"
-              flexDirection="column"
-              gap={8}
-              paddingTop={4}
-              paddingBottom={4}
-            >
+            <ModalBody display="flex" flexDirection="column" gap={8} paddingTop={4} paddingBottom={4}>
               <TaskDescription dataInput={data} />
               <TaskStoryPoint dataInput={data} />
               <TaskPriority dataInput={data} />
@@ -112,7 +99,7 @@ export default function TaskDetail({
                 onClick={() => {
                   handleClose();
                   queryClient.refetchQueries({
-                    queryKey: [reactQueryKeys.projectList],
+                    queryKey: [queryKeys.projectList],
                   });
                 }}
               >

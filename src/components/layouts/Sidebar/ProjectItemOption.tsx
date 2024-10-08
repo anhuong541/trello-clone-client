@@ -1,15 +1,9 @@
 import { MouseEvent } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  useDisclosure,
-} from "@chakra-ui/react";
-import { reactQueryKeys } from "@/lib/react-query-keys";
-import { onDeleteProject, onEditProject } from "@/actions/query-actions";
+import { useQueryClient } from "@tanstack/react-query";
+import { Popover, PopoverTrigger, PopoverContent, PopoverArrow, useDisclosure } from "@chakra-ui/react";
+import { queryKeys } from "@/lib/react-query/query-keys";
+import { OnDeleteProject, OnEditProject } from "@/lib/react-query/query-actions";
 import { ProjectListItem } from "./Sidebar";
 import { Input, Textarea } from "@chakra-ui/react";
 import { Button } from "@/components/common/Button";
@@ -36,14 +30,8 @@ export default function ProjectItemOption({
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<EditProjectInput>();
 
-  const userEditProjectAction = useMutation({
-    mutationFn: onEditProject,
-    mutationKey: [reactQueryKeys.editProject],
-  });
-  const userDeleteProjectAction = useMutation({
-    mutationFn: onDeleteProject,
-    mutationKey: [reactQueryKeys.deleteProject],
-  });
+  const userEditProjectAction = OnEditProject();
+  const userDeleteProjectAction = OnDeleteProject();
 
   const listProjectItenOption = [
     {
@@ -57,7 +45,7 @@ export default function ProjectItemOption({
         onClose();
         await userDeleteProjectAction.mutateAsync(itemData.projectId);
         queryClient.refetchQueries({
-          queryKey: [reactQueryKeys.projectList],
+          queryKey: [queryKeys.projectList],
         });
       },
     },
@@ -87,7 +75,7 @@ export default function ProjectItemOption({
       ...dataChange,
     });
     queryClient.refetchQueries({
-      queryKey: [reactQueryKeys.projectList],
+      queryKey: [queryKeys.projectList],
     });
     reset();
   };
@@ -141,12 +129,7 @@ export default function ProjectItemOption({
                 );
               } else {
                 return (
-                  <Button
-                    key={index}
-                    className="w-full"
-                    variant="destruction"
-                    onClick={item.action}
-                  >
+                  <Button key={index} className="w-full" variant="destruction" onClick={item.action}>
                     {item.label}
                   </Button>
                 );

@@ -8,9 +8,9 @@ import {
 } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { onChangeTaskState } from "@/actions/query-actions";
+import { onChangeTaskState } from "@/lib/react-query/query-actions";
 import { KanbanDataContextHook } from "@/context/KanbanDataContextProvider";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { queryKeys } from "@/lib/react-query/query-keys";
 import { PriorityType, StoryPointType, TaskItem } from "@/types";
 import { toast } from "react-toastify";
 import { Button } from "@/components/common/Button";
@@ -27,7 +27,7 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
 
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
-    mutationKey: [reactQueryKeys.updateTask],
+    mutationKey: [queryKeys.updateTask],
   });
 
   const onSubmit: SubmitHandler<{
@@ -105,7 +105,7 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
 
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
-    mutationKey: [reactQueryKeys.updateTask],
+    mutationKey: [queryKeys.updateTask],
   });
 
   const onSubmit: SubmitHandler<{
@@ -193,7 +193,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
 
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
-    mutationKey: [reactQueryKeys.updateTask],
+    mutationKey: [queryKeys.updateTask],
   });
 
   const onSelectStoryPoint = async (point: StoryPointType) => {
@@ -265,7 +265,7 @@ function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore } = KanbanDataContextHook();
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
-    mutationKey: [reactQueryKeys.updateTask],
+    mutationKey: [queryKeys.updateTask],
   });
 
   const onSelectPriority = async (priority: PriorityType) => {

@@ -1,7 +1,6 @@
 "use client";
 
 import { UserInfoContextHook, UserType } from "@/context/UserInfoContextProvider";
-import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { MdLightMode, MdLogout, MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
 import Image from "next/image";
@@ -16,8 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
 
-import { reactQueryKeys } from "@/lib/react-query-keys";
-import { onUserLogout } from "@/actions/query-actions";
+import { OnUserLogoutAction } from "@/lib/react-query/query-actions";
 import { removeSession } from "@/actions/auth-action";
 import { Button } from "../common/Button";
 import CopyText from "../copyText";
@@ -27,10 +25,7 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
   const { toggleColorMode } = useColorMode();
   const { theme, setTheme } = useTheme();
 
-  const logoutAction = useMutation({
-    mutationKey: [reactQueryKeys.logout],
-    mutationFn: onUserLogout,
-  });
+  const logoutAction = OnUserLogoutAction();
 
   const handleLogout = async () => {
     await removeSession();
@@ -65,16 +60,8 @@ export default function Header({ userInfo }: { userInfo: UserType }) {
         <h1 className="font-bold text-title-header md:text-4xl text-2xl">Trello Clone</h1>
       </div>
       <div className="flex items-center justify-end gap-2">
-        <Button
-          variant="icon"
-          className="transition-all duration-200 px-2 hover:bg-inherit"
-          onClick={changeThemeMode}
-        >
-          {theme === "light" ? (
-            <MdOutlineLightMode className="h-5 w-5" />
-          ) : (
-            <MdOutlineDarkMode className="h-5 w-5" />
-          )}
+        <Button variant="icon" className="transition-all duration-200 px-2 hover:bg-inherit" onClick={changeThemeMode}>
+          {theme === "light" ? <MdOutlineLightMode className="h-5 w-5" /> : <MdOutlineDarkMode className="h-5 w-5" />}
         </Button>
         <Popover placement="bottom-end">
           <PopoverTrigger>

@@ -2,12 +2,10 @@
 
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { reactQueryKeys } from "@/lib/react-query-keys";
-import { onUserLogin } from "@/actions/query-actions";
+import { OnUserLoginAction } from "@/lib/react-query/query-actions";
 import AuthForm from "@/components/common/auth-form";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { AuthFormInput } from "@/types";
@@ -20,17 +18,12 @@ type LoginInput = {
 };
 
 export default function Login() {
-  const router = useRouter();
   const [emailErr, setEmailErr] = useState(false);
   const [passwordErr, setPasswordError] = useState(false);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const { register, handleSubmit, watch, reset } = useForm<LoginInput>();
-
-  const loginAction = useMutation({
-    mutationFn: onUserLogin,
-    mutationKey: [reactQueryKeys.login],
-  });
+  const loginAction = OnUserLoginAction();
 
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
     setEmailErr(false);

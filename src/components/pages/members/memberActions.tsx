@@ -17,51 +17,35 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-import { onAddMemberOnProject, onRemoveMemberOutOfProject } from "@/actions/query-actions";
+import { OnAddMember, OnDeleteMember } from "@/lib/react-query/query-actions";
 import { useDisclosure } from "@chakra-ui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { ReactNode, useMemo, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 import { Button } from "@/components/common/Button";
 import { Input } from "@/components/common/Input";
 import { AuthorityType, ProjectUser } from "@/types";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { queryKeys } from "@/lib/react-query/query-keys";
 import useScreenView from "@/hooks/ScreenView";
 
-function AlertDelete({
-  children,
-  projectId,
-  member,
-}: {
-  children: ReactNode;
-  projectId: string;
-  member: ProjectUser;
-}) {
+function AlertDelete({ children, projectId, member }: { children: ReactNode; projectId: string; member: ProjectUser }) {
   const { screenViewType, screenView } = useScreenView();
   const queryClient = useQueryClient();
+  const removeMemberAction = OnDeleteMember();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef: any = useRef();
-
-  const removeMemberAction = useMutation({
-    mutationKey: [reactQueryKeys.removeMember],
-    mutationFn: onRemoveMemberOutOfProject,
-  });
 
   const handleActionRemoveMember = async () => {
     await removeMemberAction.mutateAsync({ projectId, email: member.email });
     queryClient.refetchQueries({
-      queryKey: [reactQueryKeys.viewProjectMember],
+      queryKey: [queryKeys.viewProjectMember],
     });
     onClose();
   };
 
   const modalSize = useMemo(() => {
-    return screenViewType === "smallMobile"
-      ? "sm"
-      : screenViewType === "superSmallMobile"
-      ? "xs"
-      : "lg";
+    return screenViewType === "smallMobile" ? "sm" : screenViewType === "superSmallMobile" ? "xs" : "lg";
   }, [screenViewType]);
 
   const isCentered = screenView ? Number(screenView) < 640 : false;
@@ -86,9 +70,7 @@ function AlertDelete({
             </AlertDialogHeader>
             <AlertDialogCloseButton />
 
-            <AlertDialogBody>
-              Are you absolutely certain you want to remove this member?
-            </AlertDialogBody>
+            <AlertDialogBody>Are you absolutely certain you want to remove this member?</AlertDialogBody>
 
             <AlertDialogFooter>
               <Button
@@ -118,15 +100,11 @@ function AddMemberModal({
 }) {
   const { screenViewType, screenView } = useScreenView();
   const queryClient = useQueryClient();
+  const addMemberAction = OnAddMember();
   const [inputEmail, setInputEmail] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isErr, setIsErr] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-
-  const addMemberAction = useMutation({
-    mutationKey: [reactQueryKeys.addMember],
-    mutationFn: onAddMemberOnProject,
-  });
 
   const handleActionAddMember = async () => {
     setIsErr(false);
@@ -155,29 +133,20 @@ function AddMemberModal({
       return;
     }
     queryClient.refetchQueries({
-      queryKey: [reactQueryKeys.viewProjectMember],
+      queryKey: [queryKeys.viewProjectMember],
     });
     onClose();
   };
 
   const modalSize = useMemo(() => {
-    return screenViewType === "smallMobile"
-      ? "sm"
-      : screenViewType === "superSmallMobile"
-      ? "xs"
-      : "lg";
+    return screenViewType === "smallMobile" ? "sm" : screenViewType === "superSmallMobile" ? "xs" : "lg";
   }, [screenViewType]);
 
   const isCentered = screenView ? Number(screenView) < 640 : false;
 
   return (
     <>
-      <Button
-        onClick={onOpen}
-        size="sm"
-        className="flex gap-2 items-center flex-shrink-0"
-        disabled={isDisable}
-      >
+      <Button onClick={onOpen} size="sm" className="flex gap-2 items-center flex-shrink-0" disabled={isDisable}>
         {children}
       </Button>
 
@@ -221,11 +190,7 @@ function ViewMemberInfo({ children, member }: { children: ReactNode; member: Pro
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const modalSize = useMemo(() => {
-    return screenViewType === "smallMobile"
-      ? "sm"
-      : screenViewType === "superSmallMobile"
-      ? "xs"
-      : "lg";
+    return screenViewType === "smallMobile" ? "sm" : screenViewType === "superSmallMobile" ? "xs" : "lg";
   }, [screenViewType]);
 
   const isCentered = screenView ? Number(screenView) < 640 : false;
@@ -254,19 +219,11 @@ function ViewMemberInfo({ children, member }: { children: ReactNode; member: Pro
             )}
           </ModalBody>
 
-          <ModalFooter
-            display="flex"
-            flexDirection="column"
-            justifyContent="end"
-            alignItems="end"
-            gap={1}
-          >
+          <ModalFooter display="flex" flexDirection="column" justifyContent="end" alignItems="end" gap={1}>
             {/* <p className="text-sm">
               Account created at {dayjs(member.createAt).format("MMM YYYY")}
             </p> */}
-            <p className="text-sm">
-              Account created at {dayjs(member.createAt).format("MMM YYYY")}
-            </p>
+            <p className="text-sm">Account created at {dayjs(member.createAt).format("MMM YYYY")}</p>
           </ModalFooter>
         </ModalContent>
       </Modal>

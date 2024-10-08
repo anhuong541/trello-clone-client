@@ -2,18 +2,12 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Popover, PopoverTrigger, PopoverContent, PopoverArrow, useDisclosure } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { MdAdd } from "react-icons/md";
 
-import { onCreateProject } from "@/actions/query-actions";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { OnCreateProject } from "@/lib/react-query/query-actions";
+import { queryKeys } from "@/lib/react-query/query-keys";
 import { toast } from "react-toastify";
 import { Input, Textarea } from "@chakra-ui/react";
 import { Button } from "@/components/common/Button";
@@ -29,10 +23,7 @@ export default function AddProjectPopover() {
   const queryClient = useQueryClient();
   const { register, handleSubmit, watch, reset } = useForm<AddProjectInput>();
 
-  const addProjectAction = useMutation({
-    mutationFn: onCreateProject,
-    mutationKey: [reactQueryKeys.addProject],
-  });
+  const addProjectAction = OnCreateProject();
 
   const onSubmit: SubmitHandler<AddProjectInput> = async (data) => {
     if (data.projectName === "") {
@@ -50,7 +41,7 @@ export default function AddProjectPopover() {
     if (res?.status) {
       toast.success("Create project successfull");
       queryClient.refetchQueries({
-        queryKey: [reactQueryKeys.projectList],
+        queryKey: [queryKeys.projectList],
       });
       route.push(`/project/${res?.data?.projectId}`);
       onClose();

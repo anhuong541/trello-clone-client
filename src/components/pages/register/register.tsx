@@ -1,12 +1,10 @@
 "use client";
 
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-import { reactQueryKeys } from "@/lib/react-query-keys";
-import { onUserRegister } from "@/actions/query-actions";
+import { OnUserRegisterAction } from "@/lib/react-query/query-actions";
 import { useState } from "react";
 import { AuthFormInput } from "@/types";
 import AuthForm from "@/components/common/auth-form";
@@ -28,10 +26,7 @@ export default function Register() {
   const [passwordErr, setPasswordErr] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  const registerAction = useMutation({
-    mutationFn: onUserRegister,
-    mutationKey: [reactQueryKeys.register],
-  });
+  const registerAction = OnUserRegisterAction();
 
   const onSubmit: SubmitHandler<RegisterInput> = async (data) => {
     setEmailErr(false);

@@ -1,22 +1,16 @@
 "use client";
 
-import { handleUserProjectList } from "@/actions/query-actions";
+import { QueryUserProjectList } from "@/lib/react-query/query-actions";
 import { ProjectListItem } from "@/components/layouts/Sidebar/Sidebar";
-import { reactQueryKeys } from "@/lib/react-query-keys";
 import { Text } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useMemo } from "react";
 
 export default function SelectProjectMobileView() {
-  const queryUserProjectList = useQuery({
-    queryKey: [reactQueryKeys.projectList],
-    queryFn: handleUserProjectList,
-  });
+  const queryUserProjectList = QueryUserProjectList();
 
   const userProjectList: ProjectListItem[] = useMemo(() => {
-    const data: ProjectListItem[] =
-      (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
+    const data: ProjectListItem[] = (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
 
     const formatDataUserProjectList = data.sort((a, b) => b?.dueTime - a?.dueTime);
 

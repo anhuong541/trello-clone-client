@@ -9,13 +9,11 @@ import {
 } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@chakra-ui/react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { handleUserProjectList } from "@/actions/query-actions";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { QueryUserProjectList } from "@/lib/react-query/query-actions";
 import AddProjectPopover from "./AddProjectPopover";
 import ProjectItemOption from "./ProjectItemOption";
 import useScreenView from "@/hooks/ScreenView";
@@ -77,14 +75,10 @@ export default function Sidebar({ projectId }: { projectId: string }) {
     }
   }, [screenView]);
 
-  const queryUserProjectList = useQuery({
-    queryKey: [reactQueryKeys.projectList],
-    queryFn: handleUserProjectList,
-  });
+  const queryUserProjectList = QueryUserProjectList();
 
   const userProjectList: ProjectListItem[] = useMemo(() => {
-    const data: ProjectListItem[] =
-      (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
+    const data: ProjectListItem[] = (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
 
     return data?.sort((a, b) => b?.dueTime - a?.dueTime);
   }, [queryUserProjectList]);
@@ -151,9 +145,7 @@ export default function Sidebar({ projectId }: { projectId: string }) {
           <div className="flex items-center justify-between px-4">
             <div className="flex items-center gap-2">
               <MdOutlinePostAdd className="w-5 h-5" />
-              <h3 className="font-semibold text-sm overflow-hidden whitespace-nowrap">
-                Your Projects
-              </h3>
+              <h3 className="font-semibold text-sm overflow-hidden whitespace-nowrap">Your Projects</h3>
             </div>
             <AddProjectPopover />
           </div>
@@ -162,13 +154,7 @@ export default function Sidebar({ projectId }: { projectId: string }) {
               <Skeleton height="60px" />
             ) : (
               userProjectList.map((item: ProjectListItem, index: number) => {
-                return (
-                  <ProjectSelect
-                    item={item}
-                    ProjectSelected={projectId === item.projectId}
-                    key={index}
-                  />
-                );
+                return <ProjectSelect item={item} ProjectSelected={projectId === item.projectId} key={index} />;
               })
             )}
           </div>

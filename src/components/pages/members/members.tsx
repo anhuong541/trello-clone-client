@@ -1,34 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverBody,
-  PopoverArrow,
-} from "@chakra-ui/react";
+import { Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow } from "@chakra-ui/react";
 import { Skeleton, SkeletonCircle } from "@chakra-ui/react";
-import {
-  MdOutlineGroupRemove,
-  MdOutlineKeyboardDoubleArrowDown,
-  MdOutlinePersonAdd,
-} from "react-icons/md";
+import { MdOutlineGroupRemove, MdOutlineKeyboardDoubleArrowDown, MdOutlinePersonAdd } from "react-icons/md";
 import { Box, Flex } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import dayjs from "dayjs";
 
-import {
-  handleProjectInfo,
-  handleUserProjectList,
-  viewProjectMemberAction,
-} from "@/actions/query-actions";
+import { QueryProjectMember, QueryUserProjectInfo, QueryUserProjectList } from "@/lib/react-query/query-actions";
 import { AddMemberModal, AlertDelete, ViewMemberInfo } from "./memberActions";
-import { UserDataContext, UserInfoContextHook } from "@/context/UserInfoContextProvider";
+import { UserInfoContextHook } from "@/context/UserInfoContextProvider";
 import { ProjectListItem } from "@/components/layouts/Sidebar/Sidebar";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { queryKeys } from "@/lib/react-query/query-keys";
 import { AuthorityType, ProjectUser } from "@/types";
 import { Button } from "@/components/common/Button";
 import useScreenView from "@/hooks/ScreenView";
@@ -48,14 +33,10 @@ function SelectProjectMember({ currentProject }: { currentProject: any }) {
   const { screenView } = useScreenView();
   const route = useRouter();
 
-  const queryUserProjectList = useQuery({
-    queryKey: [reactQueryKeys.projectList],
-    queryFn: handleUserProjectList,
-  });
+  const queryUserProjectList = QueryUserProjectList();
 
   const userProjectList: ProjectListItem[] = useMemo(() => {
-    const data: ProjectListItem[] =
-      (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
+    const data: ProjectListItem[] = (queryUserProjectList && queryUserProjectList.data?.data.data) ?? [];
 
     const formatDataUserProjectList = data.sort((a, b) => b?.dueTime - a?.dueTime);
     return formatDataUserProjectList;
@@ -99,22 +80,14 @@ function SelectProjectMember({ currentProject }: { currentProject: any }) {
 }
 
 export default function Members({ projectId }: { projectId: string }) {
+  const viewProjectMember = QueryProjectMember(projectId);
   const { userDataStore } = UserInfoContextHook();
-
-  const queryUserProjectInfo = useQuery({
-    queryKey: [reactQueryKeys.projectInfo],
-    queryFn: () => handleProjectInfo(projectId),
-  });
-
-  const queryProjectMember = useQuery({
-    queryKey: [reactQueryKeys.viewProjectMember],
-    queryFn: () => viewProjectMemberAction(projectId),
-  });
+  const queryUserProjectInfo = QueryUserProjectInfo(projectId);
 
   const projectInfo = queryUserProjectInfo?.data?.data?.data;
-  const projectMember = queryProjectMember?.data?.data?.listUser;
+  const projectMember = viewProjectMember?.data?.data?.listUser;
 
-  const isOwner = queryProjectMember?.data?.data?.listUser
+  const isOwner = viewProjectMember?.data?.data?.listUser
     .find((item: any) => item.uid === userDataStore?.uid)
     .authority.includes("Owner");
 
@@ -122,7 +95,7 @@ export default function Members({ projectId }: { projectId: string }) {
     <Box className="lg:col-span-8 overflow-x-auto overflow-y-hidden h-full w-full">
       <div className="mx-auto max-w-5xl flex sm:justify-between sm:items-center sm:flex-row flex-col sm:gap-0 gap-4 py-4 px-6">
         <div className="flex items-center gap-2">
-          {queryProjectMember.isLoading ? (
+          {viewProjectMember.isLoading ? (
             <SkeletonCircle size="12" />
           ) : (
             <Image
@@ -134,17 +107,15 @@ export default function Members({ projectId }: { projectId: string }) {
             />
           )}
 
-          {queryProjectMember.isLoading ? (
+          {viewProjectMember.isLoading ? (
             <Skeleton height="30px" width="100px" borderRadius={4} />
           ) : (
-            <h2 className="font-bold text-xl overflow-hidden whitespace-nowrap">
-              {projectInfo?.projectName}
-            </h2>
+            <h2 className="font-bold text-xl overflow-hidden whitespace-nowrap">{projectInfo?.projectName}</h2>
           )}
         </div>
         <Flex gap={2} className="sm:flex-row flex-col sm:items-center">
           {isOwner && (
-            <AddMemberModal projectId={projectId} isDisable={queryProjectMember.isLoading}>
+            <AddMemberModal projectId={projectId} isDisable={viewProjectMember.isLoading}>
               <MdOutlinePersonAdd className="h-5 w-5" /> Add new member
             </AddMemberModal>
           )}
@@ -153,10 +124,8 @@ export default function Members({ projectId }: { projectId: string }) {
       </div>
       <hr />
       <Box className="flex flex-col mx-auto py-4 px-6" maxWidth={1024}>
-        <p className={cn(!queryProjectMember.isLoading && "border-b", "font-bold pb-4")}>
-          Members:
-        </p>
-        {queryProjectMember.isLoading ? (
+        <p className={cn(!viewProjectMember.isLoading && "border-b", "font-bold pb-4")}>Members:</p>
+        {viewProjectMember.isLoading ? (
           <Box display="flex" flexDirection="column" gap={1}>
             <SkeletonMemberList height="40px" />
           </Box>
@@ -178,12 +147,8 @@ export default function Members({ projectId }: { projectId: string }) {
                     />
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
-                        <h6 className="font-bold group-hover:underline underline-offset-2">
-                          {member.username}
-                        </h6>
-                        <p className="text-sm text-gray-500">
-                          ({showMemberRole(member.authority)})
-                        </p>
+                        <h6 className="font-bold group-hover:underline underline-offset-2">{member.username}</h6>
+                        <p className="text-sm text-gray-500">({showMemberRole(member.authority)})</p>
                       </div>
                       <p className="text-sm text-gray-500">
                         {member.email} - Time created: {dayjs(member.createAt).format("MMM YYYY")}

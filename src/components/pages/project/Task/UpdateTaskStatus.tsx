@@ -1,6 +1,6 @@
-import { onChangeTaskState } from "@/actions/query-actions";
+import { onChangeTaskState } from "@/lib/react-query/query-actions";
 import { KanbanDataContextHook } from "@/context/KanbanDataContextProvider";
-import { reactQueryKeys } from "@/lib/react-query-keys";
+import { queryKeys } from "@/lib/react-query/query-keys";
 import { PriorityType, TaskItem, TaskStatusType } from "@/types";
 import {
   Popover,
@@ -29,7 +29,7 @@ export default function UpdateTaskStatus({ dataInput }: { dataInput: TaskItem })
 
   const onUserEdit = useMutation({
     mutationFn: onChangeTaskState,
-    mutationKey: [reactQueryKeys.updateTask],
+    mutationKey: [queryKeys.updateTask],
   });
 
   const onSelectStatus = async (taskStatus: TaskStatusType) => {
@@ -45,7 +45,7 @@ export default function UpdateTaskStatus({ dataInput }: { dataInput: TaskItem })
     });
     onClose();
     queryClient.refetchQueries({
-      queryKey: [reactQueryKeys.projectList],
+      queryKey: [queryKeys.projectList],
     });
   };
 

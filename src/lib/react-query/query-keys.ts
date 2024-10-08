@@ -1,4 +1,4 @@
-export const reactQueryKeys = {
+export const queryKeys = {
   register: "register",
   login: "login",
   logout: "logout",
