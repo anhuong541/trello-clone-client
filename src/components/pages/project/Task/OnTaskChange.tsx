@@ -1,14 +1,9 @@
 import { Flex, Input, Select, Text, Textarea } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import {
-  MdNumbers,
-  MdOutlineDescription,
-  MdOutlineVideoLabel,
-  MdPriorityHigh,
-} from "react-icons/md";
+import { MdNumbers, MdOutlineDescription, MdOutlineVideoLabel, MdPriorityHigh } from "react-icons/md";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { onChangeTaskState } from "@/lib/react-query/query-actions";
+import { OnEditTask } from "@/lib/react-query/query-actions";
 import { KanbanDataContextHook } from "@/context/KanbanDataContextProvider";
 import { queryKeys } from "@/lib/react-query/query-keys";
 import { PriorityType, StoryPointType, TaskItem } from "@/types";
@@ -25,10 +20,7 @@ function TaskTitle({ dataInput }: { dataInput: TaskItem }) {
     taskTitle: string;
   }>();
 
-  const onUserEdit = useMutation({
-    mutationFn: onChangeTaskState,
-    mutationKey: [queryKeys.updateTask],
-  });
+  const onUserEdit = OnEditTask();
 
   const onSubmit: SubmitHandler<{
     taskTitle: string;
@@ -103,10 +95,7 @@ function TaskDescription({ dataInput }: { dataInput: TaskItem }) {
   const [openEdit, setOpenEdit] = useState(false);
   const descriptionIsEmpty = dataInput?.description?.length === 0;
 
-  const onUserEdit = useMutation({
-    mutationFn: onChangeTaskState,
-    mutationKey: [queryKeys.updateTask],
-  });
+  const onUserEdit = OnEditTask();
 
   const onSubmit: SubmitHandler<{
     taskDescription: string;
@@ -191,10 +180,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore } = KanbanDataContextHook();
   const [currentPoint, setCurrentPoint] = useState(String(dataInput.storyPoint));
 
-  const onUserEdit = useMutation({
-    mutationFn: onChangeTaskState,
-    mutationKey: [queryKeys.updateTask],
-  });
+  const onUserEdit = OnEditTask();
 
   const onSelectStoryPoint = async (point: StoryPointType) => {
     if (!listStoryPointAccepted.includes(point)) {
@@ -263,10 +249,7 @@ function TaskStoryPoint({ dataInput }: { dataInput: TaskItem }) {
 
 function TaskPriority({ dataInput }: { dataInput: TaskItem }) {
   const { kanbanDataStore } = KanbanDataContextHook();
-  const onUserEdit = useMutation({
-    mutationFn: onChangeTaskState,
-    mutationKey: [queryKeys.updateTask],
-  });
+  const onUserEdit = OnEditTask();
 
   const onSelectPriority = async (priority: PriorityType) => {
     if (!kanbanDataStore) {

@@ -1,4 +1,4 @@
-import { onChangeTaskState } from "@/lib/react-query/query-actions";
+import { OnEditTask } from "@/lib/react-query/query-actions";
 import { KanbanDataContextHook } from "@/context/KanbanDataContextProvider";
 import { queryKeys } from "@/lib/react-query/query-keys";
 import { PriorityType, TaskItem, TaskStatusType } from "@/types";
@@ -27,10 +27,7 @@ export default function UpdateTaskStatus({ dataInput }: { dataInput: TaskItem })
   const { kanbanDataStore } = KanbanDataContextHook();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const onUserEdit = useMutation({
-    mutationFn: onChangeTaskState,
-    mutationKey: [queryKeys.updateTask],
-  });
+  const onUserEdit = OnEditTask();
 
   const onSelectStatus = async (taskStatus: TaskStatusType) => {
     if (!kanbanDataStore) {
