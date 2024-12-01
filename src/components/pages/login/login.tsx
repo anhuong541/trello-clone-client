@@ -7,10 +7,10 @@ import { useState } from "react";
 
 import { OnUserLoginAction } from "@/lib/react-query/query-actions";
 import AuthForm from "@/components/common/auth-form";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { capitalizeFirstLetter } from "@/utils";
 import { AuthFormInput } from "@/types";
 import { isProduction } from "@/lib/network";
-import { createSession } from "@/actions/auth-action";
+import { createSession } from "@/lib/auth-action";
 
 type LoginInput = {
   emailLogin: string;

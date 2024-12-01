@@ -2,7 +2,7 @@ import { HOME_ROUTE, ROOT_ROUTE, SESSION_COOKIE_NAME } from "./constants";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { serverCl } from "./lib/network";
-import { removeSession } from "./actions/auth-action";
+import { removeSession } from "./lib/auth-action";
 
 const protectedRoutes = [HOME_ROUTE];
 const routesBanWhenUserSignin = ["/login", "/register", ROOT_ROUTE];

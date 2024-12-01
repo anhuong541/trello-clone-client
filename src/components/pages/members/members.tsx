@@ -17,7 +17,7 @@ import { queryKeys } from "@/lib/react-query/query-keys";
 import { AuthorityType, ProjectUser } from "@/types";
 import { Button } from "@/components/common/Button";
 import useScreenView from "@/hooks/ScreenView";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const showMemberRole = (input: AuthorityType[]) => {
   if (input.includes("Owner")) {

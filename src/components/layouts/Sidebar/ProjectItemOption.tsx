@@ -8,7 +8,7 @@ import { ProjectListItem } from "./Sidebar";
 import { Input, Textarea } from "@chakra-ui/react";
 import { Button } from "@/components/common/Button";
 import { MdOutlineMoreHoriz } from "react-icons/md";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface ProjectItemOptionProps {
   itemData: ProjectListItem;

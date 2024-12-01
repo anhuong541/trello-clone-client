@@ -17,7 +17,7 @@ import { QueryUserProjectList } from "@/lib/react-query/query-actions";
 import AddProjectPopover from "./AddProjectPopover";
 import ProjectItemOption from "./ProjectItemOption";
 import useScreenView from "@/hooks/ScreenView";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 export interface ProjectListItem {
   description: string;

@@ -8,7 +8,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { queryKeys } from "@/lib/react-query/query-keys";
 import { TaskInput } from "@/types/query-types";
-import { cn, generateNewUid } from "@/lib/utils";
+import { cn, generateNewUid } from "@/utils";
 import { toast } from "react-toastify";
 import {
   Box,

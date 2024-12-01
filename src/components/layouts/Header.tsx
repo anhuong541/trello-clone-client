@@ -16,7 +16,7 @@ import {
 import { useTheme } from "next-themes";
 
 import { OnUserLogoutAction } from "@/lib/react-query/query-actions";
-import { removeSession } from "@/actions/auth-action";
+import { removeSession } from "@/lib/auth-action";
 import { Button } from "../common/Button";
 import CopyText from "../copyText";
 

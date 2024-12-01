@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookieValue } from "./utils";
+import { getCookieValue } from "../utils";
 import { AUTH_TOKEN } from "@/constants";
 
 export const isProduction = process.env.NEXT_PUBLIC_NODE_ENV! === "production";
