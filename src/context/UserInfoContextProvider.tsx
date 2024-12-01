@@ -18,11 +18,7 @@ export const UserDataContext = createContext<{
 export default function UserInfoContextProvider({ children }: { children: ReactNode }) {
   const [userDataStore, setUserDataStore] = useState<UserType | null>(null);
 
-  return (
-    <UserDataContext.Provider value={{ userDataStore, setUserDataStore }}>
-      {children}
-    </UserDataContext.Provider>
-  );
+  return <UserDataContext.Provider value={{ userDataStore, setUserDataStore }}>{children}</UserDataContext.Provider>;
 }
 
 export const UserInfoContextHook = () => {

@@ -27,16 +27,8 @@ export default function AuthForm({ data }: { data: AuthFormInput }) {
             );
           })}
 
-          <Button
-            type="submit"
-            className="flex gap-2 items-center"
-            disabled={data.submit.isLoadingSubmit}
-          >
-            {data.submit.isLoadingSubmit ? (
-              <FaCircleNotch className="w-5 h-5 animate-spin" />
-            ) : (
-              data.submit.text
-            )}
+          <Button type="submit" className="flex gap-2 items-center" disabled={data.submit.isLoadingSubmit}>
+            {data.submit.isLoadingSubmit ? <FaCircleNotch className="w-5 h-5 animate-spin" /> : data.submit.text}
           </Button>
         </form>
         <Link

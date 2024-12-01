@@ -2,17 +2,23 @@
 
 import { Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { MdAdd, MdClear, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
+import { MdAdd, MdOutlineEdit, MdOutlineSubject } from "react-icons/md";
 import { OnCreateNewTask, OnEditTask } from "@/lib/react-query/query-actions";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { KanbanBoardType, PriorityType, StoryPointType, TaskItem, TaskStatusType } from "@/types";
 import { queryKeys } from "@/lib/react-query/query-keys";
 import { TaskInput } from "@/types/query-types";
 import { cn, generateNewUid } from "@/lib/utils";
-import { Box, Flex, Input, Select, Tooltip } from "@chakra-ui/react";
-import { Skeleton, Text, Textarea, useDisclosure } from "@chakra-ui/react";
 import { toast } from "react-toastify";
 import {
+  Box,
+  Flex,
+  Input,
+  Select,
+  Skeleton,
+  Text,
+  Textarea,
+  useDisclosure,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -112,7 +118,7 @@ function AddTask({
   setIsUserAction: Dispatch<SetStateAction<boolean>>;
 }) {
   const { kanbanDataStore, setKanbanDataStore } = KanbanDataContextHook();
-  const { register, handleSubmit, watch, reset } = useForm<TaskType>();
+  const { register, handleSubmit, reset } = useForm<TaskType>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
   const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
@@ -261,7 +267,7 @@ function TooltipDes({ children, label }: { children: ReactNode; label: string })
         <div
           className={cn(
             position?.left && "fixed",
-            "font-medium px-2 py-1 text-sm whitespace-nowrap -translate-x-1/2 bg-slate-400 text-white shadow-sm rounded-md"
+            "font-medium px-2 py-1 text-sm whitespace-nowrap -translate-x-1/2 bg-slate-400 text-white shadow-sm rounded-md",
           )}
           style={{ top: position?.top ?? 0, left: position?.left ?? 0, zIndex: 999 }}
         >
@@ -288,7 +294,7 @@ function TaskDrableItem({
   const [disableDrag, setDisableDrag] = useState(false);
 
   return (
-    <Draggable draggableId={id ? id : itemInput.taskId} index={index} isDragDisabled={disableDrag}>
+    <Draggable draggableId={id || itemInput.taskId} index={index} isDragDisabled={disableDrag}>
       {(provided, snapshot) => {
         selectedDragItem.current = itemInput; //  this is for saving the selected drag itemData
 
@@ -323,8 +329,8 @@ function TaskDrableItem({
                   itemInput.priority === "High"
                     ? "text-red-400"
                     : itemInput.priority === "Medium"
-                    ? "text-blue-400"
-                    : "text-gray-400"
+                      ? "text-blue-400"
+                      : "text-gray-400",
                 )}
               >
                 {itemInput?.priority}

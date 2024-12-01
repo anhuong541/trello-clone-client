@@ -42,7 +42,7 @@ function ProjectSelect({ item, ProjectSelected }: ProjectSelectProps) {
         "flex relative group pr-4 hover:bg-blue-300 dark:hover:bg-gray-700/80",
         disableIfOnMemberPage &&
           ProjectSelected &&
-          "bg-blue-400 hover:bg-blue-400/70 dark:bg-gray-800 dark:hover:bg-gray-700/80"
+          "bg-blue-400 hover:bg-blue-400/70 dark:bg-gray-800 dark:hover:bg-gray-700/80",
       )}
     >
       <Link
@@ -91,7 +91,7 @@ export default function Sidebar({ projectId }: { projectId: string }) {
     <div
       className={cn(
         openSidebar ? "max-lg:w-[300px] max-lg:sm:w-[400px]" : "w-[16px]",
-        "relative col-span-2 lg:flex flex-shrink-0 flex-col bg-blue-200 dark:bg-gray-900 transition-all duration-300"
+        "relative col-span-2 lg:flex flex-shrink-0 flex-col bg-blue-200 dark:bg-gray-900 transition-all duration-300",
       )}
     >
       {openSidebar && (

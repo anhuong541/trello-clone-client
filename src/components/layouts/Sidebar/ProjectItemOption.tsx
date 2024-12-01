@@ -85,7 +85,7 @@ export default function ProjectItemOption({
       <PopoverTrigger>
         <button
           className={cn(
-            "h-9 w-9 flex justify-center items-center m-auto hover:text-white hover:bg-blue-400/60 dark:hover:bg-gray-600/60"
+            "h-9 w-9 flex justify-center items-center m-auto hover:text-white hover:bg-blue-400/60 dark:hover:bg-gray-600/60",
           )}
         >
           <MdOutlineMoreHoriz className="w-5 h-5" />

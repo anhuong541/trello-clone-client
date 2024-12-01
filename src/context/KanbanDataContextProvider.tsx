@@ -10,9 +10,7 @@ export default function KanbanDataContextProvider({ children }: { children: Reac
   const [kanbanDataStore, setKanbanDataStore] = useState<KanbanBoardType | null>(null);
 
   return (
-    <KanbanDataContext.Provider value={{ kanbanDataStore, setKanbanDataStore }}>
-      {children}
-    </KanbanDataContext.Provider>
+    <KanbanDataContext.Provider value={{ kanbanDataStore, setKanbanDataStore }}>{children}</KanbanDataContext.Provider>
   );
 }
 

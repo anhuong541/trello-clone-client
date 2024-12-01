@@ -65,7 +65,7 @@ function SelectProjectMember({ currentProject }: { currentProject: any }) {
                 className={cn(
                   "cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-gray-600/80 text-sm whitespace-nowrap text-ellipsis overflow-hidden font-medium",
                   project?.projectId === currentProject?.projectId &&
-                    "bg-gray-200 dark:bg-gray-600 hover:bg-gray-200/80"
+                    "bg-gray-200 dark:bg-gray-600 hover:bg-gray-200/80",
                 )}
                 onClick={() => route.push(`/project/members/${project.projectId}`)}
               >
