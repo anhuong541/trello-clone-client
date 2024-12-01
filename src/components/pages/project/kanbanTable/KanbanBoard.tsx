@@ -112,14 +112,11 @@ function AddTask({
   setIsUserAction: Dispatch<SetStateAction<boolean>>;
 }) {
   const { kanbanDataStore, setKanbanDataStore } = KanbanDataContextHook();
+  const { register, handleSubmit, watch, reset } = useForm<TaskType>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const queryClient = useQueryClient();
-  const { register, handleSubmit, watch, reset } = useForm<TaskType>();
-
   const listStoryPointAccepted = [1, 2, 3, 5, 8, 13, 21];
   const addTaskAction = OnCreateNewTask();
-
-  // console.log({ kanbanDataStore });
 
   const onSubmit: SubmitHandler<TaskType> = async (data) => {
     onClose();
@@ -413,7 +410,7 @@ export default function KanbanBoard({ projectId }: { projectId: string }) {
     };
 
     callViewProjectTasks(projectId);
-  });
+  }, [projectId]);
 
   useEffect(() => {
     if (!ablyClient) {

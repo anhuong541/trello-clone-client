@@ -20,11 +20,9 @@ export const checkJwtExpire = async (token: string) => {
 };
 
 export async function middleware(request: NextRequest) {
-  console.log("middleware start !!!");
   const tokenSession = request.cookies.get(SESSION_COOKIE_NAME)?.value || null;
   const firstParam = "/" + request.nextUrl.pathname.split("/")[1];
   if (tokenSession) {
-    console.log("middleware! is running");
     const checkToken = (await checkJwtExpire(tokenSession)) as any;
     // const checkToken: any = null;
     if (!checkToken) {
@@ -39,7 +37,7 @@ export async function middleware(request: NextRequest) {
     }
 
     if (checkToken?.response?.status === 401 && protectedRoutes.includes(firstParam)) {
-      console.log("it token fail!!!");
+      console.log("token is fail!!!");
       removeSession();
       const absoluteURL = new URL("/login", request.nextUrl.origin);
       return NextResponse.redirect(absoluteURL.toString());
