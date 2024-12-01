@@ -18,6 +18,7 @@ type LoginInput = {
 };
 
 export default function Login() {
+  const router = useRouter();
   const [emailErr, setEmailErr] = useState(false);
   const [passwordErr, setPasswordError] = useState(false);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
@@ -52,8 +53,11 @@ export default function Login() {
       });
 
     if (res?.status === 200) {
-      isProduction && createSession(res?.data.token);
-      // router.push("/project");
+      if (isProduction) {
+        createSession(res?.data.token);
+      } else {
+        router.push("/project");
+      }
       setEmailErr(false);
       reset();
       return;
